@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[tool.setuptools.packages.find]
+include = ["bigblock"]
+
+[project]
+name = "bigblock"
+description = "Easily generate information-rich, publication-quality tables from Python."
+readme = "README.md"
+keywords = ["tables"]
+license.file = "LICENSE"
+authors = [
+    { name = "Michael Chow", email = "michael.chow@posit.co" }
+]
+dynamic = ["version"]
+classifiers = [
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Scientific/Engineering :: Visualization"
+]
+dependencies = [
+    "ipyreact",
+    "IPython",
+    "importlib-metadata",
+    "importlib-resources",
+    "typing_extensions>=3.10.0.0",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+all = [
+]
+
+extra = [
+]
+
+dev = [
+    "black",
+    "jupyter",
+    "quartodoc>=0.7.1; python_version >= '3.9'",
+    "griffe==0.38.1",
+    "pandas",
+    "polars",
+    "pre-commit==2.15.0",
+    "pyarrow",
+    "pyright>=1.1.244",
+    "pytest>=3",
+    "pytest-cov",
+    "shiny",
+    "syrupy"
+]
+
+
+[project.urls]
+homepage = "https://github.com/posit-dev/great-tables"
+documentation = "https://posit-dev.github.io/great-tables/"
+
+[tool.flake8]
+exclude = ["docs", ".venv", "tests/*"]
+
+ignore = [
+    "E501",    # line too long (maximum 100 characters)
+    "W503",    # line break before binary operator
+    "E203",    # whitespace before ':'
+]
+
+max-line-length = 100
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov=bigblock"
+asyncio_mode = "strict"
+testpaths = [
+    "tests"
+]
+
+markers = [
+]
+
+[tool.black]
+line-length = 100

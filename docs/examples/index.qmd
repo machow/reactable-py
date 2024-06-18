@@ -1,0 +1,105 @@
+---
+title: Examples
+jupyter: python3
+---
+
+
+```{python}
+from bigblock.widgets import BigblockWidget, embed_css
+from bigblock.models import process_data, default_columns, Column, Props
+from plotnine.data import penguins
+import polars as pl
+
+embed_css()
+
+pl_penguins = pl.from_pandas(penguins)
+```
+
+## Basic usage
+
+```{python}
+BigblockWidget(
+    props=dict(
+        data={"a": [1, 2], "b": ["a", "b"], "c": ["c", "d"]},
+        columns=[
+            dict(name="colA", id="a", footer="footer", minWidth=50),
+            dict(name="colB", id="b", width=120, minWidth=50),
+            dict(name="colC", id="c"),
+        ],
+        # theme = asdict(Theme(color = "blue"))
+    )
+)
+
+```
+
+
+```{python}
+BigblockWidget(
+    props=dict(
+        data=process_data(pl_penguins),
+        columns=default_columns(pl_penguins),
+    ),
+)
+```
+
+### Column definitions
+
+* TODO: unspecified columns should be included by default
+
+```{python}
+# shouldn't subset columns
+lil_penguins = process_data(pl_penguins.head())
+BigblockWidget(
+    props=Props(
+        data=lil_penguins,
+        columns=[
+            Column(id="species", name="Species"),
+            Column(id="island", name="Island"),
+            Column(id="bill_length_mm", align="center"),
+        ],
+    ).to_props()
+)
+```
+
+* TODO: defaultColDef merged in on python side
+
+```{python}
+BigblockWidget(
+    props=Props(
+        lil_penguins,
+        defaultColDef=Column(align="center"),
+        columns=[Column(id="species", minWidth=140)],
+        bordered=True,
+        highlight=True,
+    ).to_props()
+)
+
+```
+
+## Sorting
+
+```{python}
+# defaultSorted may be..
+#  * dict mapping name -> order
+#  * list of names
+# for each col in default sorted:
+# * set Column.defaultSortDesc (if not set already)
+# *
+BigblockWidget(
+    props=Props(
+        pl_penguins,
+        defaultSorted=["species", "island"],
+    ).to_props()
+)
+```
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins,
+        columns=[Column(id="species", defaultSortOrder="desc")],
+        defaultSorted=["species", "island"],
+    ).to_props()
+)
+
+```
