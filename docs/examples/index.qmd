@@ -1,6 +1,9 @@
 ---
 title: Examples
 jupyter: python3
+format:
+  html:
+    toc: true
 ---
 
 
@@ -44,7 +47,6 @@ BigblockWidget(
 
 ### Column definitions
 
-* TODO: unspecified columns should be included by default
 
 ```{python}
 # shouldn't subset columns
@@ -60,6 +62,10 @@ BigblockWidget(
     ).to_props()
 )
 ```
+
+### Default columns
+
+(NOTE: Added header)
 
 * TODO: defaultColDef merged in on python side
 
@@ -78,6 +84,8 @@ BigblockWidget(
 
 ## Sorting
 
+### Default sorted columns
+
 ```{python}
 # defaultSorted may be..
 #  * dict mapping name -> order
@@ -94,6 +102,7 @@ BigblockWidget(
 ```
 
 ```{python}
+# TODO: support defaultSorted being a dict?
 BigblockWidget(
     props=Props(
         pl_penguins,
@@ -101,5 +110,102 @@ BigblockWidget(
         defaultSorted=["species", "island"],
     ).to_props()
 )
+```
+
+### Default sort order
+
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins,
+        defaultSortOrder="desc",
+        columns=[Column(id="species", defaultSortOrder="asc")],
+        defaultSorted=["species", "island"],
+    ).to_props()
+)
+```
+
+### Sort missing values last
+
+TODO(jupyter): Out of range float values are not JSON compliant
+
+```{python}
+import math
+
+df = pl.DataFrame(
+    {
+        "n": [1, 2, 3, -math.inf, math.inf],
+        "x": [2, 3, 1, None, math.nan],
+        "y": ["aa", "cc", "bb", None, None],
+    }
+)
+
+BigblockWidget(
+    props=Props(
+        df,
+        defaultColDef=Column(sortNALast=True),
+        defaultSorted="x",
+    ).to_props()
+)
+```
+
+### No sorting
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins.head(),
+        sortable=False,
+        showSortable=True,
+        columns=[
+            Column(id="bill_length_mm", sortable=True),
+            Column(id="bill_depth_mm", sortable=True),
+        ],
+    ).to_props()
+)
+```
+
+
+### Hide sort icons
+
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins.head(),
+        showSortIcon=False,
+    ).to_props()
+)
+```
+
+## Filtering
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins,
+        filterable=True,
+        minRows=10,
+    ).to_props()
+)
+```
+
+
+```{python}
+BigblockWidget(
+    props=Props(
+        pl_penguins,
+        filterable=True,
+        columns=[Column(id="Price", filterable=False)],
+        defaultPageSize=5,
+    ).to_props()
+)
+```
+
+### Custom filtering
+
+
+```{python}
 
 ```

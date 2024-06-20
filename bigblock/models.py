@@ -112,6 +112,8 @@ class Props:
     # ...rest ----
     bordered: bool = False
     highlight: bool = False
+    minRows: int | None = None
+    defaultPageSize: int | None = None
 
     # derived props ----
     defaultSortDesc: bool = field(init=False)
@@ -150,10 +152,12 @@ class Props:
     ) -> list[Column]:
         if default is None:
             default = Column()
-        crnt_cols = list(columns)
-        col_def_names = {col.id for col in columns}
+        crnt_cols = []
+        col_def_map = {col.id: col for col in columns}
         for col_name in data:
-            if col_name not in col_def_names:
+            if col_name in col_def_map:
+                crnt_cols.append(col_def_map[col_name])
+            else:
                 crnt_cols.append(replace(default, id=col_name))
 
         return crnt_cols
