@@ -6,6 +6,7 @@ from typing_extensions import TypeAlias
 from dataclasses import asdict, dataclass, field, fields, replace, InitVar
 
 from polars import DataFrame as PlDataFrame
+from bigblock.data import SimpleFrame
 
 
 # Utils ----
@@ -19,22 +20,60 @@ def filter_none(d: dict[str, Any]):
     return {k: v for k, v in d.items() if v is not None}
 
 
-def process_data(d: PlDataFrame) -> dict[str, list[Any]]:
-    return d.to_dict(as_series=False)
+def process_data(d: PlDataFrame | SimpleFrame) -> dict[str, list[Any]]:
+    if isinstance(d, PlDataFrame):
+        return d.to_dict(as_series=False)
+    elif isinstance(d, SimpleFrame):
+        return d.to_dict()
+
+    raise TypeError(f"Unsupported type: {type(d)}")
 
 
-def default_columns(d: PlDataFrame | dict[str, Any]) -> list[Column]:
+def get_column_names(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[str]:
+    if isinstance(d, PlDataFrame):
+        names = [col.name for col in d]
+    elif isinstance(d, SimpleFrame):
+        names = list(d.columns)
+    else:
+        names = list(d)
+
+    return names
+
+
+def default_columns(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[Column]:
     if isinstance(d, dict):
         return [Column(name=k, id=k) for k in d]
 
+    names = get_column_names(d)
+
     out = []
-    for ser in d:
+    for name in names:
         col = Column(
-            name=ser.name,
-            id=ser.name,
+            name=name,
+            id=name,
         )
-        out.append(col.to_props())
+        out.append(col)
     return out
+
+
+def as_props(data):
+    res = {}
+    for field in fields(data):
+        attr = getattr(data, field.name)
+        if hasattr(attr, "to_props"):
+            res[field.name] = attr.to_props()
+        else:
+            res[field.name] = attr
+
+    return res
+
+
+@dataclass
+class JS:
+    code: str
+
+    def to_props(self):
+        return self.code
 
 
 # Misc field types ----
@@ -45,14 +84,14 @@ CellRenderer: TypeAlias = Callable[["CellInfo"], str]
 StrIsoCurrency: TypeAlias = str
 
 
-JsFunction: TypeAlias = str
-JsFunctionCell: TypeAlias = str
+JsFunction: TypeAlias = JS
+JsFunctionCell: TypeAlias = JS
 """A javascript function that takes cell info, and table state."""
 
-JsFunctionCol: TypeAlias = str
+JsFunctionCol: TypeAlias = JS
 """A javascript function that takes column info, and table state."""
 
-JsFunctionRow: TypeAlias = str
+JsFunctionRow: TypeAlias = JS
 """A javascript function that takes row info, and table state."""
 
 
@@ -104,6 +143,7 @@ class Props:
     showSortIcon: bool | None = None
     showSortable: bool | None = None
     filterable: bool | None = None
+    searchable: bool | None = None
     resizable: bool | None = None
     theme: Theme | None = None
     language: str | None = None
@@ -114,6 +154,14 @@ class Props:
     highlight: bool = False
     minRows: int | None = None
     defaultPageSize: int | None = None
+    showPageSizeOptions: bool | None = None
+    pageSizeOptions: list[int] = field(default_factory=lambda: [10, 25, 50, 100])
+    paginationType: Literal["numbers", "jump", "simple"] = "numbers"
+    showPageInfo: bool | None = None
+    showPagination: bool | None = None
+    pagination: bool | None = None
+    height: int | None = None
+    groupBy: str | list[str] | None = None
 
     # derived props ----
     defaultSortDesc: bool = field(init=False)
@@ -127,7 +175,7 @@ class Props:
         defaultSortOrder: Literal["asc", "desc"],
     ):
         # data ----
-        if isinstance(self.data, PlDataFrame):
+        if isinstance(self.data, (PlDataFrame, SimpleFrame)):
             self.data = process_data(self.data)
 
         # columns ----
@@ -142,6 +190,7 @@ class Props:
         self.validate_columns()
 
         self.defaultSorted = self.derive_default_sorted(defaultSortOrder)
+        self.groupBy = [self.groupBy] if isinstance(self.groupBy, str) else self.groupBy
 
         # derived ----
         self.defaultSortDesc = defaultSortOrder == "desc"
@@ -179,9 +228,25 @@ class Props:
         return out
 
     def validate_columns(self):
+        names = set(get_column_names(self.data))
         for col in self.columns:
-            if col.id not in self.data:
+            if col.id not in names:
                 raise ValueError(f"Column id '{col.id}' is not a column name in the data.")
+
+    def validate_groupBy(self):
+        if self.groupBy is None:
+            return
+
+        col_map = {col.id: col for col in self.columns}
+        missing = [col for col in self.groupBy if col not in col_map]
+        if missing:
+            raise ValueError(f"groupBy column names not in data: {missing}")
+
+        details = [col for col in self.groupBy if getattr(col_map[col], "details", None)]
+        if details:
+            raise ValueError(
+                "groupBy columns cannot have `details` set.\n\n" f"Affected columns: {details}"
+            )
 
     def to_props(self):
         props_list = ["columns"]
@@ -277,7 +342,8 @@ class Column:
             self.name = self.id
 
     def to_props(self) -> dict[str, Any]:
-        renamed = rename(asdict(self), **{"class": "class_"})
+
+        renamed = rename(as_props(self), **{"class": "class_"})
         return filter_none(renamed)
 
 

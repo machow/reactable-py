@@ -43,8 +43,8 @@ var require_react_table_development = __commonJS({
         try {
           var info = gen[key](arg);
           var value = info.value;
-        } catch (error) {
-          reject(error);
+        } catch (error2) {
+          reject(error2);
           return;
         }
         if (info.done) {
@@ -3997,7 +3997,7 @@ var require_checkPropTypes = __commonJS({
       if (true) {
         for (var typeSpecName in typeSpecs) {
           if (has(typeSpecs, typeSpecName)) {
-            var error;
+            var error2;
             try {
               if (typeof typeSpecs[typeSpecName] !== "function") {
                 var err = Error(
@@ -4006,20 +4006,20 @@ var require_checkPropTypes = __commonJS({
                 err.name = "Invariant Violation";
                 throw err;
               }
-              error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
+              error2 = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
             } catch (ex) {
-              error = ex;
+              error2 = ex;
             }
-            if (error && !(error instanceof Error)) {
+            if (error2 && !(error2 instanceof Error)) {
               printWarning(
-                (componentName || "React class") + ": type specification of " + location + " `" + typeSpecName + "` is invalid; the type checker function must return `null` or an `Error` but returned a " + typeof error + ". You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument)."
+                (componentName || "React class") + ": type specification of " + location + " `" + typeSpecName + "` is invalid; the type checker function must return `null` or an `Error` but returned a " + typeof error2 + ". You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument)."
               );
             }
-            if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-              loggedTypeFailures[error.message] = true;
+            if (error2 instanceof Error && !(error2.message in loggedTypeFailures)) {
+              loggedTypeFailures[error2.message] = true;
               var stack = getStack ? getStack() : "";
               printWarning(
-                "Failed " + location + " type: " + error.message + (stack != null ? stack : "")
+                "Failed " + location + " type: " + error2.message + (stack != null ? stack : "")
               );
             }
           }
@@ -4177,9 +4177,9 @@ var require_factoryWithTypeCheckers = __commonJS({
             return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an array."));
           }
           for (var i = 0; i < propValue.length; i++) {
-            var error = typeChecker(propValue, i, componentName, location, propFullName + "[" + i + "]", ReactPropTypesSecret);
-            if (error instanceof Error) {
-              return error;
+            var error2 = typeChecker(propValue, i, componentName, location, propFullName + "[" + i + "]", ReactPropTypesSecret);
+            if (error2 instanceof Error) {
+              return error2;
             }
           }
           return null;
@@ -4262,9 +4262,9 @@ var require_factoryWithTypeCheckers = __commonJS({
           }
           for (var key in propValue) {
             if (has(propValue, key)) {
-              var error = typeChecker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
-              if (error instanceof Error) {
-                return error;
+              var error2 = typeChecker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
+              if (error2 instanceof Error) {
+                return error2;
               }
             }
           }
@@ -4329,9 +4329,9 @@ var require_factoryWithTypeCheckers = __commonJS({
             if (typeof checker !== "function") {
               return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
             }
-            var error = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
-            if (error) {
-              return error;
+            var error2 = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
+            if (error2) {
+              return error2;
             }
           }
           return null;
@@ -4356,9 +4356,9 @@ var require_factoryWithTypeCheckers = __commonJS({
                 "Invalid " + location + " `" + propFullName + "` key `" + key + "` supplied to `" + componentName + "`.\nBad object: " + JSON.stringify(props[propName], null, "  ") + "\nValid keys: " + JSON.stringify(Object.keys(shapeTypes), null, "  ")
               );
             }
-            var error = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
-            if (error) {
-              return error;
+            var error2 = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
+            if (error2) {
+              return error2;
             }
           }
           return null;
@@ -5541,9 +5541,9 @@ function handleInterpolation(mergedProps, registered, interpolation) {
     case "function": {
       if (mergedProps !== void 0) {
         var previousCursor = cursor;
-        var result = interpolation(mergedProps);
+        var result2 = interpolation(mergedProps);
         cursor = previousCursor;
-        return handleInterpolation(mergedProps, registered, result);
+        return handleInterpolation(mergedProps, registered, result2);
       } else if (true) {
         console.error("Functions that are interpolated in css calls will be stringified.\nIf you want to have a css call based on props, create a function that returns a css call like this\nlet dynamicStyle = (props) => css`color: ${props.color}`\nIt can be called directly with props or interpolated in a styled call like this\nlet SomeComponent = styled('div')`${dynamicStyle}`");
       }
@@ -7784,16 +7784,16 @@ function sum(values) {
   if (numbers.length === 0) {
     return 0;
   }
-  const result = numbers.reduce((a, b) => a + b, 0);
-  return round(result, 12);
+  const result2 = numbers.reduce((a, b) => a + b, 0);
+  return round(result2, 12);
 }
 function mean(values) {
   const numbers = omitMissingNumbers(values);
   if (numbers.length === 0) {
     return NaN;
   }
-  const result = sum(numbers) / numbers.length;
-  return round(result, 12);
+  const result2 = sum(numbers) / numbers.length;
+  return round(result2, 12);
 }
 function maxNumber(values) {
   const numbers = omitMissingNumbers(values);
@@ -8480,6 +8480,7 @@ function Reactable({
   dataKey,
   ...rest
 }) {
+  console.log(rest);
   data = normalizeColumnData(data, columns);
   columns = buildColumnDefs(columns, columnGroups, {
     sortable,
@@ -10309,10 +10310,74 @@ ReactableData.propTypes = Reactable.propTypes;
 ReactableData.defaultProps = Reactable.defaultProps;
 
 // tmp/reactable/srcjs/index2.js
-var index2_default = Reactable;
+function tryEval(code) {
+  var result = null;
+  try {
+    result = eval("(" + code + ")");
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) {
+      throw error;
+    }
+    try {
+      result = eval(code);
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        throw error;
+      } else {
+        throw e;
+      }
+    }
+  }
+  return result;
+}
+function replaceWithEval(obj, field) {
+  if (obj[field] === void 0) {
+    return obj;
+  }
+  if (typeof obj[field] !== "string") {
+    return obj;
+  }
+  var res = tryEval(obj[field]);
+  if (typeof res === "function") {
+    obj[field] = res;
+  }
+  return obj;
+}
+function mapReplaceWithEval(obj, field) {
+  if (obj === void 0) {
+    console.log("no object");
+    return obj;
+  }
+  console.log(typeof obj);
+  if (!Array.isArray(obj)) {
+    console.log("no array");
+    return obj;
+  }
+  var res = obj.map((x) => replaceWithEval(x, field));
+  console.log("original:");
+  console.log(obj);
+  console.log("res:");
+  console.log(res);
+  return res;
+}
+function Reactable2({
+  data,
+  columns,
+  ...rest
+}) {
+  var columns = mapReplaceWithEval(columns, "filterMethod");
+  console.log(rest);
+  return Reactable({
+    data,
+    columns,
+    ...rest
+  });
+}
+Reactable2.propTypes = Reactable.propTypes;
+Reactable2.defaultProps = Reactable.defaultProps;
 export {
   ReactableData,
-  index2_default as default,
+  Reactable2 as default,
   downloadDataCSV,
   getDataCSV,
   getInstance,

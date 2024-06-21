@@ -1,6 +1,8 @@
 ---
 title: Examples
 jupyter: python3
+execute:
+  daemon: false
 format:
   html:
     toc: true
@@ -8,14 +10,16 @@ format:
 
 
 ```{python}
+from bigblock import bigblock
 from bigblock.widgets import BigblockWidget, embed_css
-from bigblock.models import process_data, default_columns, Column, Props
+from bigblock.models import process_data, default_columns, Column, Props, JS
+from bigblock.data import us_states
 from plotnine.data import penguins
 import polars as pl
 
 embed_css()
 
-pl_penguins = pl.from_pandas(penguins)
+pl_penguins = pl.from_pandas(penguins).with_columns(pl.col(pl.Categorical()).cast(pl.String))
 ```
 
 ## Basic usage
@@ -205,7 +209,198 @@ BigblockWidget(
 
 ### Custom filtering
 
+```{python}
+titled = pl_penguins.with_columns(pl.col("species").str.to_titlecase())
+
+js_filter = JS(
+    """
+function(rows, columnId, filterValue) {
+  return rows.filter(function(row) {
+    return row.values[columnId].indexOf(filterValue) !== -1
+  })
+}"""
+)
+
+BigblockWidget(
+    props=Props(
+        data=titled.head(2),
+        filterable=True,
+        columns=[
+            Column(
+                id="species",
+                filterMethod=js_filter,
+            ),
+        ],
+        defaultPageSize=5,
+    ).to_props()
+)
+```
+
+## Searching
+
 
 ```{python}
+bigblock(Props(data = pl_penguins,searchable = True, minRows = 10))
+```
 
+### Custom searching
+
+## Pagination
+
+```{python}
+bigblock(Props(pl_penguins, defaultPageSize=4))
+```
+
+
+
+```{python}
+bigblock(Props(pl_penguins, defaultPageSize=4, minRows=4, searchable=True))
+
+```
+
+### Page size options
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        showPageSizeOptions=True,
+        pageSizeOptions=[4, 8, 12],
+        defaultPageSize=4,
+    )
+)
+```
+
+### Alternative pagination types
+
+#### Page jump
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        paginationType="jump",
+        defaultPageSize=4,
+    )
+)
+```
+
+#### Simple
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        paginationType="simple",
+        defaultPageSize=4,
+    )
+)
+```
+
+### Hide page info
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        showPageInfo=False,
+        defaultPageSize=4,
+    )
+)
+```
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        showPageInfo=False,
+        showPageSizeOptions=True,
+        defaultPageSize=4,
+    )
+)
+```
+
+### Always show pagination
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        showPagination=True,
+    )
+)
+```
+
+### No pagination
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        pagination=False,
+        highlight=True,
+        height=250,
+    )
+)
+```
+
+## Grouping and aggregation
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        groupBy="species",
+    )
+)
+```
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        groupBy="species",
+        columns=[
+            Column(id="sex", aggregate="frequency"),
+            Column(id="island", aggregate="unique"),
+            Column(id="bill_length_mm", aggregate="max"),
+            # TODO: an NA causes mean to be NA
+            Column(id="bill_depth_mm", aggregate="mean"),
+        ],
+    )
+)
+```
+
+```python
+colDef(aggregate = "sum")        # Sum of numbers
+colDef(aggregate = "mean")       # Mean of numbers
+colDef(aggregate = "max")        # Maximum of numbers
+colDef(aggregate = "min")        # Minimum of numbers
+colDef(aggregate = "median")     # Median of numbers
+colDef(aggregate = "count")      # Count of values
+colDef(aggregate = "unique")     # Comma-separated list of unique values
+colDef(aggregate = "frequency")  # Comma-separated counts of unique values
+```
+
+```python
+colDef(
+  aggregate = JS("
+    function(values, rows) {
+      // input:
+      //  - values: an array of all values in the group
+      //  - rows: an array of row data values for all rows in the group (optional)
+      //
+      // output:
+      //  - an aggregated value, e.g. a comma-separated list
+      return values.join(', ')
+    }
+  ")
+)
+```
+
+
+```{python}
+bigblock(Props(us_states))
 ```

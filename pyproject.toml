@@ -85,7 +85,7 @@ max-line-length = 100
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov=bigblock"
+addopts = "-ra -q"
 asyncio_mode = "strict"
 testpaths = [
     "tests"
