@@ -98,8 +98,8 @@ class SimpleFrame:
         name = self.__class__.__name__
         if cycle:
             p.text(f"{name}(...)")
+            return
 
-        p.text(f"{name}(\n")
         col_reps = [
             f'"{k}": {col._repr(n=5, include_name=False)}' for k, col in self.columns.items()
         ]
@@ -154,20 +154,39 @@ class SimpleFrame:
         return cls(res)
 
     def __getitem__(self, indx: RowIndex | ColIndex):
+        # handle multi-arg indexing ----
         if isinstance(indx, tuple):
             ii: RowIndex = indx[0]
             k: ColIndex = indx[1]
-        # fetch single value ----
+
+        # otherwise, figure out if single arg is for rows or cols ----
+        elif isinstance(indx, list):
+            _first = _maybe_getitem(indx, 0, None)
+            if isinstance(_first, int):
+                ii, k = indx, slice(None)
+            else:
+                ii, k = slice(None), indx
+
+        elif isinstance(indx, int):
+            ii, k = indx, slice(None)
+
+        elif isinstance(indx, str):
+            ii, k = slice(None), indx
+
+        else:
+            raise TypeError(f"Unknown getitem input type: {type(indx)}")
+
+        # slice ----
+
+        # case 1: single value
         if isinstance(ii, int) and isinstance(k, str):
             return self._get_value(ii, k)
 
-        # fetch columns only ----
-        elif isinstance(ii, str) or (
-            isinstance(ii, list) and isinstance(_maybe_getitem(ii, 0, None), str)
-        ):
-            return self._get_frame(slice(None), ii)
+        # case 2: single column
+        elif isinstance(k, str):
+            return self._get_column(ii, k)
 
-        # fetch rows and columns ----
+        # case 3: frame subset
         else:
             return self._get_frame(ii, k)
 
@@ -184,6 +203,9 @@ class SimpleFrame:
         subsetted = {name: col[ii] for name, col in new_cols.items()}
 
         return self.__class__(subsetted)
+
+    def _get_column(self, ii: RowSliceIndex, k: ColIndex = ColValIndex):
+        return self.columns[k][ii]
 
     def to_dict(self):
         return {k: v.to_list() for k, v in self.columns.items()}
@@ -211,3 +233,10 @@ class SimpleFrame:
             data = dict(zip(fieldnames, cols))
 
             return cls.from_dict(data)
+
+    def cast(self, col_mapping: dict[str, Any]) -> Self:
+        new_columns = {**self.columns}
+        for k, call in col_mapping.items():
+            new_columns[k] = [call(x) for x in self.columns[k]]
+
+        return self.__class__(new_columns)

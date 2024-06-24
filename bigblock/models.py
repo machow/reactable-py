@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass, field, fields, replace, InitVar
 
 from polars import DataFrame as PlDataFrame
 from bigblock.data import SimpleFrame
+from ._tbl_data import col_type
 
 
 # Utils ----
@@ -42,7 +43,7 @@ def get_column_names(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[str]
 
 def default_columns(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[Column]:
     if isinstance(d, dict):
-        return [Column(name=k, id=k) for k in d]
+        return [Column(name=k, id=k).infer_type(v) for k, v in d.items()]
 
     names = get_column_names(d)
 
@@ -51,7 +52,7 @@ def default_columns(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[Colum
         col = Column(
             name=name,
             id=name,
-        )
+        ).infer_type(d[name])
         out.append(col)
     return out
 
@@ -153,6 +154,7 @@ class Props:
     bordered: bool = False
     highlight: bool = False
     minRows: int | None = None
+    paginateSubRows: bool | None = None
     defaultPageSize: int | None = None
     showPageSizeOptions: bool | None = None
     pageSizeOptions: list[int] = field(default_factory=lambda: [10, 25, 50, 100])
@@ -174,20 +176,20 @@ class Props:
         defaultColDef,
         defaultSortOrder: Literal["asc", "desc"],
     ):
+        # columns ----
+
+        _simple_cols = default_columns(self.data)
+        if self.columns is None:
+            # TODO: does not apply defaultColDef
+            self.columns = _simple_cols
+        else:
+            self.columns = self.complete_columns(_simple_cols, defaultColDef, self.columns)
+
+        self.validate_columns()
+
         # data ----
         if isinstance(self.data, (PlDataFrame, SimpleFrame)):
             self.data = process_data(self.data)
-
-        # columns ----
-
-        if self.columns is None:
-            # TODO: for names in data, but not in columns,
-            # make the default
-            self.columns = default_columns(self.data)
-        else:
-            self.columns = self.complete_columns(self.data, defaultColDef, self.columns)
-
-        self.validate_columns()
 
         self.defaultSorted = self.derive_default_sorted(defaultSortOrder)
         self.groupBy = [self.groupBy] if isinstance(self.groupBy, str) else self.groupBy
@@ -195,17 +197,21 @@ class Props:
         # derived ----
         self.defaultSortDesc = defaultSortOrder == "desc"
 
+        # initialize columns ----
+        self.columns = [col.init_data(self.data) for col in self.columns]
+
     @staticmethod
     def complete_columns(
-        data: dict[str, Any], default: Column | None, columns: list[Column]
+        simple_cols: list[Column], default: Column | None, columns: list[Column]
     ) -> list[Column]:
         if default is None:
             default = Column()
         crnt_cols = []
         col_def_map = {col.id: col for col in columns}
-        for col_name in data:
+        for simple_col in simple_cols:
+            col_name = simple_col.id
             if col_name in col_def_map:
-                crnt_cols.append(col_def_map[col_name])
+                crnt_cols.append(replace(col_def_map[col_name], type=simple_col.type))
             else:
                 crnt_cols.append(replace(default, id=col_name))
 
@@ -282,17 +288,26 @@ class ColFormat:
     prefix: str | None = None
     suffix: str | None = None
     digits: int | None = None
-    separators: bool | None = False
-    percent: bool | None = False
+    separators: bool | None = None
+    percent: bool | None = None
     currency: StrIsoCurrency | None = None
-    datetime: bool | None = False
-    date: bool | None = False
-    time: bool | None = False
+    datetime: bool | None = None
+    date: bool | None = None
+    time: bool | None = None
     hour12: bool | None = None
     locales: bool | None = None
 
     def to_props(self):
         return filter_none(asdict(self))
+
+
+@dataclass
+class ColFormatGroupBy:
+    cell: ColFormat | None = None
+    aggregated: ColFormat | None = None
+
+    def to_props(self):
+        return filter_none(as_props(self))
 
 
 @dataclass
@@ -312,7 +327,7 @@ class Column:
     show: bool | None = None
     defaultSortOrder: Literal["asc", "desc"] | None = None
     sortNALast: bool | None = None
-    format: ColFormat | None = None
+    format: ColFormat | ColFormatGroupBy | None = None
     cell: JsFunctionCell | CellRenderer | None = None
     grouped: JsFunctionCell | None = None
     aggregated: JsFunctionCell | None = None
@@ -337,9 +352,57 @@ class Column:
     footerClass: list[str] | None = None
     footerStyle: CssRules | None = None
 
+    # internal ----
+    # TODO: ideally this cannot be specified in the constructor
+    # it's just passed to the widget
+    type: str | None = None
+
     def __post_init__(self):
         if self.name is None:
             self.name = self.id
+
+        # TODO: currently ColFormat is never passed in directly,
+        # but always converted to specify cell and aggregate formatting
+        if isinstance(self.format, ColFormat):
+            self.format = ColFormatGroupBy(
+                cell=self.format.to_props(),
+                aggregated=self.format.to_props(),
+            )
+
+    def _apply_transform(self, col_data: list[Any], transform: callable):
+        return [transform(CellInfo(val, ii, self.id)) for ii, val in enumerate(col_data)]
+
+    def init_data(self, data: dict[str, list[Any]]) -> Column:
+        col_data = data[self.id]
+
+        new_col = replace(self)
+
+        # merge column config ----
+
+        # cell is function: transform content ----
+        if isinstance(self.cell, JS):
+            pass
+        if callable(self.cell):
+            new_col.cell = self._apply_transform(col_data, self.cell)
+
+        # header: transform or set string as react tag ----
+
+        # footer: transform or set string as react tag ----
+
+        # details: transform ----
+
+        # filterInput: transform or set string as react tag ----
+
+        # className: transform ----
+
+        # style: transform ----
+
+        # columnGroups (spanners) ----
+        # call header func if exists (or add as react tag)
+        return new_col
+
+    def infer_type(self, series):
+        return replace(self, type=col_type(series))
 
     def to_props(self) -> dict[str, Any]:
 

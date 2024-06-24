@@ -8480,7 +8480,6 @@ function Reactable({
   dataKey,
   ...rest
 }) {
-  console.log(rest);
   data = normalizeColumnData(data, columns);
   columns = buildColumnDefs(columns, columnGroups, {
     sortable,
@@ -10345,19 +10344,12 @@ function replaceWithEval(obj, field) {
 }
 function mapReplaceWithEval(obj, field) {
   if (obj === void 0) {
-    console.log("no object");
     return obj;
   }
-  console.log(typeof obj);
   if (!Array.isArray(obj)) {
-    console.log("no array");
     return obj;
   }
   var res = obj.map((x) => replaceWithEval(x, field));
-  console.log("original:");
-  console.log(obj);
-  console.log("res:");
-  console.log(res);
   return res;
 }
 function Reactable2({
@@ -10366,7 +10358,6 @@ function Reactable2({
   ...rest
 }) {
   var columns = mapReplaceWithEval(columns, "filterMethod");
-  console.log(rest);
   return Reactable({
     data,
     columns,

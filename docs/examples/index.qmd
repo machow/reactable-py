@@ -12,8 +12,17 @@ format:
 ```{python}
 from bigblock import bigblock
 from bigblock.widgets import BigblockWidget, embed_css
-from bigblock.models import process_data, default_columns, Column, Props, JS
-from bigblock.data import us_states
+from bigblock.models import (
+    process_data,
+    default_columns,
+    Column,
+    ColFormat,
+    Props,
+    JS,
+    ColFormatGroupBy,
+)
+from bigblock.data import us_states, cars_93, prices
+from bigblock import tags
 from plotnine.data import penguins
 import polars as pl
 
@@ -42,10 +51,10 @@ BigblockWidget(
 
 ```{python}
 BigblockWidget(
-    props=dict(
+    props=Props(
         data=process_data(pl_penguins),
         columns=default_columns(pl_penguins),
-    ),
+    ).to_props(),
 )
 ```
 
@@ -349,25 +358,27 @@ bigblock(
 ## Grouping and aggregation
 
 ```{python}
+data = cars_93[10:22, ["manufacturer", "model", "type", "price", "mpg_city"]]
+
 bigblock(
     Props(
-        pl_penguins,
-        groupBy="species",
+        data,
+        groupBy="manufacturer",
     )
 )
 ```
 
 ```{python}
+data = cars_93[14:38, ["type", "price", "mpg_city", "drive_train", "man_trans_avail"]]
 bigblock(
     Props(
-        pl_penguins,
-        groupBy="species",
+        data,
+        groupBy="type",
         columns=[
-            Column(id="sex", aggregate="frequency"),
-            Column(id="island", aggregate="unique"),
-            Column(id="bill_length_mm", aggregate="max"),
-            # TODO: an NA causes mean to be NA
-            Column(id="bill_depth_mm", aggregate="mean"),
+            Column(id="price", aggregate="max"),
+            Column(id="mpg_city", aggregate="mean", format=ColFormat(digits=1)),
+            Column(id="drive_train", aggregate="unique"),
+            Column(id="man_trans_avail", aggregate="frequency"),
         ],
     )
 )
@@ -401,6 +412,259 @@ colDef(
 ```
 
 
+### Multiple groups
+
 ```{python}
-bigblock(Props(us_states))
+bigblock(
+    Props(
+        us_states,
+        groupBy=["Region", "Division"],
+        columns=[
+            Column(id="Division", aggregate="unique"),
+            Column(id="Area", aggregate="sum", format=ColFormat(separators=True)),
+        ],
+    )
+)
+
 ```
+
+
+### Custom aggregate function
+
+* TODO: custom JS in colDef.aggregate
+
+
+### Include sub rows in pagination
+
+
+```{python}
+data = cars_93[["manufacturer", "model", "type", "price", "mpg_city"]]
+
+bigblock(
+    Props(
+        data=cars_93,
+        groupBy="type",
+        paginateSubRows=True,
+    )
+)
+```
+
+## Column formatting
+
+```{python}
+
+bigblock(
+    Props(
+        data=prices,
+        columns=[
+            Column(id="price_usd", format=ColFormat(prefix="$", separators=True, digits=2)),
+            Column(
+                id="price_inr", format=ColFormat(currency="INR", separators=True, locales="hi-IN")
+            ),
+            Column(id="number_fr", format=ColFormat(locales="fr-FR")),
+            Column(id="temp", format=ColFormat(suffix="°C")),
+            Column(id="percent", format=ColFormat(percent=True, digits=1)),
+            Column(id="date", format=ColFormat(date=True, locales="en-GB")),
+        ],
+    )
+)
+```
+
+### Date formatting
+
+
+```{python}
+ts = ["2019-01-02 03:22:15", "2019-03-15 09:15:55", "2019-09-22 14:20:00"]
+ser = pl.Series(ts, dtype=pl.Date).str.to_datetime().dt.replace_time_zone("America/New_York")
+
+data = pl.DataFrame(
+    {
+        "datetime": ser,
+        "date": ser,
+        "time": ser,
+        "time_24h": ser,
+        "datetime_pt_BR": ser,
+    }
+)
+
+bigblock(
+    Props(
+        data,
+        columns=[
+            Column(id="datetime", format=ColFormat(datetime=True)),
+            Column(id="date", format=ColFormat(date=True)),
+            Column(id="time", format=ColFormat(time=True)),
+            Column(id="time_24h", format=ColFormat(time=True, hour12=False)),
+            Column(id="datetime_pt_BR", format=ColFormat(datetime=True, locales="pt-BR")),
+        ],
+    )
+)
+```
+
+
+### Currency formatting
+
+```{python}
+data = pl.DataFrame(
+    {
+        "USD": [12.12, 2141.213, 0.42, 1.55, 34414],
+        "EUR": [10.68, 1884.27, 0.37, 1.36, 30284.32],
+        "INR": [861.07, 152122.48, 29.84, 110, 2444942.63],
+        "JPY": [1280, 226144, 44.36, 164, 3634634.61],
+        "MAD": [115.78, 20453.94, 4.01, 15, 328739.73],
+    }
+)
+
+bigblock(Props(data, columns=[
+    Column(id="USD", format=ColFormat(currency="USD", separators=True, locales="en-US")),
+    Column(id="EUR", format=ColFormat(currency="EUR", separators=True, locales="de-DE")),
+    Column(id="INR", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+    Column(id="JPY", format=ColFormat(currency="JPY", separators=True, locales="ja-JP")),
+    Column(id="MAD", format=ColFormat(currency="MAD", separators=True, locales="ar-MA")),
+]))
+```
+
+### Formatting aggregated cells
+
+```python
+from bigblock.models import ColFormatGroupBy
+
+Column(
+  format = ColFormatGroupBy(
+    cell = colFormat(...),       # Standard cells
+    aggregated = colFormat(...)  # Aggregated cells
+  )
+)
+```
+
+
+```{r}
+data <- data.frame(
+  States = state.name,
+  Region = state.region,
+  Area = state.area
+)
+
+reactable(
+  data,
+  groupBy = "Region",
+  columns = list(
+    States = colDef(
+      aggregate = "count",
+      format = list(
+        aggregated = colFormat(suffix = " states")
+      )
+    ),
+    Area = colDef(
+      aggregate = "sum",
+      format = colFormat(suffix = " mi²", separators = TRUE)
+    )
+  )
+)
+```
+
+
+```{python}
+data = us_states
+
+bigblock(
+    Props(
+        data,
+        groupBy="Region",
+        columns=[
+            Column(
+                id="States",
+                aggregate="count",
+                format=ColFormatGroupBy(aggregated=ColFormat(suffix=" states")),
+            ),
+            Column(id="Area", aggregate="sum", format=ColFormat(suffix=" mi²", separators=True)),
+        ],
+    )
+)
+```
+
+### Displaying missing values
+
+
+
+```{python}
+data = pl.DataFrame(
+    {
+        "n": [1, 2, None, 4, 5],
+        "x": [55, 27, None, float("nan"), 19],
+        "y": [1, None, 0.25, 0.55, None],
+    }
+)
+
+bigblock(
+    Props(
+        data,
+        columns=[
+            Column(id="x", na="-"),
+            Column(id="y", na="NA", format=ColFormat(percent=True)),
+        ],
+    )
+)
+```
+
+### Custom data formatting
+
+## Custom rendering
+
+### Cell rendering (py)
+
+
+```{python}
+from bigblock.models import CellInfo
+from bigblock.tags import to_hydrate_format
+import htmltools
+
+data = cars_93[:5, ["manufacturer", "model", "type", "air_bags", "price"]]
+
+
+def render_link(ci: CellInfo) -> htmltools.Tag:
+    # TODO: should use polars expressions
+    manufacturer = data[ci.row_index, "manufacturer"]
+    url = htmltools.a(
+        ci.value,
+        href=f"https://wikipedia.org/wiki/{manufacturer}_{ci.value}",
+        target="blank_",
+    )
+
+    return to_hydrate_format(url)
+
+
+bigblock(
+    Props(
+        data=data,
+        columns=[
+            Column(id="model", cell=render_link),
+            Column(id="air_bags", cell=lambda ci: "❌ No" if ci.value == "None" else f"✅ Yes"),
+            Column(id="price", cell=lambda ci: f"${int(ci.value*1000):,}"),
+        ],
+    )
+)
+```
+
+### Cell rendering (js)
+
+* TODO finish rendering sections
+
+### Grouped cell rendering (py)
+
+### Grouped cell rendering (js)
+
+### Aggregated cell rendering (py)
+
+### Aggregated cell rendering (js)
+
+### Heading rendering (py)
+
+### Heading rendering (js)
+
+### Custom metadata
+
+## Footers
+
+### Python render function
+
