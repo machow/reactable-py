@@ -36,6 +36,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization"
 ]
 dependencies = [
+    "htmltools",
     "ipyreact",
     "IPython",
     "importlib-metadata",
@@ -63,7 +64,6 @@ dev = [
     "pyright>=1.1.244",
     "pytest>=3",
     "pytest-cov",
-    "shiny",
     "syrupy"
 ]
 
