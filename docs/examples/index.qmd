@@ -28,12 +28,14 @@ from bigblock.models import (
 )
 from bigblock.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
 from bigblock import tags
-from plotnine.data import penguins
+from palmerpenguins import load_penguins
 import polars as pl
+
 
 embed_css()
 
-pl_penguins = pl.from_pandas(penguins).with_columns(pl.col(pl.Categorical()).cast(pl.String))
+penguins = load_penguins()
+pl_penguins = pl.from_pandas(penguins)
 ```
 
 ## Basic usage
