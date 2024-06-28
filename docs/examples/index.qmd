@@ -10,18 +10,23 @@ format:
 
 
 ```{python}
-from bigblock import bigblock
+import htmltools
+from bigblock import bigblock, options
 from bigblock.widgets import BigblockWidget, embed_css
 from bigblock.models import (
     process_data,
     default_columns,
+    CellInfo,
     Column,
     ColFormat,
+    ColGroup,
+    Language,
     Props,
+    Theme,
     JS,
     ColFormatGroupBy,
 )
-from bigblock.data import us_states, cars_93, prices
+from bigblock.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
 from bigblock import tags
 from plotnine.data import penguins
 import polars as pl
@@ -668,3 +673,991 @@ bigblock(
 
 ### Python render function
 
+```{python}
+data = cars_93[17:47, ["manufacturer", "model", "type", "price"]]
+
+bigblock(
+    props=Props(
+        data,
+        defaultPageSize=5,
+        columns=[
+            Column(id="manufacturer", footer="Total"),
+            Column(id="price", footer=lambda col_info: f"{sum(col_info.values):.2f}"),
+        ],
+        defaultColDef=Column(footerStyle={"font-weight": "bold"}),
+    ),
+)
+
+```
+
+### JS render function 
+
+```{python}
+js_sum_column = JS(
+    """function(column, state) {
+   let total = 0
+   state.sortedData.forEach(function(row) {
+       total += row[column.id]
+   })
+   return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+} """
+)
+
+bigblock(
+    props=Props(
+        data,
+        defaultPageSize=5,
+        columns=[
+            Column(id="manufacturer", footer="Total"),
+            Column(id="price", footer=js_sum_column),
+        ],
+        defaultColDef=Column(footerStyle={"font-weight": "bold"}),
+    ),
+)
+
+```
+
+### Embedding HTML Widgets
+
+* TODO: complete original example
+
+```{python}
+import plotly.express as px
+import htmltools as h
+
+tips = px.data.tips()
+p = px.histogram(tips, x="tip")
+
+import plotly.graph_objects as go
+
+fw = go.FigureWidget(p)
+h.div(p).show()
+
+data = pl.DataFrame({"x": [1]})
+
+bigblock(
+    Props(
+        data,
+        details=lambda indx: go.FigureWidget(p),
+    )
+)
+
+```
+
+* TODO: beg shinywidgets for help? ipywidgets I don't think likes being embedded like this?
+
+## Expanding row details
+
+
+* TODO: using python function
+
+```{python}
+import htmltools
+
+bigblock(
+    Props(
+        pl_penguins,
+        details=lambda indx: htmltools.div("Details for row: ", indx, htmltools.pre("nice")),
+    )
+)
+
+```
+
+```{python}
+js_details = JS(
+    """function(rowInfo) {
+  return `Details for row: ${rowInfo.index}` +
+    `<pre>${JSON.stringify(rowInfo.values, null, 2)}</pre>`
+}"""
+)
+
+bigblock(
+    Props(
+        pl_penguins,
+        details=Column(
+            name="more",
+            html=True,
+            width=60,
+            details=js_details,
+        ),
+    )
+)
+```
+
+### Nested tables
+
+
+```{python}
+from htmltools import HTML, div
+
+
+sub_tables = {
+    g: div(bigblock(Props(df, outlined=True)), style="padding: 1rem")
+    for g, df in pl_penguins.group_by("species", "island")
+}
+
+df_uniq = pl_penguins.select(["species", "island"]).unique()
+
+bigblock(
+    Props(
+        df_uniq,
+        details=lambda indx: list(sub_tables.values())[indx],
+    )
+)
+
+```
+
+### Conditional row details
+
+* TODO: sub frames are centered? Maybe a quarto style thing?
+
+```{python}
+sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+
+bigblock(
+    Props(
+        pl_penguins[:5],
+        details=lambda indx: (
+            bigblock(Props(sub_frame, fullWidth=False)) if indx in [2, 4] else None
+        ),
+    )
+)
+```
+
+### Multiple row details
+
+* TODO: Should be able to validate output of column object
+
+```{python}
+
+sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+bigblock(
+    Props(
+        pl_penguins[:5],
+        details=lambda indx: (
+            bigblock(Props(sub_frame, fullWidth=False)) if indx in [2, 4] else None
+        ),
+        columns=[
+            Column(
+                id="bill_length_mm",
+                details=lambda indx: f"bill_length_mm: {pl_penguins[indx, 'bill_length_mm']}",
+            ),
+            Column(
+                id="bill_depth_mm",
+                format=ColFormat(digits=1),
+                details=JS(
+                    """
+            function(rowInfo) {
+                return 'bill_depth_mm: ' + rowInfo.values['bill_depth_mm']
+            }
+            """
+                ),
+            ),
+        ],
+    )
+)
+```
+
+### Default expanded rows
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:12],
+        defaultPageSize=4,
+        details=lambda indx: f"Details for row: {indx}",
+        defaultExpanded=True,
+    )
+)
+```
+
+
+## Conditional styling
+
+### Cell styling (R)
+
+
+```{python}
+bigblock(
+    Props(
+        sleep[:6, :],
+        columns=[
+            Column(
+                id="extra",
+                style=lambda val: {
+                    "color": "#008800" if val > 0 else "#e00000",
+                    "font-weight": "bold",
+                },
+            )
+        ],
+    )
+)
+```
+
+### Cell styling (js)
+
+
+```{python}
+
+js_style = JS(
+    """function(rowInfo) {
+      const value = rowInfo.values['extra']
+      let color
+      if (value > 0) {
+        color = '#008000'
+      } else if (value < 0) {
+        color = '#e00000'
+      } else {
+        color = '#777'
+      }
+      return { color: color, fontWeight: 'bold' }
+    }"""
+)
+bigblock(
+    Props(
+        sleep[:6, :],
+        columns=[
+            Column(
+                id="extra",
+                style=js_style,
+            )
+        ],
+    )
+)
+```
+
+### Row styling (python)
+
+* TODO: somehow set bold css class style
+
+```{python}
+bigblock(
+    Props(
+        sleep[:6, :],
+        rowStyle=lambda indx: (
+            {"background": "rgba(0, 0, 0, 0.05)"} if sleep[indx, "extra"] < -1 else None
+        ),
+        rowClass=lambda indx: "bold" if sleep[indx, "extra"] < -1 else None,
+    )
+)
+```
+
+
+### Row styling (js)
+
+z
+
+```{python}
+bigblock(
+    Props(
+        sleep[:6, :],
+        rowStyle=JS(
+            """function(rowInfo) {
+    if (rowInfo.values['extra'] < -1) {
+      return { background: 'rgba(0, 0, 0, 0.05)' }
+    }
+  }"""
+        ),
+        rowClass=JS(
+            """function(rowInfo) {
+    if (rowInfo.values['extra'] < -1) {
+      return 'bold'
+    }
+  }"""
+        ),
+    )
+)
+```
+
+### Custom metadata
+
+* TODO: expose Reactable on window
+
+```{python}
+from IPython.display import display
+
+cars = cars_93[:6, ["manufacturer", "model", "type", "price", "mpg_city"]]
+
+js_mpg_background = JS(
+    """function(rowInfo, column, state) {
+        const { showColors, mpgColor } = state.meta
+        if (showColors) {
+            return { 
+              backgroundColor: rowInfo.values[column.id] > 20 ? mpgColor : 'transparent'
+            }
+        }
+    }
+"""
+)
+
+bb = bigblock(
+    Props(
+        cars,
+        columns=[
+            Column(
+                id="mpg_city",
+                style=js_mpg_background,
+            )
+        ],
+        meta={
+            # yellow
+            "mpgColor": "#ff9f1a",
+            "showColors": True,
+        },
+        elementId="cars-colors-table",
+    )
+)
+
+import htmltools as ht
+
+clicker = ht.TagList(
+    ht.tags.label(
+        ht.tags.input(
+            type="checkbox",
+            checked=None,
+            onclick="Reactable.setMeta('cars-colors-table', function(prevMeta) { return { showColors: !prevMeta.showColors } })",
+        ),
+        "Show color scale",
+    ),
+)
+
+display(bb)
+clicker
+```
+
+## Table styling
+
+### Highlight rows on hover
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        highlight=True,
+    )
+)
+
+```
+
+### Bordered
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        bordered=True,
+    )
+)
+```
+
+
+### Borderless
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        borderless=True,
+    )
+)
+
+```
+
+### Outlined
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        outlined=True,
+    )
+)
+```
+
+### Striped
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        striped=True,
+    )
+)
+```
+
+### Bordered + striped + highlighting
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        bordered=True,
+        striped=True,
+        highlight=True,
+    )
+)
+```
+
+### Outlined + borderless
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        outlined=True,
+        borderless=True,
+    )
+)
+```
+
+### Compact
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        compact=True,
+    )
+)
+```
+
+### No text wrapping
+
+
+```{python}
+import polars.selectors as cs
+
+cat_penguins = pl_penguins.group_by("species").agg(cs.ends_with("_mm").str.concat(", "))
+
+bigblock(Props(cat_penguins, wrap=False, resizable=True, bordered=True))
+
+```
+
+### Fixed height + sticky header/footer
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins,
+        height=270,
+        striped=True,
+        defaultColDef=Column(
+            footer=lambda col_info: htmltools.div(col_info.name, style="font-weight: bold")
+        ),
+    )
+)
+```
+
+### Column widths
+
+
+```{python}
+bigblock(
+    Props(
+        cars_93[:6, ["make", "type", "weight"]],
+        columns=[
+            Column(id="make", minWidth=200),
+            Column(id="type", minWidth=100),
+            Column(id="weight", minWidth=100),
+        ],
+        bordered=True
+    )
+)
+```
+
+### No full width
+
+
+```{python}
+bigblock(
+    Props(
+        cars_93[:6, :5],
+        fullWidth=False,
+        bordered=True,
+        defaultColDef=Column(minWidth=120),
+    )
+)
+```
+
+You can also set a maximum or fixed width on the table:
+
+```{python}
+bigblock(
+    Props(
+        cars_93[:6, :5],
+        fullWidth=False,
+        bordered=True,
+        defaultColDef=Column(minWidth=120),
+        # Set a maximum width on the table
+        style={"max-width": 650},
+        # or a fixed width:
+        width=650,
+    )
+)
+
+```
+
+### Vertical alignment
+
+```{python}
+from htmltools import div
+
+data = starwars[:6, ["name", "height", "mass", "gender", "homeworld", "species"]]
+
+
+def render_species(ci: CellInfo):
+    species = data[ci.row_index, "species"]
+    species_name = species if species else "Unknown"
+    return div(
+        div(ci.value, style="font-weight: 600"),
+        div(species_name, style="font-size: 0.75rem"),
+    )
+
+
+bigblock(
+    Props(
+        data,
+        columns=[
+            Column(
+                id="name",
+                name="Character / Species",
+                cell=render_species,
+            ),
+            Column(id="species", show=False),
+        ],
+        defaultColDef=Column(vAlign="center", headerVAlign="bottom"),
+        bordered=True,
+    )
+)
+```
+
+### Custom CSS
+
+
+```{R}
+reactable(
+  iris[1:18, ],
+  defaultPageSize = 6,
+  borderless = TRUE,
+  class = "my-tbl",
+  defaultColDef = colDef(headerClass = "my-header"),
+  columns = list(
+    Sepal.Width = colDef(class = "my-col"),
+    Petal.Width = colDef(class = "my-col")
+  ),
+  rowClass = "my-row"
+)
+```
+
+
+
+```{python}
+from IPython.display import display, HTML
+
+display(
+    HTML(
+        """
+<style>
+.my-tbl {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.my-header {
+  border-width: 1px;
+}
+
+.my-col {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.my-row:hover {
+  background-color: #f5f8ff;
+}
+</style>
+"""
+    )
+)
+
+bigblock(
+    Props(
+        pl_penguins[:18],
+        defaultPageSize=6,
+        borderless=True,
+        class_="my-tbl",
+        defaultColDef=Column(headerClass="my-header"),
+        # columns but for penguins data
+        columns=[
+            Column(id="species", class_="my-col"),
+            Column(id="island", class_="my-col"),
+        ],
+        rowClass="my-row",
+    )
+)
+
+```
+
+## Theming
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:30],
+        searchable=True,
+        striped=True,
+        highlight=True,
+        bordered=True,
+        theme=Theme(
+            borderColor="#dfe2e5",
+            stripedColor="#f6f8fa",
+            highlightColor="#f0f5f9",
+            cellPadding="8px 12px",
+            style={
+                "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+            },
+            searchInputStyle={"width": "100%"},
+        ),
+    )
+)
+
+```
+
+### Global theme
+
+```{R}
+options(reactable.theme = reactableTheme(
+  color = "hsl(233, 9%, 87%)",
+  backgroundColor = "hsl(233, 9%, 19%)",
+  borderColor = "hsl(233, 9%, 22%)",
+  stripedColor = "hsl(233, 12%, 22%)",
+  highlightColor = "hsl(233, 12%, 24%)",
+  inputStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  selectStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonHoverStyle = list(backgroundColor = "hsl(233, 9%, 25%)"),
+  pageButtonActiveStyle = list(backgroundColor = "hsl(233, 9%, 28%)")
+))
+
+
+reactable(
+  iris[1:30, ],
+  filterable = TRUE,
+  showPageSizeOptions = TRUE,
+  striped = TRUE,
+  highlight = TRUE,
+  details = function(index) paste("Details for row", index)
+)
+
+```
+
+```{python}
+options.theme = Theme(
+    color="hsl(233, 9%, 87%)",
+    backgroundColor="hsl(233, 9%, 19%) !important",
+    borderColor="hsl(233, 9%, 22%) !important",
+    stripedColor="hsl(233, 12%, 22%)",
+    highlightColor="hsl(233, 12%, 24%)",
+    inputStyle={"background-color": "hsl(233, 9%, 25%) !important"},
+    selectStyle={"background-color": "hsl(233, 9%, 25%)"},
+    pageButtonHoverStyle={"background-color": "hsl(233, 9%, 25%)"},
+    pageButtonActiveStyle={"background-color": "hsl(233, 9%, 28%)"},
+)
+
+bigblock(
+    Props(
+        pl_penguins[:30],
+        filterable=True,
+        showPageSizeOptions=True,
+        striped=True,
+        highlight=True,
+        details=lambda index: f"Details for row {index}",
+    )
+)
+```
+
+```{python}
+options.reset()
+```
+
+### Nested selectors
+
+### Dynamic theming
+
+## Column groups
+
+
+```{python}
+# | eval: false
+bigblock(
+    Props(
+        pl_penguins[:5, ["species", "island", "bill_length_mm", "bill_depth_mm"]],
+        columns=[
+            Column(id="bill_length_mm", name="Length (mm)"),
+            Column(id="bill_depth_mm", name="Depth (mm)"),
+            Column(id="species", name="Species"),
+            Column(id="island", name="Island"),
+        ],
+        columnGroups=[
+            ColGroup(name="Bill", columns=["bill_length_mm", "bill_depth_mm"]),
+        ],
+    )
+)
+```
+
+## Column resizing
+
+
+```{python}
+bigblock(
+    Props(
+        cars_93[:5, :],
+        resizable=True,
+        wrap=False,
+        bordered=True,
+    )
+)
+```
+
+### Sticky columns
+
+```{python}
+bigblock(
+    Props(
+        cars_93[:5, :],
+        columns=[
+            Column(
+                id="manufacturer",
+                sticky="left",
+                style={"border-right": "1px solid #eee"},
+                headerStyle={"border-right": "1px solid #eee"},
+            ),
+            Column(
+                id="make",
+                sticky="right",
+                style={"border-left": "1px solid #eee"},
+                headerStyle={"border-left": "1px solid #eee"},
+            ),
+        ],
+        defaultColDef=Column(minWidth=150),
+    )
+)
+```
+
+### Multiple sticky columns
+
+```{python}
+stick_style = {"background-color": "#f7f7f7"}
+
+bigblock(
+    Props(
+        cars_93[:5, :],
+        columns=[
+            Column(id="manufacturer", sticky="left", style=stick_style, headerStyle=stick_style),
+            Column(id="make", sticky="left", style=stick_style, headerStyle=stick_style),
+            Column(id="type", sticky="left", style=stick_style, headerStyle=stick_style),
+        ],
+    )
+)
+```
+
+### Sticky column groups
+
+
+```{python}
+bigblock(Props(
+    cars_93[:5, :],
+    columnGroups=[
+        ColGroup(name="Make", columns=["manufacturer", "model"], sticky="left"),
+        ColGroup(name="Price", columns=["min_price", "price", "max_price"], sticky="left"),
+    ],
+    defaultColDef=Column(footer="Footer"),
+    resizable=True,
+    wrap=False,
+    bordered=True,
+))
+```
+
+## Row names and row headers
+
+### Row names
+
+* TODO: how far to go for pandas?
+* Display spanner index over names?
+
+```{python}
+# pd_expenditures = us_expenditures.to_pandas().set_index("index")
+# bigblock(Props(, ))
+```
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        rownames=True,
+    )
+)
+```
+
+### Row headers
+
+```{R}
+data <- MASS::Cars93[1:5, c("Make", "Type", "Price", "MPG.city", "AirBags")]
+
+reactable(
+  data,
+  columns = list(
+    Make = colDef(rowHeader = TRUE, style = list(fontWeight = 600))
+  ),
+  bordered = TRUE
+)
+```
+
+translated to python
+
+```{python}
+data = cars_93[:5, ["manufacturer", "model", "type", "price", "mpg_city", "air_bags"]]
+
+bigblock(Props(
+    data,
+    columns=[
+        Column(id="manufacturer", rowHeader=True, style={"font-weight": "600"}),
+    ],
+    bordered=True
+))
+```
+
+## Cell click actions
+
+### Expand on click
+
+
+```{R}
+reactable(
+  iris[48:52, ],
+  groupBy = "Species",
+  details = function(index) paste("Details for row:", index),
+  onClick = "expand",
+  # Give rows a pointer cursor to indicate that they're clickable
+  rowStyle = list(cursor = "pointer")
+)
+```
+
+translated to python
+
+
+```{python}
+bigblock(Props(
+    pl_penguins[150:155],
+    groupBy="species",
+    details=lambda index: f"Details for row: {index}",
+    onClick="expand",
+    rowStyle={"cursor": "pointer"}
+))
+
+```
+
+### Select on click
+
+
+```{python}
+bigblock(
+    Props(
+        pl_penguins[:5],
+        selection="multiple",
+        onClick="select",
+    )
+)
+```
+
+### Custom action
+
+
+
+```{python}
+data = cars_93[:5, ["manufacturer", "model", "type", "price"]]
+data["details"] = None
+
+js_on_click = JS(
+    """function(rowInfo, column) {
+    // Only handle click events on the 'details' column
+    if (column.id !== 'details') {
+      return
+    }
+
+    // Display an alert dialog with details for the row
+    window.alert('Details for row ' + rowInfo.index + ':\\n' + JSON.stringify(rowInfo.values, null, 2))
+
+    // Send the click event to Shiny, which will be available in input$show_details
+    // Note that the row index starts at 0 in JavaScript, so we add 1
+    if (window.Shiny) {
+      Shiny.setInputValue('show_details', { index: rowInfo.index + 1 }, { priority: 'event' })
+    }
+  }"""
+)
+
+bigblock(
+    Props(
+        data,
+        columns=[
+            Column(
+                id="details",
+                name="",
+                sortable=False,
+                cell=lambda ci: htmltools.tags.button("Show details"),
+            )
+        ],
+        onClick=js_on_click,
+    ),
+)
+```
+
+## Language options
+
+```{python}
+from bigblock.models import Language
+
+bigblock(
+    Props(
+        pl_penguins[:30],
+        searchable=True,
+        paginationType="simple",
+        language=Language(
+            searchPlaceholder="Search...",
+            noData="No entries found",
+            pageInfo="{rowStart} to {rowEnd} of {rows} entries",
+            pagePrevious="\u276e",
+            pageNext="\u276f",
+            # Accessible labels for assistive technologies such as screen readers.
+            # These are already set by default, but don't forget to update them when
+            # changing visible text.
+            pagePreviousLabel="Previous page",
+            pageNextLabel="Next page",
+        ),
+    )
+)
+```
+
+### Global language options
+
+
+```{python}
+options.language = Language(
+    pageSizeOptions="显示 {rows}",
+    pageInfo="{rowStart} 至 {rowEnd} 项结果,共 {rows} 项",
+    pagePrevious="上页",
+    pageNext="下页",
+)
+
+bigblock(Props(pl_penguins[:12], defaultPageSize=4, showPageSizeOptions=True))
+```
+
+
+```{python}
+options.reset()
+
+```

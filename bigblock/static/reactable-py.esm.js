@@ -4569,7 +4569,7 @@ var StyleSheet = /* @__PURE__ */ function() {
     this.before = null;
   }
   var _proto = StyleSheet2.prototype;
-  _proto.hydrate = function hydrate2(nodes) {
+  _proto.hydrate = function hydrate3(nodes) {
     nodes.forEach(this._insertTag);
   };
   _proto.insert = function insert(rule) {
@@ -5783,7 +5783,7 @@ var createEmotion = function createEmotion2(options) {
     cx,
     injectGlobal,
     keyframes,
-    hydrate: function hydrate2(ids) {
+    hydrate: function hydrate3(ids) {
       ids.forEach(function(key) {
         cache.inserted[key] = true;
       });
@@ -8406,6 +8406,24 @@ function getVAlignClass(vAlign) {
 }
 
 // tmp/reactable/srcjs/Reactable.js
+function hydrate2(components, tag) {
+  console.log("tag");
+  console.log(tag);
+  if (React11.isValidElement(tag)) {
+    console.log("skipping");
+    return tag;
+  }
+  if (typeof tag === "string") return tag;
+  if (tag.name[0] === tag.name[0].toUpperCase() && !components[tag.name]) {
+    throw new Error("Unknown component: " + tag.name);
+  }
+  const elem = components[tag.name] || tag.name;
+  const args = [elem, tag.attribs];
+  for (let child of tag.children) {
+    args.push(hydrate2(components, child));
+  }
+  return React11.createElement(...args);
+}
 var tableInstances = {};
 function getInstance(tableId) {
   if (!tableId) {
@@ -8480,6 +8498,8 @@ function Reactable({
   dataKey,
   ...rest
 }) {
+  console.log(data);
+  console.log(columns);
   data = normalizeColumnData(data, columns);
   columns = buildColumnDefs(columns, columnGroups, {
     sortable,
@@ -9585,7 +9605,9 @@ function Table({
       if (html) {
         props.html = content;
       }
-      props.children = hydrate({ Reactable, Fragment: Fragment2, WidgetContainer }, content);
+      console.log("hydrating");
+      console.log(content);
+      props.children = hydrate2({ Reactable, Fragment: Fragment2, WidgetContainer }, content);
     }
     return /* @__PURE__ */ React11.createElement(RowDetails, { key: `${expandedCol.id}_${rowInfo.index}`, ...props });
   };
@@ -10329,16 +10351,15 @@ function tryEval(code) {
   }
   return result;
 }
-function replaceWithEval(obj, field) {
-  if (obj[field] === void 0) {
-    return obj;
-  }
-  if (typeof obj[field] !== "string") {
-    return obj;
-  }
-  var res = tryEval(obj[field]);
-  if (typeof res === "function") {
-    obj[field] = res;
+function replaceWithEval(obj, fields) {
+  for (let field of fields) {
+    if (obj[field] && typeof obj[field].code === "string") {
+      var res = tryEval(obj[field].code);
+      if (typeof res === "function") {
+        console.log("replacing", field, obj[field], res);
+        obj[field] = res;
+      }
+    }
   }
   return obj;
 }
@@ -10357,7 +10378,10 @@ function Reactable2({
   columns,
   ...rest
 }) {
-  var columns = mapReplaceWithEval(columns, "filterMethod");
+  var colProps = ["filterMethod", "footer", "cell", "details", "style"];
+  var tableProps = ["rowStyle", "rowClass", "onClick"];
+  var columns = mapReplaceWithEval(columns, colProps);
+  var rest = replaceWithEval(rest, tableProps);
   return Reactable({
     data,
     columns,
@@ -10374,6 +10398,7 @@ export {
   getInstance,
   getState,
   gotoPage,
+  hydrate2,
   onStateChange,
   setAllFilters,
   setData,

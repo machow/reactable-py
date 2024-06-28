@@ -9,6 +9,9 @@ website:
         file: get-started/index.qmd
       - text: Examples
         file: examples/index.qmd
+      - text: Demos
+        menu: 
+          - demos/twitter-followers.qmd
       #- href: reference/index.qmd
       #  text: Reference
     right:

@@ -91,6 +91,9 @@ class SimpleFrame:
         if not all(isinstance(x, SimpleColumn) for x in self.columns.values()):
             self.columns: dict[str, SimpleColumn] = self.from_dict(self.columns).columns
 
+    def __len__(self):
+        return len(next(iter(self.columns.values()), []))
+
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self.columns)})"
 
@@ -206,6 +209,14 @@ class SimpleFrame:
 
     def _get_column(self, ii: RowSliceIndex, k: ColIndex = ColValIndex):
         return self.columns[k][ii]
+
+    def __setitem__(self, k: ColValIndex, v: SimpleColumn | Any):
+        if isinstance(v, SimpleColumn):
+            self.columns[k] = v
+        elif isinstance(v, (list, tuple)):
+            self.columns[k] = SimpleColumn(v)
+        else:
+            self.columns[k] = SimpleColumn([v] * len(self))
 
     def to_dict(self):
         return {k: v.to_list() for k, v in self.columns.items()}

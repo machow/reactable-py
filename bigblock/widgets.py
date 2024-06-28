@@ -26,3 +26,10 @@ def embed_css():
 
 class BigblockWidget(ipyreact.Widget):
     _esm = Path(str(STATIC_FILES / "reactable-py.esm.js"))
+
+    def tagify(self) -> str:
+        # to appease htmltools
+        return str(self)
+
+    # def to_tag(self):
+    #    return htmltool.Tag("Reactable", )

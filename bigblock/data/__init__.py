@@ -1,16 +1,27 @@
+import json
+
 from datetime import datetime
 
 from importlib_resources import files
 from ..simpleframe import SimpleFrame
 
-us_states = SimpleFrame.read_csv(files("bigblock.data") / "us_states.csv").cast({"Area": int})
-cars_93 = SimpleFrame.read_csv(files("bigblock.data") / "cars_93.csv").cast(
+BIG_DATA = files("bigblock.data")
+
+cars_93 = SimpleFrame.read_csv(BIG_DATA / "cars_93.csv").cast(
     dict(
         mpg_city=int,
         mpg_highway=int,
         price=float,
     )
 )
+
+co2 = SimpleFrame.read_csv(BIG_DATA / "co2.csv").cast(
+    dict(
+        conc=int,
+        uptake=float,
+    )
+)
+
 
 prices = SimpleFrame.from_dict(
     {
@@ -22,3 +33,16 @@ prices = SimpleFrame.from_dict(
         "date": [datetime(2019, 1, 2), datetime(2019, 3, 15), datetime(2019, 9, 22)],
     }
 )
+
+sleep = SimpleFrame.read_csv(BIG_DATA / "sleep.csv").cast(
+    dict(
+        extra=float,
+        group=int,
+        id=int,
+    )
+)
+
+starwars = SimpleFrame.from_dict(json.load((BIG_DATA / "starwars.json").open()))
+
+us_states = SimpleFrame.read_csv(BIG_DATA / "us_states.csv").cast({"Area": int})
+us_expenditures = SimpleFrame.read_csv(BIG_DATA / "us_expenditures.csv")
