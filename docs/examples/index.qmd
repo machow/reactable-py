@@ -11,9 +11,9 @@ format:
 
 ```{python}
 import htmltools
-from bigblock import bigblock, options
-from bigblock.widgets import BigblockWidget, embed_css
-from bigblock.models import (
+from react_tables import bigblock, RT, options
+from react_tables.widgets import BigblockWidget, embed_css
+from react_tables.models import (
     process_data,
     default_columns,
     CellInfo,
@@ -26,8 +26,8 @@ from bigblock.models import (
     JS,
     ColFormatGroupBy,
 )
-from bigblock.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
-from bigblock import tags
+from react_tables.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
+from htmltools import tags
 from palmerpenguins import load_penguins
 import polars as pl
 
@@ -41,14 +41,14 @@ pl_penguins = pl.from_pandas(penguins)
 ## Basic usage
 
 ```{python}
-BigblockWidget(
-    props=dict(
+bigblock(
+    props=Props(
         data={"a": [1, 2], "b": ["a", "b"], "c": ["c", "d"]},
-        columns=[
-            dict(name="colA", id="a", footer="footer", minWidth=50),
-            dict(name="colB", id="b", width=120, minWidth=50),
-            dict(name="colC", id="c"),
-        ],
+        columns=dict(
+            a=Column(name="colA", footer="footer", minWidth=50),
+            b=Column(name="colB", width=120, minWidth=50),
+            c=Column(name="colC"),
+        ),
         # theme = asdict(Theme(color = "blue"))
     )
 )
@@ -56,22 +56,13 @@ BigblockWidget(
 ```
 
 
-```{python}
-BigblockWidget(
-    props=Props(
-        data=process_data(pl_penguins),
-        columns=default_columns(pl_penguins),
-    ).to_props(),
-)
-```
-
 ### Column definitions
 
 
 ```{python}
 # shouldn't subset columns
 lil_penguins = process_data(pl_penguins.head())
-BigblockWidget(
+bigblock(
     props=Props(
         data=lil_penguins,
         columns=[
@@ -79,7 +70,7 @@ BigblockWidget(
             Column(id="island", name="Island"),
             Column(id="bill_length_mm", align="center"),
         ],
-    ).to_props()
+    )
 )
 ```
 
@@ -90,14 +81,14 @@ BigblockWidget(
 * TODO: defaultColDef merged in on python side
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         lil_penguins,
         defaultColDef=Column(align="center"),
         columns=[Column(id="species", minWidth=140)],
         bordered=True,
         highlight=True,
-    ).to_props()
+    )
 )
 
 ```
@@ -113,11 +104,11 @@ BigblockWidget(
 # for each col in default sorted:
 # * set Column.defaultSortDesc (if not set already)
 # *
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins,
         defaultSorted=["species", "island"],
-    ).to_props()
+    )
 )
 ```
 
@@ -136,13 +127,13 @@ BigblockWidget(
 
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins,
         defaultSortOrder="desc",
         columns=[Column(id="species", defaultSortOrder="asc")],
         defaultSorted=["species", "island"],
-    ).to_props()
+    )
 )
 ```
 
@@ -161,19 +152,19 @@ df = pl.DataFrame(
     }
 )
 
-BigblockWidget(
+bigblock(
     props=Props(
         df,
         defaultColDef=Column(sortNALast=True),
         defaultSorted="x",
-    ).to_props()
+    )
 )
 ```
 
 ### No sorting
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins.head(),
         sortable=False,
@@ -182,7 +173,7 @@ BigblockWidget(
             Column(id="bill_length_mm", sortable=True),
             Column(id="bill_depth_mm", sortable=True),
         ],
-    ).to_props()
+    )
 )
 ```
 
@@ -191,35 +182,35 @@ BigblockWidget(
 
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins.head(),
         showSortIcon=False,
-    ).to_props()
+    )
 )
 ```
 
 ## Filtering
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins,
         filterable=True,
         minRows=10,
-    ).to_props()
+    )
 )
 ```
 
 
 ```{python}
-BigblockWidget(
+bigblock(
     props=Props(
         pl_penguins,
         filterable=True,
         columns=[Column(id="Price", filterable=False)],
         defaultPageSize=5,
-    ).to_props()
+    )
 )
 ```
 
@@ -237,7 +228,7 @@ function(rows, columnId, filterValue) {
 }"""
 )
 
-BigblockWidget(
+bigblock(
     props=Props(
         data=titled.head(2),
         filterable=True,
@@ -248,7 +239,7 @@ BigblockWidget(
             ),
         ],
         defaultPageSize=5,
-    ).to_props()
+    )
 )
 ```
 
@@ -534,7 +525,7 @@ bigblock(Props(data, columns=[
 ### Formatting aggregated cells
 
 ```python
-from bigblock.models import ColFormatGroupBy
+from react_tables.models import ColFormatGroupBy
 
 Column(
   format = ColFormatGroupBy(
@@ -622,8 +613,8 @@ bigblock(
 
 
 ```{python}
-from bigblock.models import CellInfo
-from bigblock.tags import to_hydrate_format
+from react_tables.models import CellInfo
+from react_tables.tags import to_hydrate_format
 import htmltools
 
 data = cars_93[:5, ["manufacturer", "model", "type", "air_bags", "price"]]
@@ -1621,7 +1612,7 @@ bigblock(
 ## Language options
 
 ```{python}
-from bigblock.models import Language
+from react_tables.models import Language
 
 bigblock(
     Props(

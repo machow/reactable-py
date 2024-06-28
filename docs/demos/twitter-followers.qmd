@@ -78,8 +78,8 @@ execute:
 
 ```{python}
 
-from bigblock import bigblock, embed_css
-from bigblock.models import Column, Props, CellInfo, JS
+from react_tables import bigblock, embed_css
+from react_tables.models import Column, Props, CellInfo, JS
 from htmltools import tags
 
 import polars as pl

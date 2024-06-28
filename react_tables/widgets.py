@@ -3,7 +3,7 @@ import ipyreact
 from importlib_resources import files
 from pathlib import Path
 
-STATIC_FILES = files("bigblock.static")
+STATIC_FILES = files("react_tables.static")
 
 
 def embed_css():

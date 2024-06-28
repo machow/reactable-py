@@ -6,7 +6,7 @@ from typing_extensions import TypeAlias
 from dataclasses import asdict, dataclass, field, fields, replace, InitVar
 
 from polars import DataFrame as PlDataFrame
-from bigblock.data import SimpleFrame
+from .data import SimpleFrame
 from ._tbl_data import col_type
 from .tags import to_hydrate_format
 

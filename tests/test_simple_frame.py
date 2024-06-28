@@ -1,5 +1,5 @@
 import pytest
-from bigblock.simpleframe import SimpleFrame, SimpleColumn
+from react_tables.simpleframe import SimpleFrame, SimpleColumn
 
 data = SimpleFrame({"x": [1, 2], "y": ["a", "b"]})
 
