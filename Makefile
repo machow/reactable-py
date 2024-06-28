@@ -1,13 +1,16 @@
 LIBRARY_DIR=$(PWD)/bigblock
 REACTABLE_DIR=tmp/reactable
 
-all:
-	echo $(LIBRARY_DIR)
+all: bigblock/static/reactable-py.esm.js
+
+setup:
+	mkdir -p tmp/reactable
+	git clone https://github.com/machow/reactable.git tmp/reactable
 
 docs-build:
 	cd docs && quarto render
 
-bigblock/static/reactable-py.esm.%:
+bigblock/static/reactable-py.esm.%: setup
 	cd tmp/reactable
 	npx esbuild \
       $(REACTABLE_DIR)/srcjs/index2.js \
