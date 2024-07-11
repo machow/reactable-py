@@ -7,7 +7,7 @@ jupyter: python3
 ```{python}
 import polars as pl
 
-from react_tables.render_gt import render
+from react_tables.render_gt import _render, render
 from react_tables import embed_css
 from great_tables import GT, exibble
 
@@ -19,7 +19,7 @@ render(gt)
 
 
 ```{python}
-from great_tables import GT, html
+from great_tables import GT, html, loc, style
 from great_tables.data import airquality
 
 airquality_mini = airquality.assign(Year=1973)
@@ -43,7 +43,9 @@ gt = (
     .tab_stubhead("Ozoneeee")
     .tab_source_note("I am a source note")
     .tab_source_note("I am another source note")
+    .tab_style(style.fill("yellow"), loc.body("Day", pl.col("Day") > 5))
 )
 
+h, widget, f = _render(gt)
 render(gt)
 ```

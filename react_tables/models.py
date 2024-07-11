@@ -582,6 +582,13 @@ class Column:
         # overall style
         if callable(self.style):
             new_col.style = [self.style(x) for x in col_data]
+        elif isinstance(self.style, list):
+            if len(self.style) != n_rows:
+                raise ValueError(
+                    f"Style list must be same length as data. Data has {n_rows}, list has {len(self.style)}"
+                )
+
+            new_col.style = self.style
 
         # columnGroups (spanners) ----
         # call header func if exists (or add as react tag)

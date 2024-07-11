@@ -5,7 +5,7 @@ import ipyreact
 import ipywidgets
 
 from great_tables import GT
-from great_tables._tbl_data import subset_frame
+from great_tables._tbl_data import n_rows, subset_frame
 from great_tables._helpers import random_id
 from great_tables._text import _process_text
 from great_tables._spanners import spanners_print_matrix
@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 
 from .models import Column, Language, Theme, ColGroup
 from . import bigblock, Props
+from .tags import as_react_style
 
 if TYPE_CHECKING:
     from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes
@@ -137,7 +138,7 @@ def extract_cells(
     return to_column_dict(df_subset)
 
 
-def render(self: GT):
+def _render(self: GT):
     # TODO: final sorting
     # data = self._build_data(context="html")
 
@@ -163,12 +164,35 @@ def render(self: GT):
 
     # handle hidden columns ---------------------------------------------------
     data = subset_frame(self._tbl_data, cols=visible_col_names)
+    data_n_rows = n_rows(data)
 
     # define a bunch of variables for options ----
 
     # TODO: note that gt calls this once per column, but that triggers
     # all formatting activity per column, so we call only once.
     formatted_cols = extract_cells(self, columns=visible_col_names, output="html")
+
+    # Generate body styles ----------------------------------------------------
+    # TODO: implement
+    # gt uses a default Column(style = JS(...))
+    body_style_info = (style for style in self._styles if style.locname == "data")
+    body_styles: dict[str, list[str]] = {k: [None] * data_n_rows for k in visible_col_names}
+
+    for info in body_style_info:
+        for style in info.styles:
+            # TODO: Great Tables code currently filters styles for every cell (should refactor)
+            crnt_style = body_styles[info.colname][info.rownum]
+            new_style = as_react_style(style._to_html_style())
+            if crnt_style is None:
+                body_styles[info.colname][info.rownum] = new_style
+            else:
+                body_styles[info.colname][info.rownum] = {**crnt_style, **new_style}
+
+    # TODO: it seems like style can't be an empty string
+    for k, v in body_styles.items():
+        for ii in range(len(v)):
+            if v[ii] == "":
+                v[ii] = None
 
     # create Column definitions (including rownames) --------------------------
     columns = []
@@ -196,16 +220,13 @@ def render(self: GT):
                 width=col.column_width,
                 # TODO: html shouldn't always be true?
                 html=True,
+                style=body_styles[col.var],
             )
 
         columns.append(col_def)
 
     # Column spanners (using ColGroups) ----
     col_groups = create_col_groups(self._spanners)
-
-    # Generate body styles ----------------------------------------------------
-    # TODO: implement
-    # gt uses a default Column(style = JS(...))
 
     # Generate table header and footer elements ----
     # TODO: implement option
@@ -317,6 +338,12 @@ def render(self: GT):
             #  use_row_striping <- opt_val(data = data, option = "row_striping_include_table_body")
         )
     )
+
+    return el_header, itable, el_footer
+
+
+def render(self: GT) -> ipyreact.Widget:
+    el_header, itable, el_footer = _render(self)
 
     res = [itable]
 
