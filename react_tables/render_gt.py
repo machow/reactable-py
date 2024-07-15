@@ -51,14 +51,15 @@ def create_col_groups(spanners: Spanners) -> list[ColGroup]:
 def create_heading(heading: Heading, use_search: bool) -> html.Tag | None:
     if heading.is_empty():
         return None
+
     el = html.div(
         html.div(
-            html.HTML(heading.title),
+            html.HTML(_process_text(heading.title)),
             class_="gt_heading gt_title gt_font_normal",
             style="text-size: bigger;",
         ),
         html.div(
-            html.HTML(heading.subtitle),
+            html.HTML(_process_text(heading.subtitle)),
             class_="gt_heading gt_subtitle" + ("gt_bottom_border" if use_search else ""),
         ),
         style=dict_to_css(
@@ -104,7 +105,8 @@ def create_footer(
 
         return res
 
-    combined_notes = html.div(html.HTML(sep.join(source_notes)), style="padding-bottom: 2px;")
+    text = list(map(_process_text, source_notes))
+    combined_notes = html.div(html.HTML(sep.join(text)), style="padding-bottom: 2px;")
 
     return html.tags.tfoot(create_tr(combined_notes), class_="gt_sourcenotes")
 
@@ -148,17 +150,20 @@ def _render(self: GT):
     locale = self._locale
 
     # generate Language -------------------------------------------------------
-    # TODO: locale.locale can also be None?
     lang_defs = locale_to_lang(locale)
 
     # column info -------------------------------------------------------------
     _stub = self._boxhead._get_stub_column()
+    _group = self._boxhead._get_row_group_column()
     _defaults = self._boxhead._get_default_columns()
 
+    groupname_col = _group.var if _group else None
+
+    col_info = _defaults
+    if _group:
+        col_info = [_group, *col_info]
     if _stub:
-        col_info = [_stub, *_defaults]
-    else:
-        col_info = _defaults
+        col_info = [_stub, *col_info]
 
     visible_col_names = [col.var for col in col_info]
 
@@ -173,7 +178,6 @@ def _render(self: GT):
     formatted_cols = extract_cells(self, columns=visible_col_names, output="html")
 
     # Generate body styles ----------------------------------------------------
-    # TODO: implement
     # gt uses a default Column(style = JS(...))
     body_style_info = (style for style in self._styles if style.locname == "data")
     body_styles: dict[str, list[str]] = {k: [None] * data_n_rows for k in visible_col_names}
@@ -188,13 +192,8 @@ def _render(self: GT):
             else:
                 body_styles[info.colname][info.rownum] = {**crnt_style, **new_style}
 
-    # TODO: it seems like style can't be an empty string
-    for k, v in body_styles.items():
-        for ii in range(len(v)):
-            if v[ii] == "":
-                v[ii] = None
+    # create Column definitions (including rownames) --------------
 
-    # create Column definitions (including rownames) --------------------------
     columns = []
 
     for col in col_info:
@@ -204,10 +203,13 @@ def _render(self: GT):
             # TODO: rowname col should also have a righthand border?
             col_def = Column(
                 id=col.var,
-                # TODO: handle stubhead
-                name=self._stubhead or "",
+                cell=lambda ci: formatted_cols[ci.column_name][ci.row_index],
+                name=_process_text(self._stubhead or ""),
+                headerStyle={"font-weight": "normal"},
+                width=col.column_width,
                 sortable=False,
                 filterable=False,
+                html=True,
             )
 
         else:
@@ -285,8 +287,10 @@ def _render(self: GT):
             data=data,
             columns=columns,
             columnGroups=col_groups,
+            defaultExpanded=True,
             rownames=None,
-            groupBy=None,
+            # TODO: reactable always puts groupBy cols first, even before rowname cols
+            groupBy=groupname_col,
             # TODO: no ihtml options
             # sortable=opts["ihtml_use_sorting"],
             # resizable=opts["ihtml_use_resizing"],
@@ -304,7 +308,6 @@ def _render(self: GT):
             minRows=1,
             paginateSubRows=False,
             details=None,
-            defaultExpanded=False,
             selection=None,
             # TODO: selectionId not implemented
             # selectionId=None,
@@ -317,8 +320,8 @@ def _render(self: GT):
             # striped=opts["row_striping_include_table_body"],
             # compact=opts["ihtml_use_compact_mode"],
             # text_wrapping=opts["ihtml_use_text_wrapping"],
-            showSortIcon=True,
-            showSortable=True,
+            # showSortIcon=True,
+            # showSortable=True,
             class_=None,
             style=None,
             rowClass=None,

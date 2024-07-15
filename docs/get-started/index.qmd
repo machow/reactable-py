@@ -13,8 +13,9 @@ from great_tables import GT, exibble
 
 embed_css()
 
-gt = GT(pl.from_pandas(exibble))
+gt = GT(pl.from_pandas(exibble)).tab_stub("row", "group")
 render(gt)
+# gt
 ```
 
 

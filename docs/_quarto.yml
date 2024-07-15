@@ -12,6 +12,7 @@ website:
       - text: Demos
         menu: 
           - demos/twitter-followers.qmd
+          - demos/great-tables.qmd
       #- href: reference/index.qmd
       #  text: Reference
     right:

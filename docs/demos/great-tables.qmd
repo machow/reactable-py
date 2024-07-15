@@ -1,0 +1,337 @@
+---
+title: Great Tables Gallery
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the Code"
+html-table-processing: none
+jupyter: python3
+---
+
+```{python}
+from react_tables import embed_css, render
+
+embed_css()
+
+```
+
+:::::: {.column-page}
+::::: {.grid}
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+import polars as pl
+from great_tables import GT, md, html
+from great_tables.data import islands
+from react_tables import render
+
+
+islands_mini = pl.from_pandas(islands).sort("size", descending=True).head(10)
+
+gt = (
+    GT(islands_mini)
+    .tab_header(title="Large Landmasses of the World", subtitle="The top ten largest are presented")
+    .tab_stub(rowname_col="name")
+    .tab_source_note(source_note="Source: The World Almanac and Book of Facts, 1975, page 406.")
+    .tab_source_note(
+        source_note=md("Reference: McNeil, D. R. (1977) *Interactive Data Analysis*. Wiley.")
+    )
+    .tab_stubhead(label="landmass")
+    .fmt_integer(columns="size")
+)
+
+render(gt)
+```
+
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+import polars as pl
+
+from great_tables import GT, html
+from great_tables.data import airquality
+
+airquality_mini = airquality.head(10).assign(Year=1973)
+
+gt = (
+    GT(pl.from_pandas(airquality_mini))
+    .tab_header(
+        title="New York Air Quality Measurements",
+        subtitle="Daily measurements in New York City (May 1-10, 1973)",
+    )
+    .tab_spanner(label="Time", columns=["Year", "Month", "Day"])
+    .tab_spanner(label="Measurement", columns=["Ozone", "Solar_R", "Wind", "Temp"])
+    .cols_move_to_start(columns=["Year", "Month", "Day"])
+    .cols_label(
+        Ozone=html("Ozone,<br>ppbV"),
+        Solar_R=html("Solar R.,<br>cal/m<sup>2</sup>"),
+        Wind=html("Wind,<br>mph"),
+        Temp=html("Temp,<br>&deg;F"),
+    )
+)
+
+render(gt)
+```
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+from great_tables import GT
+from great_tables.data import countrypops
+import polars as pl
+import polars.selectors as cs
+
+# Get vectors of 2-letter country codes for each region of Oceania
+oceania = {
+    "Australasia": ["AU", "NZ"],
+    "Melanesia": ["NC", "PG", "SB", "VU"],
+    "Micronesia": ["FM", "GU", "KI", "MH", "MP", "NR", "PW"],
+    "Polynesia": ["PF", "WS", "TO", "TV"],
+}
+
+# Create a dictionary mapping country to region (e.g. AU -> Australasia)
+country_to_region = {
+    country: region for region, countries in oceania.items() for country in countries
+}
+
+wide_pops = (
+    pl.from_pandas(countrypops)
+    .filter(
+        pl.col("country_code_2").is_in(list(country_to_region))
+        & pl.col("year").is_in([2000, 2010, 2020])
+    )
+    .with_columns(pl.col("country_code_2").replace(country_to_region).alias("region"))
+    .filter(pl.col("region").is_in(["Australasia", "Melanesia"]))
+    .pivot(index=["country_name", "region"], columns="year", values="population")
+    .sort("2020", descending=True)
+)
+
+gt = (
+    GT(wide_pops, id="some-table")
+    .tab_header(title="Some title", subtitle="Some subtitle")
+    .tab_spanner(label="Spanner label", columns=cs.all())
+    .tab_stub(rowname_col="country_name", groupname_col="region")
+    .tab_stubhead("Stubhead label")
+    .tab_source_note("footnote1")
+    .tab_source_note("footnote2")
+    .fmt_integer()
+)
+
+gt
+```
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+from great_tables import GT, html
+from great_tables.data import towny
+
+towny_mini = (
+    towny[["name", "website", "density_2021", "land_area_km2", "latitude", "longitude"]]
+    .sort_values("density_2021", ascending=False)
+    .head(10)
+)
+
+towny_mini["url_name"] = ["["] + towny_mini["name"] + ["]"] + ["("] + towny_mini["website"] + [")"]
+
+towny_mini["location"] = (
+    ["[map](http://maps.google.com/?ie=UTF8&hq=&ll="]
+    + towny_mini["latitude"].astype(str)
+    + [","]
+    + towny_mini["longitude"].astype(str)
+    + ["&z=13)"]
+)
+
+pl_towny = pl.from_pandas(towny_mini[["url_name", "location", "land_area_km2", "density_2021"]])
+
+gt = (
+    GT(
+        pl_towny,
+        rowname_col="url_name",
+    )
+    .tab_header(
+        title="The Municipalities of Ontario",
+        subtitle="The top 10 highest population density in 2021",
+    )
+    .tab_stubhead(label="Municipality")
+    .fmt_markdown(columns=["url_name", "location"])
+    .fmt_number(columns=["land_area_km2", "density_2021"], decimals=1)
+    .cols_label(
+        land_area_km2=html("land area, <br>km<sup>2</sup>"),
+        density_2021=html("density, <br>people/km<sup>2</sup>"),
+    )
+)
+
+render(gt)
+```
+
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+from great_tables import GT, html
+from great_tables.data import sza
+import polars as pl
+import polars.selectors as cs
+
+sza_pivot = (
+    pl.from_pandas(sza)
+    .filter((pl.col("latitude") == "20") & (pl.col("tst") <= "1200"))
+    .select(pl.col("*").exclude("latitude"))
+    .drop_nulls()
+    .pivot(values="sza", index="month", columns="tst", sort_columns=True)
+)
+
+gt = (
+    GT(sza_pivot, rowname_col="month")
+    .data_color(
+        domain=[90, 0],
+        palette=["rebeccapurple", "white", "orange"],
+        na_color="white",
+    )
+    .tab_header(
+        title="Solar Zenith Angles from 05:30 to 12:00",
+        subtitle=html("Average monthly values at latitude of 20&deg;N."),
+    )
+    .sub_missing(missing_text="")
+)
+
+render(gt)
+```
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+import polars as pl
+import polars.selectors as cs
+from great_tables import GT, md
+
+
+def create_bar(prop_fill: float, max_width: int, height: int) -> str:
+    """Create divs to represent prop_fill as a bar."""
+    width = round(max_width * prop_fill, 2)
+    px_width = f"{width}px"
+    return f"""\
+    <div style="width: {max_width}px; background-color: lightgrey;">\
+        <div style="height:{height}px;width:{px_width};background-color:green;"></div>\
+    </div>\
+    """
+
+
+df = pl.read_csv("./sports-earnings/sports_earnings.csv")
+
+res = (
+    df.with_columns(
+        (pl.col("Off-the-Field Earnings") / pl.col("Total Earnings")).alias("raw_perc"),
+        ("./sports-earnings/" + pl.col("Sport").str.to_lowercase() + ".png").alias("icon"),
+    )
+    .head(9)
+    .with_columns(
+        pl.col("raw_perc")
+          .map_elements(lambda x: create_bar(x, max_width=75, height=20))
+          .alias("Off-the-Field Earnings Perc")
+    )
+    .select("Rank", "Name", "icon", "Sport", "Total Earnings", "Off-the-Field Earnings", "Off-the-Field Earnings Perc")
+)
+
+gt = (
+    GT(res, rowname_col="Rank")
+    .tab_header("Highest Paid Athletes in 2023")
+    .tab_spanner("Earnings", cs.contains("Earnings"))
+    #.fmt_number(cs.starts_with("Total"), scale_by = 1/1_000_000, decimals=1)
+    .cols_label(**{
+        "Total Earnings": "Total $M",
+        "Off-the-Field Earnings": "Off field $M",
+        "Off-the-Field Earnings Perc": "Off field %"
+    })
+    .fmt_number(["Total Earnings", "Off-the-Field Earnings"], scale_by = 1/1_000_000, decimals=1)
+    .fmt_image("icon", path="./")
+    .tab_source_note(
+        md(
+            '<br><div style="text-align: center;">'
+            "Original table: [@LisaHornung_](https://twitter.com/LisaHornung_/status/1752981867769266231)"
+            " | Sports icons: [Firza Alamsyah](https://thenounproject.com/browse/collection-icon/sports-96427)"
+            " | Data: Forbes"
+            "</div>"
+            "<br>"
+        )
+    )
+)
+render(gt)
+```
+
+:::
+
+:::{.g-col-lg-6 .g-col-12}
+
+```{python}
+import polars as pl
+import polars.selectors as cs
+from great_tables import GT, loc, style
+
+coffee_sales = pl.read_json("coffee-sales/coffee-sales.json")
+
+sel_rev = cs.starts_with("revenue")
+sel_prof = cs.starts_with("profit")
+
+
+coffee_table = (
+    GT(coffee_sales)
+    .tab_header("Sales of Coffee Equipment")
+    .tab_spanner(label="Revenue", columns=sel_rev)
+    .tab_spanner(label="Profit", columns=sel_prof)
+    .cols_label(
+        revenue_dollars="Amount",
+        profit_dollars="Amount",
+        revenue_pct="Percent",
+        profit_pct="Percent",
+        monthly_sales="Monthly Sales",
+        icon="",
+        product="Product",
+    )
+    # formatting ----
+    .fmt_number(
+        columns=cs.ends_with("dollars"),
+        compact=True,
+        pattern="${x}",
+        n_sigfig=3,
+    )
+    .fmt_percent(columns=cs.ends_with("pct"), decimals=0)
+    # style ----
+    .tab_style(
+        style=style.fill(color="aliceblue"),
+        locations=loc.body(columns=sel_rev),
+    )
+    .tab_style(
+        style=style.fill(color="papayawhip"),
+        locations=loc.body(columns=sel_prof),
+    )
+    .tab_style(
+        style=style.text(weight="bold"),
+        locations=loc.body(rows=pl.col("product") == "Total"),
+    )
+    .fmt_nanoplot("monthly_sales", plot_type="bar")
+    .fmt_image("icon", path="coffee-sales")
+    .sub_missing(missing_text="")
+)
+
+# coffee_table.save("data/coffee-table.png",  scale=2)
+render(coffee_table)
+```
+
+:::
+
+::::::
+:::::

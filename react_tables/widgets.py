@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 import ipyreact
 
 from importlib_resources import files
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 STATIC_FILES = files("react_tables.static")
+
+if TYPE_CHECKING:
+    from .models import Props
 
 
 def embed_css():
@@ -33,3 +39,25 @@ class BigblockWidget(ipyreact.Widget):
 
     # def to_tag(self):
     #    return htmltool.Tag("Reactable", )
+
+
+def bigblock(props: Props):
+
+    return BigblockWidget(props=props.to_props())
+
+
+class RT:
+    props: Props
+    widget: "None | BigblockWidget"
+
+    def __init__(self, props: Props):
+        self.props = Props
+        self._widget = None
+
+    def _repr_mimebundle_(self, **kwargs: dict) -> tuple[dict, dict] | None:
+        # TODO: note that this means updates to props won't affect widget
+        if self._widget is not None:
+            return self._widget._repr_mimebundle_(**kwargs)
+
+        self._widget = BigblockWidget(props=self.props.to_props())
+        return self._widget._repr_mimebundle_(**kwargs)
