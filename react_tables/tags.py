@@ -7,6 +7,9 @@ import htmltools
 # format, so it can manually create the html elements
 # in react
 def to_hydrate_format(el: htmltools.Tag | str):
+    if isinstance(el, htmltools.TagList):
+        raise NotImplementedError()
+
     if not isinstance(el, htmltools.Tag):
         return el
 

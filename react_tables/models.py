@@ -560,6 +560,9 @@ class Column:
             new_col.cell = self._apply_transform(col_data, self.cell)
 
         # header: transform or set string as react tag ----
+        if callable(self.header):
+            # TODO: confusing that the column data name is called id, and label is called name?
+            new_col.header = to_hydrate_format(self.header(HeaderCellInfo(self.name, self.id)))
 
         # footer: transform or set string as react tag ----
         if callable(self.footer):
@@ -567,11 +570,16 @@ class Column:
             new_col.footer = to_hydrate_format(self.footer(ColInfo(col_data, new_col.name)))
         elif isinstance(self.footer, JS):
             pass
+        else:
+            new_col.footer = to_hydrate_format(self.footer)
 
         # details: transform ----
         if callable(self.details):
             new_col.details = list(
-                map(to_hydrate_format, [self.details(ii) for ii in range(len(col_data))])
+                map(
+                    to_hydrate_format,
+                    [self.details(RowInfo(ii, self.name)) for ii in range(len(col_data))],
+                )
             )
 
         # filterInput: transform or set string as react tag ----

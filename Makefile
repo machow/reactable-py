@@ -1,7 +1,7 @@
-LIBRARY_DIR=$(PWD)/bigblock
+LIBRARY_DIR=$(PWD)/react_tables
 REACTABLE_DIR=tmp/reactable
 
-all: bigblock/static/reactable-py.esm.js
+all: react_tables/static/reactable-py.esm.js
 
 setup:
 	mkdir -p tmp/reactable
@@ -10,7 +10,7 @@ setup:
 docs-build:
 	cd docs && quarto render
 
-bigblock/static/reactable-py.esm.%: setup
+react_tables/static/reactable-py.esm.%: 
 	cd tmp/reactable
 	npx esbuild \
       $(REACTABLE_DIR)/srcjs/index2.js \

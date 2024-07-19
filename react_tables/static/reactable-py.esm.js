@@ -8498,8 +8498,6 @@ function Reactable({
   dataKey,
   ...rest
 }) {
-  console.log(data);
-  console.log(columns);
   data = normalizeColumnData(data, columns);
   columns = buildColumnDefs(columns, columnGroups, {
     sortable,
@@ -9605,8 +9603,6 @@ function Table({
       if (html) {
         props.html = content;
       }
-      console.log("hydrating");
-      console.log(content);
       props.children = hydrate2({ Reactable, Fragment: Fragment2, WidgetContainer }, content);
     }
     return /* @__PURE__ */ React11.createElement(RowDetails, { key: `${expandedCol.id}_${rowInfo.index}`, ...props });
@@ -10378,7 +10374,7 @@ function Reactable2({
   columns,
   ...rest
 }) {
-  var colProps = ["filterMethod", "footer", "cell", "details", "style"];
+  var colProps = ["filterMethod", "footer", "cell", "details", "style", "header"];
   var tableProps = ["rowStyle", "rowClass", "onClick"];
   var columns = mapReplaceWithEval(columns, colProps);
   var rest = replaceWithEval(rest, tableProps);

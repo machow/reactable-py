@@ -113,17 +113,15 @@ wide_pops = (
 )
 
 gt = (
-    GT(wide_pops, id="some-table")
-    .tab_header(title="Some title", subtitle="Some subtitle")
-    .tab_spanner(label="Spanner label", columns=cs.all())
+
+    GT(wide_pops)
+    .tab_header(title="Populations of Oceania's Countries in 2000, 2010, and 2020")
+    .tab_spanner(label="Total Population", columns=cs.all())
     .tab_stub(rowname_col="country_name", groupname_col="region")
-    .tab_stubhead("Stubhead label")
-    .tab_source_note("footnote1")
-    .tab_source_note("footnote2")
     .fmt_integer()
 )
 
-gt
+render(gt)
 ```
 
 :::
@@ -281,7 +279,7 @@ import polars as pl
 import polars.selectors as cs
 from great_tables import GT, loc, style
 
-coffee_sales = pl.read_json("coffee-sales/coffee-sales.json")
+coffee_sales = pl.DataFrame.deserialize("coffee-sales/coffee-sales.json", format="json")
 
 sel_rev = cs.starts_with("revenue")
 sel_prof = cs.starts_with("profit")

@@ -13,6 +13,9 @@ website:
         menu: 
           - demos/twitter-followers.qmd
           - demos/great-tables.qmd
+      - text: Articles
+        menu:
+          - articles/custom-rendering.qmd
       #- href: reference/index.qmd
       #  text: Reference
     right:
@@ -24,6 +27,9 @@ website:
 #metadata-files:
 #  - _sidebar.yml
 
+format:
+  html:
+    toc: true
 
 #quartodoc:
 #  # the name used to import the package you want to create reference docs for

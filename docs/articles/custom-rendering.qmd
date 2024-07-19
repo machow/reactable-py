@@ -1,0 +1,432 @@
+---
+title: Custom Rendering
+jupyter: python3
+---
+
+Control functions:
+
+* aggregate
+* filterMethod
+* onClick
+
+
+Rendering functions:
+
+* cell
+* header
+  - also ColGroup
+* footer
+* details
+* class (Js Cell)
+
+```{python}
+import polars as pl
+import htmltools as html
+from react_tables.data import cars_93
+from react_tables import reactable, Props, embed_css
+from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+
+embed_css()
+
+data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
+```
+
+## Cells
+
+```{python}
+def fmt_cell_red(ci: CellInfo):
+    return html.div(ci.value.upper(), style="color: red")
+
+
+reactable(
+    Props(
+        data,
+        columns={"manufacturer": Column(cell=fmt_cell_red)},
+    )
+)
+```
+
+## Headers
+
+```{python}
+def fmt_header(ci: HeaderCellInfo):
+    return html.div(f"name: {ci.name}", html.br(), f"value: {ci.value}")
+
+
+reactable(
+    Props(
+        data,
+        columns={"manufacturer": Column(header=fmt_header, name="Manufacturer")},
+    )
+)
+```
+
+## Footers
+
+```{python}
+def fmt_footer(ci: ColInfo):
+    ttl = sum(ci.values)
+    return f"${ttl:.2f}"
+
+
+reactable(
+    Props(
+        data,
+        searchable=True,
+        columns={"price": Column(footer=fmt_footer)},
+    )
+)
+```
+
+Note that a sum of `$79.10` appears at the bottom right of the table. Importantly, if you filter the rows by typing into the search box, the sum won't update. This is because Python footers are rendered only once, when generating the initial table.
+
+## Expandable row details
+
+```{python}
+def fmt_details(ci: RowInfo):
+    return html.div(
+        f"Details for row: {ci.row_index}",
+        reactable(Props(data[ci.row_index, :])),
+    )
+
+
+reactable(
+    Props(
+        data[["model"]],
+        details=fmt_details,
+    )
+)
+```
+
+## Why use javascript? Dynamic filtering
+
+
+```{python}
+js_footer = JS(
+    """
+function(column, state) {
+  let total = 0
+  state.sortedData.forEach(function(row) {
+    total += row[column.id]
+  })
+  return '<b>$' + total.toFixed(2) + '</b>'
+}"""
+)
+reactable(
+    Props(
+        data,
+        searchable=True,
+        columns={
+            "price": Column(
+                html=True,
+                footer=js_footer,
+            ),
+        },
+    )
+)
+```
+
+## Javascript renderers
+
+### Cell
+
+```{python}
+column = Column(
+    cell=JS(
+        """
+    function(cellInfo, state) {
+      // input:
+      //  - cellInfo, an object containing cell info
+      //  - state, an object containing the table state (optional)
+      //
+      // output:
+      //  - content to render (e.g. an HTML string)
+      return `<div><b>${cellInfo.value}</b></div>`
+    }
+  """
+    ),
+    html=True,  # to render as HTML
+)
+
+reactable(Props(data, columns={"manufacturer": column}))
+
+```
+
+::: {.callout-note}
+
+
+#### `cellInfo` properties
+
+
+```{python}
+# | echo: false
+import polars as pl
+
+cell_info_props = pl.DataFrame(
+    {
+        "Property": [
+            "value",
+            "row",
+            "column",
+            "index",
+            "viewIndex",
+            "aggregated",
+            "expanded",
+            "filterValue",
+            "subRows",
+            "level",
+            "selected",
+        ],
+        "Example": [
+            '"setosa"',
+            '{ Petal.Length: 1.7, Species: "setosa" }',
+            '{ id: "Petal.Length" }',
+            "20",
+            "0",
+            "true",
+            "true",
+            '"petal"',
+            '[{ Petal.Length: 1.7, Species: "setosa" }, ...]',
+            "0",
+            "true",
+        ],
+        "Description": [
+            "cell value",
+            "row data",
+            "column info object",
+            "row index (zero-based)",
+            "row index within the page (zero-based)",
+            "whether the row is aggregated",
+            "whether the row is expanded",
+            "column filter value",
+            "sub rows data (aggregated cells only)",
+            "row nesting depth (zero-based)",
+            "whether the row is selected",
+        ],
+    }
+)
+
+reactable(Props(cell_info_props, pagination=False))
+```
+
+:::
+
+### Headers
+
+
+```{python}
+column = Column(
+    header=JS(
+        """
+    function(column, state) {
+      // input:
+      //  - column, an object containing column properties
+      //  - state, an object containing the table state (optional)
+      //
+      // output:
+      //  - content to render (e.g. an HTML string)
+      return `<div><em>${column.name}</em></div>`
+    }
+  """
+    ),
+    html=True,  # to render as HTML
+)
+
+reactable(
+    Props(
+        data,
+        columns={"price": column},
+    )
+)
+```
+
+::: {.callout-note}
+#### `column` properties
+
+```{python}
+# | echo: false
+column_props = pl.DataFrame(
+    {
+        "Property": [
+            "id",
+            "name",
+            "filterValue",
+            "setFilter",
+            "column",
+            "data",
+        ],
+        "Example": [
+            '"Petal.Length"',
+            '"Petal Length"',
+            '"petal"',
+            "function setFilter(value: any)",
+            '{ id: "Petal.Length", name: "Petal Length", filterValue: "petal" }',
+            "[{ Petal.Length: 1.7, Petal.Width: 0.2, _subRows: [] }, ...]",
+        ],
+        "Description": [
+            "column ID",
+            "column display name",
+            "column filter value",
+            "function to set the column filter value (set to undefined to clear the filter)",
+            "column info object (deprecated in v0.3.0)",
+            "current row data in the table (deprecated in v0.3.0)",
+        ],
+    }
+)
+
+reactable(Props(column_props))
+```
+:::
+
+
+### Footers
+
+```{python}
+column = Column(
+    footer=JS(
+        """
+    function(column, state) {
+      // input:
+      //  - column, an object containing column properties
+      //  - state, an object containing the table state (optional)
+      //
+      // output:
+      //  - content to render (e.g. an HTML string)
+      return `<div>Rows: ${state.sortedData.length}</div>`
+    }
+  """
+    ),
+    html=True,  # to render as HTML
+)
+
+reactable(Props(data, columns={"price": column}))
+```
+
+::: {.callout-note}
+#### `column` properties
+
+```{python}
+# | echo: false
+reactable(Props(column_props))
+```
+:::
+
+### Expandable row details
+
+```{python}
+reactable(
+    Props(
+        data,
+        details=JS(
+            """
+          function(rowInfo, state) {
+            // input:
+            //  - rowInfo, an object containing row info
+            //  - state, an object containing the table state (optional)
+            //
+            // output:
+            //  - content to render (e.g. an HTML string)
+            return `<div>Details for row: ${rowInfo.index}</div>`
+          }
+        """
+        ),
+    )
+)
+```
+
+::: {.callout-note}
+
+#### `rowInfo` properties
+
+```{python}
+# | echo: false
+row_info_props = pl.DataFrame(
+    {
+        "Property": [
+            "values",
+            "row",
+            "index",
+            "viewIndex",
+            "expanded",
+            "level",
+            "selected",
+        ],
+        "Example": [
+            '{ Petal.Length: 1.7, Species: "setosa" }',
+            '{ Petal.Length: 1.7, Species: "setosa" }',
+            "20",
+            "0",
+            "true",
+            "0",
+            "true",
+        ],
+        "Description": [
+            "row data values",
+            "same as values (deprecated in v0.3.0)",
+            "row index (zero-based)",
+            "row index within the page (zero-based)",
+            "whether the row is expanded",
+            "row nesting depth (zero-based)",
+            "whether the row is selected",
+        ],
+    }
+)
+
+reactable(Props(row_info_props))
+```
+:::
+
+## Javascript `state` properties
+
+
+```{python}
+# | echo: false
+state_props = pl.DataFrame(
+    {
+        "Property": [
+            "sorted",
+            "page",
+            "pageSize",
+            "pages",
+            "filters",
+            "searchValue",
+            "selected",
+            "pageRows",
+            "sortedData",
+            "data",
+            "meta",
+            "hiddenColumns",
+        ],
+        "Example": [
+            '[{ id: "Petal.Length", desc: true }, ...]',
+            "2",
+            "10",
+            "5",
+            '[{ id: "Species", value: "petal" }]',
+            '"petal"',
+            "[0, 1, 4]",
+            '[{ Petal.Length: 1.7, Species: "setosa" }, ...]',
+            '[{ Petal.Length: 1.7, Species: "setosa" }, ...]',
+            '[{ Petal.Length: 1.7, Species: "setosa" }, ...]',
+            "{ custom: 123 }",
+            '["Petal.Length"]',
+        ],
+        "Description": [
+            "columns being sorted in the table",
+            "page index (zero-based)",
+            "page size",
+            "number of pages",
+            "column filter values",
+            "table search value",
+            "selected row indices (zero-based)",
+            "current row data on the page",
+            "current row data in the table (after sorting, filtering, grouping)",
+            "original row data in the table",
+            "custom table metadata from reactable() (new in v0.4.0)",
+            "columns being hidden in the table",
+        ],
+    }
+)
+
+reactable(Props(state_props))
+```
