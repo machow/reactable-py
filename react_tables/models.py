@@ -98,6 +98,23 @@ def default_columns(
     return out
 
 
+CAMEL_OVERRIDES: dict[str, str] = {
+    "sort_na_last": "sortNALast",
+}
+
+
+def to_camel_case(s: str) -> str:
+    if s in CAMEL_OVERRIDES:
+        return CAMEL_OVERRIDES[s]
+
+    full_camel = "".join(x.capitalize() for x in s.lower().split("_"))
+    return full_camel[0].lower() + full_camel[1:]
+
+
+def to_camel_dict(d: dict) -> dict:
+    return {to_camel_case(k): v for k, v in d.items()}
+
+
 def as_props(data):
     res = {}
     for field in fields(data):
@@ -188,82 +205,90 @@ class ColInfo:
 class Props:
     data: dict[str, list[Any]] | PlDataFrame
     columns: list[Column] | None = None
-    columnGroups: list[ColGroup] | None = None
+    column_groups: list[ColGroup] | None = None
+    rownames: InitVar[bool] = False
+    group_by: str | list[str] | None = None
+
     sortable: bool = True
-    defaultColDef: InitVar[Column | None] = None
-    defaultSortOrder: InitVar[Literal["asc", "desc"]] = "asc"
-    defaultSorted: list[str] | None = None
-    showSortIcon: bool | None = None
-    showSortable: bool | None = None
-    class_: InitVar[str | list[str] | None] = None
+    resizable: bool | None = None
     filterable: bool | None = None
     searchable: bool | None = None
-    resizable: bool | None = None
-    theme: Theme | None = None
-    language: str | None = None
-    meta: dict[str, Any] | None = None
-    elementId: str | None = None
-    dataKey: str | None = None
+    pagination: bool | None = None
+    default_col_def: InitVar[Column | None] = None
+    default_sort_order: InitVar[Literal["asc", "desc"]] = "asc"
+    default_sorted: list[str] | None = None
+    default_page_size: int | None = None
+    show_page_size_options: bool | None = None
+    page_size_options: list[int] = field(default_factory=lambda: [10, 25, 50, 100])
+    pagination_type: Literal["numbers", "jump", "simple"] = "numbers"
+    show_pagination: bool | None = None
+    show_page_info: bool | None = None
+    min_rows: int | None = None
+    paginate_sub_rows: bool | None = None
 
-    # ...rest ----
+    details: InitVar[JS | Column | None] = field(default=None)
+    default_expanded: bool | None = None
+
+    selection: Literal["multiple", "single"] | None = None
+    # TODO: default_selected
+    on_click: Literal["expand", "select"] | JsFunction | None = None
+    highlight: bool = False
+
+    outlined: bool | None = None
     bordered: bool = False
     borderless: bool = False
     striped: bool = False
     compact: bool = True
+
     wrap: InitVar[bool] = True
-    highlight: bool = False
-    outlined: bool | None = None
-    minRows: int | None = None
-    paginateSubRows: bool | None = None
-    details: InitVar[JS | Column | None] = field(default=None)
-    defaultExpanded: bool | None = None
-    selection: Literal["multiple", "single"] | None = None
-    defaultPageSize: int | None = None
-    showPageSizeOptions: bool | None = None
-    pageSizeOptions: list[int] = field(default_factory=lambda: [10, 25, 50, 100])
-    paginationType: Literal["numbers", "jump", "simple"] = "numbers"
-    showPageInfo: bool | None = None
-    showPagination: bool | None = None
-    pagination: bool | None = None
-    onClick: Literal["expand", "select"] | JsFunction | None = None
-    fullWidth: InitVar[bool] = True
+
+    show_sort_icon: bool | None = None
+    show_sortable: bool | None = None
+
+    class_: InitVar[str | list[str] | None] = None
+    style: CssRules | None = None
+    row_class: InitVar[list[str] | Callable[RowIndx, list[str]] | None] = None
+    row_style: CssRules | Callable[RowIndx, dict[str, str]] | None = None
+
+    full_width: InitVar[bool] = True
     width: int | None = None
     height: int | None = None
-    groupBy: str | list[str] | None = None
-    style: CssRules | None = None
-    rowStyle: CssRules | Callable[RowIndx, dict[str, str]] | None = None
-    rowClass: InitVar[list[str] | Callable[RowIndx, list[str]] | None] = None
-    rownames: InitVar[bool] = False
+
+    theme: Theme | None = None
+    language: str | None = None
+    meta: dict[str, Any] | None = None
+    element_id: str | None = None
     static: bool | None = None
+    dataKey: str | None = None
 
     # derived props ----
-    defaultSortDesc: bool = field(init=False)
+    default_sort_desc: bool = field(init=False)
     inline: bool = field(init=False)
-    rowClassName: list[str] | None = field(init=False)
+    row_class_name: list[str] | None = field(init=False)
     nowrap: bool = field(init=False)
-    className: list[str] | None = field(init=False)
+    class_name: list[str] | None = field(init=False)
     # groupBy: list[str] | None = None
     # defaults: Defaults
 
     def __post_init__(
         self,
-        defaultColDef,
-        defaultSortOrder: Literal["asc", "desc"],
-        class_: str | list[str] | None,
-        wrap: bool,
-        details,
-        fullWidth: bool | None,
-        rowClass: list[str] | Callable[RowIndx, list[str]] | None,
         rownames: bool,
+        default_col_def,
+        default_sort_order: Literal["asc", "desc"],
+        details,
+        wrap: bool,
+        class_: str | list[str] | None,
+        row_class: list[str] | Callable[RowIndx, list[str]] | None,
+        full_width: bool | None,
     ):
         # columns ----
-        _simple_cols = default_columns(self.data, defaultColDef)
+        _simple_cols = default_columns(self.data, default_col_def)
         if self.columns is None:
             # TODO: does not apply defaultColDef
             self.columns = _simple_cols
         else:
             self.columns = cols_dict_to_list(self.columns)
-            self.columns = self.complete_columns(_simple_cols, defaultColDef, self.columns)
+            self.columns = self.complete_columns(_simple_cols, default_col_def, self.columns)
 
         self.validate_columns()
 
@@ -271,8 +296,8 @@ class Props:
         if isinstance(self.data, (PlDataFrame, SimpleFrame)):
             self.data = process_data(self.data)
 
-        self.defaultSorted = self.derive_default_sorted(defaultSortOrder)
-        self.groupBy = [self.groupBy] if isinstance(self.groupBy, str) else self.groupBy
+        self.default_sorted = self.derive_default_sorted(default_sort_order)
+        self.groupBy = [self.group_by] if isinstance(self.group_by, str) else self.group_by
 
         # TODO: would be nice to put at top of function
         # but needs to be after data processing for now
@@ -280,10 +305,10 @@ class Props:
         n_rows = len(list(self.data.values())[0])
 
         # derived ----
-        self.defaultSortDesc = defaultSortOrder == "desc"
-        self.inline = not fullWidth
+        self.default_sort_desc = default_sort_order == "desc"
+        self.inline = not full_width
         self.nowrap = not wrap
-        self.className = class_
+        self.class_name = class_
 
         # details ----
         if details is not None:
@@ -348,15 +373,15 @@ class Props:
         self.columns = [col.init_data(self.data) for col in self.columns]
 
         # row classes ----
-        if callable(rowClass):
-            self.rowClassName = [to_hydrate_format(rowClass(ii)) for ii in range(n_rows)]
+        if callable(row_class):
+            self.row_class_name = [to_hydrate_format(row_class(ii)) for ii in range(n_rows)]
         else:
-            self.rowClassName = rowClass
+            self.row_class_name = row_class
 
         # row style ----
-        if callable(self.rowStyle):
-            self.rowStyle = [to_hydrate_format(self.rowStyle(ii)) for ii in range(n_rows)]
-        elif isinstance(self.rowStyle, str):
+        if callable(self.row_style):
+            self.row_style = [to_hydrate_format(self.row_style(ii)) for ii in range(n_rows)]
+        elif isinstance(self.row_style, str):
             raise NotImplementedError()
 
         # apply global options ----
@@ -384,17 +409,17 @@ class Props:
 
         return crnt_cols
 
-    def derive_default_sorted(self, defaultSortOrder: Literal["asc", "desc"]):
-        if self.defaultSorted is None:
+    def derive_default_sorted(self, default_sort_order: Literal["asc", "desc"]):
+        if self.default_sorted is None:
             return
 
         out = []
         for col in self.columns:
-            if col.id in self.defaultSorted:
+            if col.id in self.default_sorted:
                 out.append(
                     dict(
                         id=col.id,
-                        desc=(col.defaultSortOrder or defaultSortOrder) == "desc",
+                        desc=(col.default_sort_order or default_sort_order) == "desc",
                     )
                 )
 
@@ -407,22 +432,22 @@ class Props:
                 raise ValueError(f"Column id '{col.id}' is not a column name in the data.")
 
     def validate_groupBy(self):
-        if self.groupBy is None:
+        if self.group_by is None:
             return
 
         col_map = {col.id: col for col in self.columns}
-        missing = [col for col in self.groupBy if col not in col_map]
+        missing = [col for col in self.group_by if col not in col_map]
         if missing:
             raise ValueError(f"groupBy column names not in data: {missing}")
 
-        details = [col for col in self.groupBy if getattr(col_map[col], "details", None)]
+        details = [col for col in self.group_by if getattr(col_map[col], "details", None)]
         if details:
             raise ValueError(
                 "groupBy columns cannot have `details` set.\n\n" f"Affected columns: {details}"
             )
 
     def to_props(self):
-        props_list = ["columns", "columnGroups"]
+        props_list = ["columns", "column_groups"]
         out = {}
         for field in fields(self):
             attr = getattr(self, field.name)
@@ -490,10 +515,10 @@ class Column:
     resizable: bool | None = None
     filterable: bool | None = None
     searchable: bool | None = None
-    filterMethod: JsFunction | None = None
+    filter_method: JsFunction | None = None
     show: bool | None = None
-    defaultSortOrder: Literal["asc", "desc"] | None = None
-    sortNALast: bool | None = None
+    default_sort_order: Literal["asc", "desc"] | None = None
+    sort_na_last: bool | None = None
     format: ColFormat | ColFormatGroupBy | None = None
     cell: JsFunctionCell | CellRenderer | None = None
     grouped: JsFunctionCell | None = None
@@ -504,20 +529,20 @@ class Column:
     # filterInput
     html: bool | None = None
     na: str | None = None
-    rowHeader: bool | None = None
-    minWidth: int | None = None
-    maxWidth: int | None = None
+    row_header: bool | None = None
+    min_width: int | None = None
+    max_width: int | None = None
     width: int | None = None
     align: Literal["left", "right", "center"] | None = None
-    vAlign: Literal["top", "center", "bottom"] | None = None
-    headerVAlign: Literal["top", "center", "bottom"] | None = None
+    v_align: Literal["top", "center", "bottom"] | None = None
+    header_v_align: Literal["top", "center", "bottom"] | None = None
     sticky: Literal["left", "right"] | None = None
     class_: list[str] | Callable[[CellInfo], list[str]] | JsFunctionCell | None = None
     style: CssRules | Callable[[ColEl], dict[str, str]] | None = None
-    headerClass: list[str] | None = None
-    headerStyle: CssStyles | None = None
-    footerClass: list[str] | None = None
-    footerStyle: CssRules | None = None
+    header_class: list[str] | None = None
+    header_style: CssStyles | None = None
+    footer_class: list[str] | None = None
+    footer_style: CssRules | None = None
 
     # internal ----
     # TODO: ideally this cannot be specified in the constructor
@@ -598,7 +623,7 @@ class Column:
 
             new_col.style = self.style
 
-        # columnGroups (spanners) ----
+        # _golumnGroups (spanners) ----
         # call header func if exists (or add as react tag)
         return new_col
 
@@ -612,7 +637,7 @@ class Column:
     def to_props(self) -> dict[str, Any]:
 
         renamed = rename(as_props(self), **{"class": "class_", "selectable": "_selectable"})
-        return filter_none(renamed)
+        return to_camel_dict(filter_none(renamed))
 
 
 @dataclass
@@ -736,3 +761,267 @@ class Language:
 
     def to_props(self):
         return asdict(self)
+
+
+"""R documentation for reactable function
+
+data
+A data frame or matrix.
+
+Can also be a crosstalk::SharedData object that wraps a data frame.
+
+columns
+Named list of column definitions. See colDef().
+
+columnGroups
+List of column group definitions. See colGroup().
+
+rownames
+Show row names? Defaults to TRUE if the data has row names.
+
+To customize the row names column, add a column definition using ".rownames" as the column name.
+
+Cells in the row names column are automatically marked up as row headers for assistive technologies.
+
+groupBy
+Character vector of column names to group by.
+
+To aggregate data when rows are grouped, use the aggregate argument in colDef().
+
+sortable
+Enable sorting? Defaults to TRUE.
+
+resizable
+Enable column resizing?
+
+filterable
+Enable column filtering?
+
+searchable
+Enable global table searching?
+
+searchMethod
+Custom search method to use for global table searching. A JS() function that takes an array of row objects, an array of column IDs, and the search value as arguments, and returns the filtered array of row objects.
+
+defaultColDef
+Default column definition used by every column. See colDef().
+
+defaultColGroup
+Default column group definition used by every column group. See colGroup().
+
+defaultSortOrder
+Default sort order. Either "asc" for ascending order or "desc" for descending order. Defaults to "asc".
+
+defaultSorted
+Character vector of column names to sort by default. Or to customize sort order, a named list with values of "asc" or "desc".
+
+pagination
+Enable pagination? Defaults to TRUE.
+
+defaultPageSize
+Default page size for the table. Defaults to 10.
+
+showPageSizeOptions
+Show page size options?
+
+pageSizeOptions
+Page size options for the table. Defaults to 10, 25, 50, 100.
+
+paginationType
+Pagination control to use. Either "numbers" for page number buttons (the default), "jump" for a page jump, or "simple" to show 'Previous' and 'Next' buttons only.
+
+showPagination
+Show pagination? Defaults to TRUE if the table has more than one page.
+
+showPageInfo
+Show page info? Defaults to TRUE.
+
+minRows
+Minimum number of rows to show per page. Defaults to 1.
+
+paginateSubRows
+When rows are grouped, paginate sub rows? Defaults to FALSE.
+
+details
+Additional content to display when expanding a row. An R function that takes the row index and column name as arguments, or a JS() function that takes a row info object as an argument. Can also be a colDef() to customize the details expander column.
+
+defaultExpanded
+Expand all rows by default?
+
+selection
+Enable row selection? Either "multiple" or "single" for multiple or single row selection.
+
+To get the selected rows in Shiny, use getReactableState().
+
+To customize the selection column, use ".selection" as the column name.
+
+defaultSelected
+A numeric vector of default selected row indices.
+
+onClick
+Action to take when clicking a cell. Either "expand" to expand the row, "select" to select the row, or a JS() function that takes a row info object, column object, and table state object as arguments.
+
+highlight
+Highlight table rows on hover?
+
+outlined
+Add borders around the table?
+
+bordered
+Add borders around the table and every cell?
+
+borderless
+Remove inner borders from table?
+
+striped
+Add zebra-striping to table rows?
+
+compact
+Make tables more compact?
+
+wrap
+Enable text wrapping? If TRUE (the default), long text will be wrapped to multiple lines. If FALSE, text will be truncated to fit on one line.
+
+showSortIcon
+Show a sort icon when sorting columns?
+
+showSortable
+Show an indicator on sortable columns?
+
+class
+Additional CSS classes to apply to the table.
+
+style
+Inline styles to apply to the table. A named list or character string.
+
+Note that if style is a named list, property names should be camelCased.
+
+rowClass
+Additional CSS classes to apply to table rows. A character string, a JS() function that takes a row info object and table state object as arguments, or an R function that takes a row index argument.
+
+rowStyle
+Inline styles to apply to table rows. A named list, character string, JS() function that takes a row info object and table state object as arguments, or an R function that takes a row index argument.
+
+Note that if rowStyle is a named list, property names should be camelCased. If rowStyle is a JS() function, it should return a JavaScript object with camelCased property names.
+
+fullWidth
+Stretch the table to fill the full width of its container? Defaults to TRUE.
+
+width
+Width of the table in pixels. Defaults to "auto" for automatic sizing.
+
+To set the width of a column, see colDef().
+
+height
+Height of the table in pixels. Defaults to "auto" for automatic sizing.
+"""
+
+
+@dataclass
+class Reactable(Props):
+    """A reactive table.
+
+    Parameters
+    ----------
+    data:
+        The data.
+    columns:
+        Named list of column definitions.
+    column_groups:
+        List of column group definitions.
+    sortable:
+        Whether to enable sorting. Defaults to `True`.
+    resizable:
+        Whether to enable column resizing.
+    filterable:
+        Whether to enable column filtering.
+    searchable:
+        Whether to enable global table searching.
+    pagination:
+        Whether to enable pagination.
+    default_col_def:
+        Default column definition used by every column.
+    default_sort_order:
+        Default sort order. Either "asc" for ascending order or "desc" for
+        descending order. Defaults to "asc".
+    default_sorted:
+        List of column names to sort by default. Or to customize sort order,
+        a dictionary mapping column names to "asc" or "desc".
+    default_page_size:
+        Default page size for the table. Defaults to 10.
+    show_page_size_options:
+        Whether to show page size options.
+    pagination_type:
+        Pagination control to use. Either "numbers" for page number buttons (the default),
+        "jump" for a page jump, or "simple" to show 'Previous' and 'Next' buttons only.
+    show_pagination:
+        Whether to show pagination.
+    show_page_info:
+        Whether to show page info.
+    min_rows:
+        Minimum number of rows to show per page. Defaults to 1.
+    paginate_sub_rows:
+        When rows are grouped, paginate sub rows. Defaults to `False`.
+    details:
+        Additional content to display when expanding a row.
+    default_expanded:
+        Whether to expand all rows by default.
+    selection:
+        Enable row selection. Either "multiple" or "single" for multiple or single row selection.
+        To customize the selection column, use `".selection"` as the column name.
+    on_click:
+        Action to take when clicking a cell. Either "expand" to expand the row, "select" to
+        select the row, or a JS function that takes a row info object as an argument.
+    highlight:
+        Whether to highlight table rows on hover.
+    outlined:
+        Whether to add borders around the table.
+    bordered:
+        Whether to add borders around the table and every cell.
+    borderless:
+        Whether to remove inner borders from table.
+    striped:
+        Whether to add zebra-striping to table rows.
+    compact:
+        Whether to make tables more compact.
+    wrap:
+        Whether to enable text wrapping. If `True` (the default), long text will be wrapped to
+        multiple lines. If `False`, text will be truncated to fit on one line.
+    show_sort_icon:
+        Whether to show a sort icon when sorting columns.
+    show_sortable:
+        Whether to show an indicator on sortable columns.
+    class_:
+        Additional CSS classes to apply to the table.
+    style:
+        Inline styles to apply to the table.
+    row_class:
+        Additional CSS classes to apply to table rows.
+    row_style:
+        Inline styles to apply to table rows.
+    full_width:
+        Whether to stretch the table to fill the full width of its container. Defaults to `True`.
+    width:
+        Width of the table in pixels. Defaults to "auto" for automatic sizing.
+    height:
+        Height of the table in pixels. Defaults to "auto" for automatic sizing.
+    theme:
+        Theme options for the table, specified by `Theme()`. Defaults to the global
+        `reactable.theme` option.
+    language:
+        Language options for the table, specified by `Language()`. Defaults to the global
+        `reactable.language` option.
+    meta:
+        Custom metadata to pass to JavaScript render functions or style functions.
+    element_id:
+        Element ID for the widget
+
+
+
+
+    """
+
+    def _repr_mimebundle_(self, **kwargs: dict) -> tuple[dict, dict] | None:
+        from .widgets import BigblockWidget
+
+        return BigblockWidget(props=self.to_props())._repr_mimebundle_()

@@ -16,6 +16,8 @@ website:
       - text: Articles
         menu:
           - articles/custom-rendering.qmd
+      - text: Reference
+        file: reference/index.qmd
       #- href: reference/index.qmd
       #  text: Reference
     right:
@@ -31,18 +33,17 @@ format:
   html:
     toc: true
 
-#quartodoc:
-#  # the name used to import the package you want to create reference docs for
-#  package: quartodoc
-#
-#  # write sidebar data to this file
-#  sidebar: _sidebar.yml
-#
-#  sections:
-#    - title: Some functions
-#      desc: Functions to inspect docstrings.
-#      contents:
-#        # the functions being documented in the package.
-#        # you can refer to anything: class methods, modules, etc..
-#        - get_object
-#        - preview
+quartodoc:
+  # the name used to import the package you want to create reference docs for
+  package: react_tables
+
+  # write sidebar data to this file
+  sidebar: _sidebar.yml
+
+  sections:
+    - title: Some functions
+      desc: Functions to inspect docstrings.
+      contents:
+        # the functions being documented in the package.
+        # you can refer to anything: class methods, modules, etc..
+        - Reactable

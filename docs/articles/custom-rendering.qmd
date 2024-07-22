@@ -23,7 +23,7 @@ Rendering functions:
 import polars as pl
 import htmltools as html
 from react_tables.data import cars_93
-from react_tables import reactable, Props, embed_css
+from react_tables import Reactable, reactable, Props, embed_css
 from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
 
 embed_css()
@@ -38,11 +38,9 @@ def fmt_cell_red(ci: CellInfo):
     return html.div(ci.value.upper(), style="color: red")
 
 
-reactable(
-    Props(
-        data,
-        columns={"manufacturer": Column(cell=fmt_cell_red)},
-    )
+Reactable(
+    data,
+    columns={"manufacturer": Column(cell=fmt_cell_red)},
 )
 ```
 
@@ -53,11 +51,9 @@ def fmt_header(ci: HeaderCellInfo):
     return html.div(f"name: {ci.name}", html.br(), f"value: {ci.value}")
 
 
-reactable(
-    Props(
-        data,
-        columns={"manufacturer": Column(header=fmt_header, name="Manufacturer")},
-    )
+Reactable(
+    data,
+    columns={"manufacturer": Column(header=fmt_header, name="Manufacturer")},
 )
 ```
 
@@ -69,12 +65,10 @@ def fmt_footer(ci: ColInfo):
     return f"${ttl:.2f}"
 
 
-reactable(
-    Props(
-        data,
-        searchable=True,
-        columns={"price": Column(footer=fmt_footer)},
-    )
+Reactable(
+    data,
+    searchable=True,
+    columns={"price": Column(footer=fmt_footer)},
 )
 ```
 
@@ -90,11 +84,9 @@ def fmt_details(ci: RowInfo):
     )
 
 
-reactable(
-    Props(
-        data[["model"]],
-        details=fmt_details,
-    )
+Reactable(
+    data[["model"]],
+    details=fmt_details,
 )
 ```
 
@@ -112,17 +104,16 @@ function(column, state) {
   return '<b>$' + total.toFixed(2) + '</b>'
 }"""
 )
-reactable(
-    Props(
-        data,
-        searchable=True,
-        columns={
-            "price": Column(
-                html=True,
-                footer=js_footer,
-            ),
-        },
-    )
+
+Reactable(
+    data,
+    searchable=True,
+    columns={
+        "price": Column(
+            html=True,
+            footer=js_footer,
+        ),
+    },
 )
 ```
 
@@ -148,7 +139,7 @@ column = Column(
     html=True,  # to render as HTML
 )
 
-reactable(Props(data, columns={"manufacturer": column}))
+Reactable(data, columns={"manufacturer": column})
 
 ```
 
@@ -206,7 +197,7 @@ cell_info_props = pl.DataFrame(
     }
 )
 
-reactable(Props(cell_info_props, pagination=False))
+Reactable(cell_info_props, pagination=False)
 ```
 
 :::
@@ -232,11 +223,9 @@ column = Column(
     html=True,  # to render as HTML
 )
 
-reactable(
-    Props(
-        data,
-        columns={"price": column},
-    )
+Reactable(
+    data,
+    columns={"price": column},
 )
 ```
 
@@ -274,7 +263,7 @@ column_props = pl.DataFrame(
     }
 )
 
-reactable(Props(column_props))
+Reactable(column_props)
 ```
 :::
 
@@ -299,7 +288,7 @@ column = Column(
     html=True,  # to render as HTML
 )
 
-reactable(Props(data, columns={"price": column}))
+Reactable(data, columns={"price": column})
 ```
 
 ::: {.callout-note}
@@ -307,18 +296,17 @@ reactable(Props(data, columns={"price": column}))
 
 ```{python}
 # | echo: false
-reactable(Props(column_props))
+Reactable(column_props)
 ```
 :::
 
 ### Expandable row details
 
 ```{python}
-reactable(
-    Props(
-        data,
-        details=JS(
-            """
+Reactable(
+    data,
+    details=JS(
+        """
           function(rowInfo, state) {
             // input:
             //  - rowInfo, an object containing row info
@@ -329,8 +317,7 @@ reactable(
             return `<div>Details for row: ${rowInfo.index}</div>`
           }
         """
-        ),
-    )
+    ),
 )
 ```
 
@@ -372,7 +359,7 @@ row_info_props = pl.DataFrame(
     }
 )
 
-reactable(Props(row_info_props))
+Reactable(row_info_props)
 ```
 :::
 
@@ -428,5 +415,5 @@ state_props = pl.DataFrame(
     }
 )
 
-reactable(Props(state_props))
+Reactable(state_props)
 ```
