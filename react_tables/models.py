@@ -297,7 +297,7 @@ class Props:
             self.data = process_data(self.data)
 
         self.default_sorted = self.derive_default_sorted(default_sort_order)
-        self.groupBy = [self.group_by] if isinstance(self.group_by, str) else self.group_by
+        self.group_by = [self.group_by] if isinstance(self.group_by, str) else self.group_by
 
         # TODO: would be nice to put at top of function
         # but needs to be after data processing for now
@@ -459,7 +459,7 @@ class Props:
 
             out[field.name] = res
 
-        return filter_none(out)
+        return to_camel_dict(filter_none(out))
 
 
 class Defaults:

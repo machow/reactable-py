@@ -3,50 +3,214 @@ title: Get Started
 jupyter: python3
 ---
 
+`reactable` is a Python library for interactively viewing DataFrames. It focuses on three things:
+
+* Quick options for sorting, searching, and paginating data.
+* Working with many DataFrame inputs, including pandas and polars.
+* Extensive customization of table structure, value formats, and targeted styles.
+
+## Install
+
+```bash
+pip install reactable
+```
+
+## Viewing DataFrames
 
 ```{python}
-import polars as pl
+from react_tables import Reactable, embed_css
+from react_tables.data import cars_93
 
-from react_tables.render_gt import _render, render
-from react_tables import embed_css
-from great_tables import GT, exibble
+# Note that currently this function is required
+# to put css into notebooks.
+embed_css()
+
+Reactable(
+    cars_93[["manufacturer", "model", "type", "price"]],
+    default_page_size=5,
+    searchable=True,
+    filterable=True,
+)
+```
+
+## Many DataFrames
+
+reactable built-in datasets, like `cars_93` don't any DataFrame libraries.
+They include methods like `.to_pandas()` and `.to_polars()`, to quickly try out reactable with your preferred DataFrame tool.
+
+```{python}
+from react_tables import Reactable, embed_css
+from react_tables.data import cars_93
+
+Reactable(
+    cars_93.to_polars()
+)
+```
+
+## Extensive customization
+
+
+
+<link href = "https://fonts.googleapis.com/css?family=Karla:400,700|Fira+Mono&display=fallback" rel = "stylesheet" />
+
+<style>
+.twitter-followers {
+  margin: 0 auto;
+  width: 575px;
+  font-family: Karla, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.followers-header {
+  margin: 1.125rem 0;
+  font-size: 1rem;
+}
+
+.followers-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.followers-tbl {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+}
+
+.followers-tbl a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.followers-tbl a:hover,
+.followers-tbl a:focus {
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, 0.0625rem);
+}
+
+.header {
+  border-bottom: 2px solid #555;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.header:hover {
+  background-color: #eee;
+}
+
+.bar-cell {
+  display: flex;
+  align-items: center;
+}
+
+.number {
+  font-family: "Fira Mono", Consolas, Monaco, monospace;
+  font-size: 0.84375rem;
+  white-space: pre;
+}
+
+.bar-chart {
+  flex-grow: 1;
+  margin-left: 0.375rem;
+  height: 0.875rem;
+}
+
+.bar {
+  height: 100%;
+}
+</style>
+
+```{python}
+# | echo: false
+
+from react_tables import bigblock, embed_css
+from react_tables.models import Column, Props, CellInfo, JS
+from htmltools import tags
+
+import polars as pl
 
 embed_css()
 
-gt = GT(pl.from_pandas(exibble)).tab_stub("row", "group")
-render(gt)
-# gt
-```
+data = pl.read_csv("../demos/twitter_followers.csv")
 
 
-```{python}
-from great_tables import GT, html, loc, style
-from great_tables.data import airquality
-
-airquality_mini = airquality.assign(Year=1973)
-
-gt = (
-    GT(pl.from_pandas(airquality_mini))
-    .tab_header(
-        title="New York Air Quality Measurements",
-        subtitle="Daily measurements in New York City (May 1-10, 1973)",
+def f_followers(ci: CellInfo):
+    width = f"{ci.value * 100 / data['followers'].max()}%"
+    val = f"{ci.value:,}".rjust(9)
+    bar = tags.div(
+        tags.div(
+            class_="bar",
+            style=f"width: {width}; background-color: #3fc1c9",
+        ),
+        class_="bar-chart",
+        style="margin-right: 0.375rem",
     )
-    .tab_spanner(label="Time", columns=["Year", "Month", "Day"])
-    .tab_spanner(label="Measurement", columns=["Ozone", "Solar_R", "Wind", "Temp"])
-    .cols_move_to_start(columns=["Year", "Month", "Day"])
-    .cols_label(
-        Ozone=html("Ozone,<br>ppbV"),
-        Solar_R=html("Solar R.,<br>cal/m<sup>2</sup>"),
-        Wind=html("Wind,<br>mph"),
-        Temp=html("Temp,<br>&deg;F"),
+    return tags.div(
+        tags.span(class_="number", content=val),
+        bar,
+        class_="bar-cell",
     )
-    .tab_stub("Ozone")
-    .tab_stubhead("Ozoneeee")
-    .tab_source_note("I am a source note")
-    .tab_source_note("I am another source note")
-    .tab_style(style.fill("yellow"), loc.body("Day", pl.col("Day") > 5))
+
+
+tbl = bigblock(
+    Props(
+        data,
+        pagination=False,
+        default_sorted="exclusive_followers_pct",
+        default_col_def=Column(header_class="header", align="left"),
+        columns=dict(
+            account=Column(
+                cell=lambda ci: (
+                    tags.a(
+                        f"@{ci.value}",
+                        href=f"https://twitter.com/{ci.value}",
+                        target="_blank",
+                    )
+                ),
+                width=150,
+            ),
+            followers=Column(default_sort_order="desc", cell=f_followers),
+            exclusive_followers_pct=Column(
+                name="Exclusive Followers",
+                default_sort_order="desc",
+                cell=JS(
+                    """function(cellInfo) {
+        // Format as percentage
+        const pct = (cellInfo.value * 100).toFixed(1) + "%"
+        // Pad single-digit numbers
+        let value = pct.padStart(5)
+        // Show % on first row only
+        if (cellInfo.viewIndex > 0) {
+          value = value.replace("%", " ")
+        }
+        // Render bar chart
+        return `
+          <div class="bar-cell">
+            <span class="number">${value}</span>
+            <div class="bar-chart" style="background-color: #e1e1e1">
+              <div class="bar" style="width: ${pct}; background-color: #fc5185"></div>
+            </div>
+          </div>
+        `
+      }"""
+                ),
+                html=True,
+            ),
+        ),
+        compact=True,
+        class_="followers-tbl",
+        static=True,
+    )
 )
 
-h, widget, f = _render(gt)
-render(gt)
+# tags.div(
+#    tags.div(
+#        tags.h2("Candidates whose followers are loyal only to them", class_="followers-title"),
+#        "Share of each 2020 candidate's followers who don't follow any other candidates",
+#        class_="followers-header",
+#    ),
+#    tbl,
+#    class_="twitter-followers",
+# )
+
+tbl
 ```

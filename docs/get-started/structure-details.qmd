@@ -1,0 +1,23 @@
+---
+title: Details
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+{{< embed ../examples/index.qmd#details-render-py echo=true >}}
+{{< embed ../examples/index.qmd#details-render-js echo=true >}}
+
+## Nested tables
+
+{{< embed ../examples/index.qmd#details-nested-tables echo=true >}}
+
+## Conditional row details
+
+{{< embed ../examples/index.qmd#details-conditional-none echo=true >}}
+
+## Multiple row details
+
+{{< embed ../examples/index.qmd#details-multiple-cols-rows echo=true >}}
+
+## Default expanded rows
+
+{{< embed ../examples/index.qmd#details-default-expanded echo=true >}}

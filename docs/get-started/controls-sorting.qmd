@@ -1,0 +1,28 @@
+---
+title: Sorting
+jupyter: python3
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+### Default sorted columns
+
+{{< embed ../examples/index.qmd#default-sorted-columns echo=true >}}
+
+{{< embed ../examples/index.qmd#default-sorted-columns2 echo=true >}}
+
+### Default sort order
+
+{{< embed ../examples/index.qmd#default-sort-order echo=true >}}
+
+### Sort missing values last
+
+{{< embed ../examples/index.qmd#sort-missing echo=true >}}
+
+### No sorting
+
+{{< embed ../examples/index.qmd#sort-false echo=true >}}
+
+### Hide sort icons
+
+{{< embed ../examples/index.qmd#sort-hide echo=true >}}

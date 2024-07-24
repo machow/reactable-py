@@ -10,6 +10,8 @@ format:
 
 
 ```{python}
+# | label: setup
+# | code-fold: true
 import htmltools
 from react_tables import bigblock, RT, options, Reactable
 from react_tables.widgets import BigblockWidget, embed_css
@@ -42,6 +44,7 @@ pl_penguins = pl.from_pandas(penguins)
 ## Basic usage
 
 ```{python}
+# | label: basic-usage
 Reactable(
     data={"a": [1, 2], "b": ["a", "b"], "c": ["c", "d"]},
     columns=dict(
@@ -59,6 +62,7 @@ Reactable(
 
 
 ```{python}
+# | label: column-definitions
 # shouldn't subset columns
 lil_penguins = process_data(pl_penguins.head())
 Reactable(
@@ -78,12 +82,13 @@ Reactable(
 * TODO: defaultColDef merged in on python side
 
 ```{python}
+# | label: default-columns
 Reactable(
-        lil_penguins,
-        default_col_def=Column(align="center"),
-        columns=[Column(id="species", min_width=140)],
-        bordered=True,
-        highlight=True,
+    lil_penguins,
+    default_col_def=Column(align="center"),
+    columns=[Column(id="species", min_width=140)],
+    bordered=True,
+    highlight=True,
 )
 
 ```
@@ -93,6 +98,7 @@ Reactable(
 ### Default sorted columns
 
 ```{python}
+# | label: default-sorted-columns
 # defaultSorted may be..
 #  * dict mapping name -> order
 #  * list of names
@@ -106,6 +112,7 @@ Reactable(
 ```
 
 ```{python}
+# | label: default-sorted-columns2
 # TODO: support defaultSorted being a dict?
 BigblockWidget(
     props=Props(
@@ -120,12 +127,13 @@ BigblockWidget(
 
 
 ```{python}
+# | label: default-sort-order
 Reactable(
-        pl_penguins,
-        default_sort_order="desc",
-        columns=[Column(id="species", default_sort_order="asc")],
-        default_sorted=["species", "island"],
-    )
+    pl_penguins,
+    default_sort_order="desc",
+    columns=[Column(id="species", default_sort_order="asc")],
+    default_sorted=["species", "island"],
+)
 ```
 
 ### Sort missing values last
@@ -133,6 +141,7 @@ Reactable(
 TODO(jupyter): Out of range float values are not JSON compliant
 
 ```{python}
+# | label: sort-missing
 import math
 
 df = pl.DataFrame(
@@ -145,24 +154,25 @@ df = pl.DataFrame(
 )
 
 Reactable(
-        df,
-        default_col_def=Column(sort_na_last=True),
-        default_sorted="x",
-    )
+    df,
+    default_col_def=Column(sort_na_last=True),
+    default_sorted="x",
+)
 ```
 
 ### No sorting
 
 ```{python}
+# | label: sort-false
 Reactable(
-        pl_penguins.head(),
-        sortable=False,
-        show_sortable=True,
-        columns=[
-            Column(id="bill_length_mm", sortable=True),
-            Column(id="bill_depth_mm", sortable=True),
-        ],
-    )
+    pl_penguins.head(),
+    sortable=False,
+    show_sortable=True,
+    columns=[
+        Column(id="bill_length_mm", sortable=True),
+        Column(id="bill_depth_mm", sortable=True),
+    ],
+)
 ```
 
 
@@ -170,35 +180,39 @@ Reactable(
 
 
 ```{python}
+# | label: sort-hide
 Reactable(
-        pl_penguins.head(),
-        show_sort_icon=False,
-    )
+    pl_penguins.head(),
+    show_sort_icon=False,
+)
 ```
 
 ## Filtering
 
 ```{python}
+# | label: filter
 Reactable(
-        pl_penguins,
-        filterable=True,
-        min_rows=10,
-    )
+    pl_penguins,
+    filterable=True,
+    min_rows=10,
+)
 ```
 
 
 ```{python}
+# | label: filter-column
 Reactable(
-        pl_penguins,
-        filterable=True,
-        columns=[Column(id="Price", filterable=False)],
-        default_page_size=5,
-    )
+    pl_penguins,
+    filterable=True,
+    columns=[Column(id="Price", filterable=False)],
+    default_page_size=5,
+)
 ```
 
 ### Custom filtering
 
 ```{python}
+# | label: filter-custom
 titled = pl_penguins.with_columns(pl.col("species").str.to_titlecase())
 
 js_filter = JS(
@@ -211,22 +225,23 @@ function(rows, columnId, filterValue) {
 )
 
 Reactable(
-        data=titled.head(2),
-        filterable=True,
-        columns=[
-            Column(
-                id="species",
-                filter_method=js_filter,
-            ),
-        ],
-        default_page_size=5,
-    )
+    data=titled.head(2),
+    filterable=True,
+    columns=[
+        Column(
+            id="species",
+            filter_method=js_filter,
+        ),
+    ],
+    default_page_size=5,
+)
 ```
 
 ## Searching
 
 
 ```{python}
+# | label: search
 Reactable(data=pl_penguins, searchable=True, min_rows=10)
 ```
 
@@ -235,25 +250,29 @@ Reactable(data=pl_penguins, searchable=True, min_rows=10)
 ## Pagination
 
 ```{python}
+# | label: pagination
 Reactable(pl_penguins, default_page_size=4)
 ```
 
 
 
 ```{python}
+# | label: pagination-min-rows
 Reactable(pl_penguins, default_page_size=4, min_rows=4, searchable=True)
 
 ```
 
+
 ### Page size options
 
 ```{python}
+# | label: pagination-size-options
 Reactable(
-        pl_penguins,
-        show_page_size_options=True,
-        page_size_options=[4, 8, 12],
-        default_page_size=4,
-    )
+    pl_penguins,
+    show_page_size_options=True,
+    page_size_options=[4, 8, 12],
+    default_page_size=4,
+)
 ```
 
 ### Alternative pagination types
@@ -261,87 +280,95 @@ Reactable(
 #### Page jump
 
 ```{python}
+# | label: pagination-type-jump
 Reactable(
-        pl_penguins,
-        pagination_type="jump",
-        default_page_size=4,
-    )
+    pl_penguins,
+    pagination_type="jump",
+    default_page_size=4,
+)
 ```
 
 #### Simple
 
 ```{python}
+# | label: pagination-type-simple
 Reactable(
-        pl_penguins,
-        pagination_type="simple",
-        default_page_size=4,
-    )
+    pl_penguins,
+    pagination_type="simple",
+    default_page_size=4,
+)
 ```
 
 ### Hide page info
 
 
 ```{python}
+# | label: pagination-page-info-false
 Reactable(
-        pl_penguins,
-        show_page_info=False,
-        default_page_size=4,
-    )
+    pl_penguins,
+    show_page_info=False,
+    default_page_size=4,
+)
 ```
 
 ```{python}
+# | label: pagination-page-size
 Reactable(
-        pl_penguins,
-        show_page_info=False,
-        show_page_size_options=True,
-        default_page_size=4,
-    )
+    pl_penguins,
+    show_page_info=False,
+    show_page_size_options=True,
+    default_page_size=4,
+)
 ```
 
 ### Always show pagination
 
 
 ```{python}
+# | label: pagination-show
 Reactable(
-        pl_penguins,
-        show_pagination=True,
-    )
+    pl_penguins,
+    show_pagination=True,
+)
 ```
 
 ### No pagination
 
 ```{python}
+# | label: pagination-false
 Reactable(
-        pl_penguins,
-        pagination=False,
-        highlight=True,
-        height=250,
-    )
+    pl_penguins,
+    pagination=False,
+    highlight=True,
+    height=250,
+)
 ```
 
 ## Grouping and aggregation
 
 ```{python}
+# | label: group-by
 data = cars_93[10:22, ["manufacturer", "model", "type", "price", "mpg_city"]]
 
 Reactable(
-        data,
-        group_by="manufacturer",
-    )
+    data,
+    group_by="manufacturer",
+)
 ```
 
 ```{python}
+# | label: group-by-aggregate
 data = cars_93[14:38, ["type", "price", "mpg_city", "drive_train", "man_trans_avail"]]
 Reactable(
-        data,
-        group_by="type",
-        columns=[
-            Column(id="price", aggregate="max"),
-            Column(id="mpg_city", aggregate="mean", format=ColFormat(digits=1)),
-            Column(id="drive_train", aggregate="unique"),
-            Column(id="man_trans_avail", aggregate="frequency"),
-        ],
-    )
+    data,
+    group_by="type",
+    columns=[
+        Column(id="price", aggregate="max"),
+        Column(id="mpg_city", aggregate="mean", format=ColFormat(digits=1)),
+        Column(id="drive_train", aggregate="unique"),
+        Column(id="man_trans_avail", aggregate="frequency"),
+    ],
+)
 ```
 
 ```python
@@ -375,14 +402,15 @@ colDef(
 ### Multiple groups
 
 ```{python}
+# | label: group-by-multiple
 Reactable(
-        us_states,
-        group_by=["Region", "Division"],
-        columns=[
-            Column(id="Division", aggregate="unique"),
-            Column(id="Area", aggregate="sum", format=ColFormat(separators=True)),
-        ],
-    )
+    us_states,
+    group_by=["Region", "Division"],
+    columns=[
+        Column(id="Division", aggregate="unique"),
+        Column(id="Area", aggregate="sum", format=ColFormat(separators=True)),
+    ],
+)
 
 ```
 
@@ -396,38 +424,38 @@ Reactable(
 
 
 ```{python}
+# | label: group-by-paginate-sub-rows
 data = cars_93[["manufacturer", "model", "type", "price", "mpg_city"]]
 
 Reactable(
-        data=cars_93,
-        group_by="type",
-        paginate_sub_rows=True,
-    )
+    data=cars_93,
+    group_by="type",
+    paginate_sub_rows=True,
+)
 ```
 
 ## Column formatting
 
 ```{python}
-
+# | label: column-format-overview
 Reactable(
-        data=prices,
-        columns=[
-            Column(id="price_usd", format=ColFormat(prefix="$", separators=True, digits=2)),
-            Column(
-                id="price_inr", format=ColFormat(currency="INR", separators=True, locales="hi-IN")
-            ),
-            Column(id="number_fr", format=ColFormat(locales="fr-FR")),
-            Column(id="temp", format=ColFormat(suffix="°C")),
-            Column(id="percent", format=ColFormat(percent=True, digits=1)),
-            Column(id="date", format=ColFormat(date=True, locales="en-GB")),
-        ],
-    )
+    data=prices,
+    columns=[
+        Column(id="price_usd", format=ColFormat(prefix="$", separators=True, digits=2)),
+        Column(id="price_inr", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+        Column(id="number_fr", format=ColFormat(locales="fr-FR")),
+        Column(id="temp", format=ColFormat(suffix="°C")),
+        Column(id="percent", format=ColFormat(percent=True, digits=1)),
+        Column(id="date", format=ColFormat(date=True, locales="en-GB")),
+    ],
+)
 ```
 
 ### Date formatting
 
 
 ```{python}
+# | label: column-format-date
 ts = ["2019-01-02 03:22:15", "2019-03-15 09:15:55", "2019-09-22 14:20:00"]
 ser = pl.Series(ts, dtype=pl.Date).str.to_datetime().dt.replace_time_zone("America/New_York")
 
@@ -442,21 +470,22 @@ data = pl.DataFrame(
 )
 
 Reactable(
-        data,
-        columns=[
-            Column(id="datetime", format=ColFormat(datetime=True)),
-            Column(id="date", format=ColFormat(date=True)),
-            Column(id="time", format=ColFormat(time=True)),
-            Column(id="time_24h", format=ColFormat(time=True, hour12=False)),
-            Column(id="datetime_pt_BR", format=ColFormat(datetime=True, locales="pt-BR")),
-        ],
-    )
+    data,
+    columns=[
+        Column(id="datetime", format=ColFormat(datetime=True)),
+        Column(id="date", format=ColFormat(date=True)),
+        Column(id="time", format=ColFormat(time=True)),
+        Column(id="time_24h", format=ColFormat(time=True, hour12=False)),
+        Column(id="datetime_pt_BR", format=ColFormat(datetime=True, locales="pt-BR")),
+    ],
+)
 ```
 
 
 ### Currency formatting
 
 ```{python}
+# | label: column-format-currency
 data = pl.DataFrame(
     {
         "USD": [12.12, 2141.213, 0.42, 1.55, 34414],
@@ -468,15 +497,15 @@ data = pl.DataFrame(
 )
 
 Reactable(
-        data,
-        columns=[
-            Column(id="USD", format=ColFormat(currency="USD", separators=True, locales="en-US")),
-            Column(id="EUR", format=ColFormat(currency="EUR", separators=True, locales="de-DE")),
-            Column(id="INR", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
-            Column(id="JPY", format=ColFormat(currency="JPY", separators=True, locales="ja-JP")),
-            Column(id="MAD", format=ColFormat(currency="MAD", separators=True, locales="ar-MA")),
-        ],
-    )
+    data,
+    columns=[
+        Column(id="USD", format=ColFormat(currency="USD", separators=True, locales="en-US")),
+        Column(id="EUR", format=ColFormat(currency="EUR", separators=True, locales="de-DE")),
+        Column(id="INR", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+        Column(id="JPY", format=ColFormat(currency="JPY", separators=True, locales="ja-JP")),
+        Column(id="MAD", format=ColFormat(currency="MAD", separators=True, locales="ar-MA")),
+    ],
+)
 ```
 
 ### Formatting aggregated cells
@@ -494,20 +523,21 @@ Column(
 
 
 ```{python}
+# | label: column-format-aggregate
 data = us_states
 
 Reactable(
-        data,
-        group_by="Region",
-        columns=[
-            Column(
-                id="States",
-                aggregate="count",
-                format=ColFormatGroupBy(aggregated=ColFormat(suffix=" states")),
-            ),
-            Column(id="Area", aggregate="sum", format=ColFormat(suffix=" mi²", separators=True)),
-        ],
-    )
+    data,
+    group_by="Region",
+    columns=[
+        Column(
+            id="States",
+            aggregate="count",
+            format=ColFormatGroupBy(aggregated=ColFormat(suffix=" states")),
+        ),
+        Column(id="Area", aggregate="sum", format=ColFormat(suffix=" mi²", separators=True)),
+    ],
+)
 ```
 
 ### Displaying missing values
@@ -515,6 +545,7 @@ Reactable(
 
 
 ```{python}
+# | label: column-format-missing
 data = pl.DataFrame(
     {
         "n": [1, 2, None, 4, 5],
@@ -525,12 +556,12 @@ data = pl.DataFrame(
 )
 
 Reactable(
-        data,
-        columns=[
-            Column(id="x", na="-"),
-            Column(id="y", na="NA", format=ColFormat(percent=True)),
-        ],
-    )
+    data,
+    columns=[
+        Column(id="x", na="-"),
+        Column(id="y", na="NA", format=ColFormat(percent=True)),
+    ],
+)
 ```
 
 ### Custom data formatting
@@ -593,23 +624,25 @@ Reactable(
 ### Python render function
 
 ```{python}
+# | label: footer-render-py
 data = cars_93[17:47, ["manufacturer", "model", "type", "price"]]
 
 Reactable(
-        data,
-        default_page_size=5,
-        columns=[
-            Column(id="manufacturer", footer="Total"),
-            Column(id="price", footer=lambda col_info: f"{sum(col_info.values):.2f}"),
-        ],
-        default_col_def=Column(footer_style={"font-weight": "bold"}),
-    ),
+    data,
+    default_page_size=5,
+    columns=[
+        Column(id="manufacturer", footer="Total"),
+        Column(id="price", footer=lambda col_info: f"{sum(col_info.values):.2f}"),
+    ],
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
 
 ```
 
 ### JS render function 
 
 ```{python}
+# | label: footer-render-js
 js_sum_column = JS(
     """function(column, state) {
    let total = 0
@@ -621,14 +654,14 @@ js_sum_column = JS(
 )
 
 Reactable(
-        data,
-        default_page_size=5,
-        columns=[
-            Column(id="manufacturer", footer="Total"),
-            Column(id="price", footer=js_sum_column),
-        ],
-        default_col_def=Column(footer_style={"font-weight": "bold"}),
-    ),
+    data,
+    default_page_size=5,
+    columns=[
+        Column(id="manufacturer", footer="Total"),
+        Column(id="price", footer=js_sum_column),
+    ],
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
 
 ```
 
@@ -637,6 +670,7 @@ Reactable(
 * TODO: complete original example
 
 ```{python}
+# | label: footer-render-widget
 import plotly.express as px
 import htmltools as h
 
@@ -651,9 +685,9 @@ h.div(p).show()
 data = pl.DataFrame({"x": [1]})
 
 Reactable(
-        data,
-        details=lambda indx: go.FigureWidget(p),
-    )
+    data,
+    details=lambda indx: go.FigureWidget(p),
+)
 
 ```
 
@@ -665,18 +699,20 @@ Reactable(
 * TODO: using python function
 
 ```{python}
+# | label: details-render-py
 import htmltools
 
 Reactable(
-        pl_penguins,
-        details=lambda row_info: htmltools.div(
-            "Details for row: ", row_info.row_index, htmltools.pre("nice")
-        ),
-    )
+    pl_penguins,
+    details=lambda row_info: htmltools.div(
+        "Details for row: ", row_info.row_index, htmltools.pre("nice")
+    ),
+)
 
 ```
 
 ```{python}
+# | label: details-render-js
 js_details = JS(
     """function(rowInfo) {
   return `Details for row: ${rowInfo.index}` +
@@ -685,20 +721,22 @@ js_details = JS(
 )
 
 Reactable(
-        pl_penguins,
-        details=Column(
-            name="more",
-            html=True,
-            width=60,
-            details=js_details,
-        ),
-    )
+    pl_penguins,
+    details=Column(
+        name="more",
+        html=True,
+        width=60,
+        details=js_details,
+    ),
+)
 ```
 
 ### Nested tables
 
 
+
 ```{python}
+# | label: details-nested-tables
 from htmltools import HTML, div
 
 
@@ -710,9 +748,9 @@ sub_tables = {
 df_uniq = pl_penguins.select(["species", "island"]).unique()
 
 Reactable(
-        df_uniq,
-        details=lambda row_info: list(sub_tables.values())[row_info.row_index],
-    )
+    df_uniq,
+    details=lambda row_info: list(sub_tables.values())[row_info.row_index],
+)
 
 ```
 
@@ -721,14 +759,15 @@ Reactable(
 * TODO: sub frames are centered? Maybe a quarto style thing?
 
 ```{python}
+# | label: details-conditional-none
 sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
 
 Reactable(
-        pl_penguins[:5],
-        details=lambda row_info: (
-            bigblock(Props(sub_frame, full_width=False)) if row_info.row_index in [2, 4] else None
-        ),
-    )
+    pl_penguins[:5],
+    details=lambda row_info: (
+        bigblock(Props(sub_frame, full_width=False)) if row_info.row_index in [2, 4] else None
+    ),
+)
 ```
 
 ### Multiple row details
@@ -736,43 +775,45 @@ Reactable(
 * TODO: Should be able to validate output of column object
 
 ```{python}
+# | label: details-multiple-cols-rows
 
 sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
 Reactable(
-        pl_penguins[:5],
-        details=lambda row_info: (
-            bigblock(Props(sub_frame, full_width=False)) if row_info.row_index in [2, 4] else None
+    pl_penguins[:5],
+    details=lambda row_info: (
+        bigblock(Props(sub_frame, full_width=False)) if row_info.row_index in [2, 4] else None
+    ),
+    columns=[
+        Column(
+            id="bill_length_mm",
+            details=lambda row_info: f"bill_length_mm: {pl_penguins[row_info.row_index, 'bill_length_mm']}",
         ),
-        columns=[
-            Column(
-                id="bill_length_mm",
-                details=lambda row_info: f"bill_length_mm: {pl_penguins[row_info.row_index, 'bill_length_mm']}",
-            ),
-            Column(
-                id="bill_depth_mm",
-                format=ColFormat(digits=1),
-                details=JS(
-                    """
+        Column(
+            id="bill_depth_mm",
+            format=ColFormat(digits=1),
+            details=JS(
+                """
             function(rowInfo) {
                 return 'bill_depth_mm: ' + rowInfo.values['bill_depth_mm']
             }
             """
-                ),
             ),
-        ],
-    )
+        ),
+    ],
+)
 ```
 
 ### Default expanded rows
 
 
 ```{python}
+# | label: details-default-expanded
 Reactable(
-        pl_penguins[:12],
-        default_page_size=4,
-        details=lambda indx: f"Details for row: {indx}",
-        default_expanded=True,
-    )
+    pl_penguins[:12],
+    default_page_size=4,
+    details=lambda indx: f"Details for row: {indx}",
+    default_expanded=True,
+)
 ```
 
 
@@ -783,17 +824,17 @@ Reactable(
 
 ```{python}
 Reactable(
-        sleep[:6, :],
-        columns=[
-            Column(
-                id="extra",
-                style=lambda val: {
-                    "color": "#008800" if val > 0 else "#e00000",
-                    "font-weight": "bold",
-                },
-            )
-        ],
-    )
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=lambda val: {
+                "color": "#008800" if val > 0 else "#e00000",
+                "font-weight": "bold",
+            },
+        )
+    ],
+)
 ```
 
 ### Cell styling (js)
@@ -1230,67 +1271,71 @@ Reactable(
 
 
 ```{python}
+# | label: resize-columns
 Reactable(
-        cars_93[:5, :],
-        resizable=True,
-        wrap=False,
-        bordered=True,
-    )
+    cars_93[:5, :],
+    resizable=True,
+    wrap=False,
+    bordered=True,
+)
 ```
 
 ### Sticky columns
 
 ```{python}
+# | label: sticky-columns
 Reactable(
-        cars_93[:5, :],
-        columns=[
-            Column(
-                id="manufacturer",
-                sticky="left",
-                style={"border-right": "1px solid #eee"},
-                header_style={"border-right": "1px solid #eee"},
-            ),
-            Column(
-                id="make",
-                sticky="right",
-                style={"border-left": "1px solid #eee"},
-                header_style={"border-left": "1px solid #eee"},
-            ),
-        ],
-        default_col_def=Column(min_width=150),
-    )
+    cars_93[:5, :],
+    columns=[
+        Column(
+            id="manufacturer",
+            sticky="left",
+            style={"border-right": "1px solid #eee"},
+            header_style={"border-right": "1px solid #eee"},
+        ),
+        Column(
+            id="make",
+            sticky="right",
+            style={"border-left": "1px solid #eee"},
+            header_style={"border-left": "1px solid #eee"},
+        ),
+    ],
+    default_col_def=Column(min_width=150),
+)
 ```
 
 ### Multiple sticky columns
 
 ```{python}
+# | label: sticky-columns-multiple
 stick_style = {"background-color": "#f7f7f7"}
 
 Reactable(
-        cars_93[:5, :],
-        columns=[
-            Column(id="manufacturer", sticky="left", style=stick_style, header_style=stick_style),
-            Column(id="make", sticky="left", style=stick_style, header_style=stick_style),
-            Column(id="type", sticky="left", style=stick_style, header_style=stick_style),
-        ],
-    )
+    cars_93[:5, :],
+    columns=[
+        Column(id="manufacturer", sticky="left", style=stick_style, header_style=stick_style),
+        Column(id="make", sticky="left", style=stick_style, header_style=stick_style),
+        Column(id="type", sticky="left", style=stick_style, header_style=stick_style),
+    ],
+)
 ```
 
 ### Sticky column groups
 
 
 ```{python}
+# | label: sticky-column-groups
 Reactable(
-        cars_93[:5, :],
-        column_groups=[
-            ColGroup(name="Make", columns=["manufacturer", "model"], sticky="left"),
-            ColGroup(name="Price", columns=["min_price", "price", "max_price"], sticky="left"),
-        ],
-        default_col_def=Column(footer="Footer"),
-        resizable=True,
-        wrap=False,
-        bordered=True,
-    )
+    cars_93[:5, :],
+    column_groups=[
+        ColGroup(name="Make", columns=["manufacturer", "model"], sticky="left"),
+        ColGroup(name="Price", columns=["min_price", "price", "max_price"], sticky="left"),
+    ],
+    default_col_def=Column(footer="Footer"),
+    resizable=True,
+    wrap=False,
+    bordered=True,
+)
 ```
 
 ## Row names and row headers

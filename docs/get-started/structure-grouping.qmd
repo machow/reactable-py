@@ -1,0 +1,24 @@
+---
+title: Grouping and aggregation
+---
+
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+{{< embed ../examples/index.qmd#group-by echo=true >}}
+
+{{< embed ../examples/index.qmd#group-by-aggregate echo=true >}}
+
+## Multiple groups
+
+{{< embed ../examples/index.qmd#group-by-multiple echo=true >}}
+
+## Custom aggregate function
+
+## Include sub rows in pagination
+
+{{< embed ../examples/index.qmd#group-by-paginate-sub-rows echo=true >}}
+
+## Sticky column groups
+
+{{< embed ../examples/index.qmd#sticky-column-groups echo=true >}}

@@ -6,7 +6,6 @@ execute:
   daemon: false
 ---
 
-
 <link href = "https://fonts.googleapis.com/css?family=Karla:400,700|Fira+Mono&display=fallback" rel = "stylesheet" />
 
 <style>
@@ -111,8 +110,8 @@ tbl = bigblock(
     Props(
         data,
         pagination=False,
-        defaultSorted="exclusive_followers_pct",
-        defaultColDef=Column(headerClass="header", align="left"),
+        default_sorted="exclusive_followers_pct",
+        default_col_def=Column(header_class="header", align="left"),
         columns=dict(
             account=Column(
                 cell=lambda ci: (
@@ -124,10 +123,10 @@ tbl = bigblock(
                 ),
                 width=150,
             ),
-            followers=Column(defaultSortOrder="desc", cell=f_followers),
+            followers=Column(default_sort_order="desc", cell=f_followers),
             exclusive_followers_pct=Column(
                 name="Exclusive Followers",
-                defaultSortOrder="desc",
+                default_sort_order="desc",
                 cell=JS(
                     """function(cellInfo) {
         // Format as percentage

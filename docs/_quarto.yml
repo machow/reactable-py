@@ -8,14 +8,9 @@ website:
       - text: Get Started
         file: get-started/index.qmd
       - text: Examples
-        file: examples/index.qmd
-      - text: Demos
         menu: 
           - demos/twitter-followers.qmd
           - demos/great-tables.qmd
-      - text: Articles
-        menu:
-          - articles/custom-rendering.qmd
       - text: Reference
         file: reference/index.qmd
       #- href: reference/index.qmd
@@ -25,6 +20,35 @@ website:
         href: https://github.com/machow/bigblock
       #- icon: rss
       #  href: blog/index.xml
+  sidebar:
+      id: get-started
+      contents:
+        - get-started/index.qmd
+        - get-started/overview.qmd
+        - section: "Controls"
+          contents:
+            - get-started/controls-sorting.qmd
+            - get-started/controls-filtering.qmd
+            - get-started/controls-searching.qmd
+            - get-started/controls-pagination.qmd
+            - get-started/controls-resizing.qmd
+            - get-started/controls-click-actions.qmd
+        - section: "Structure"
+          contents:
+            - get-started/structure-grouping.qmd
+            - get-started/structure-footers.qmd
+            - get-started/structure-details.qmd
+            - get-started/structure-column-groups.qmd
+            - get-started/structure-rownames.qmd
+        - section: "Format"
+          contents:
+            - get-started/format-columns.qmd
+            - get-started/format-custom-rendering.qmd
+        - section: "Extra"
+          contents:
+            - get-started/extra-custom-rendering.qmd
+            - examples/index.qmd
+
 # tell quarto to read the generated sidebar
 #metadata-files:
 #  - _sidebar.yml

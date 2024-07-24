@@ -1,0 +1,10 @@
+---
+title: Column formatting
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+{{< embed ../examples/index.qmd#column-format-overview echo=true >}}
+{{< embed ../examples/index.qmd#column-format-date echo=true >}}
+{{< embed ../examples/index.qmd#column-format-currency echo=true >}}
+{{< embed ../examples/index.qmd#column-format-aggregate echo=true >}}
+{{< embed ../examples/index.qmd#column-format-missing echo=true >}}

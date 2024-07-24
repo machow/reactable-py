@@ -1,0 +1,8 @@
+---
+title: Footers
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+{{< embed ../examples/index.qmd#footer-render-py echo=true >}}
+{{< embed ../examples/index.qmd#footer-render-js echo=true >}}
+{{< embed ../examples/index.qmd#footer-render-widget echo=true >}}

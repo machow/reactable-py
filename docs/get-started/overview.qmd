@@ -1,0 +1,119 @@
+---
+title: Overview
+jupyter: python3
+---
+
+```{python}
+import htmltools
+from react_tables import options, Reactable, Column, embed_css
+from react_tables.data import cars_93
+
+embed_css()
+```
+
+## Quick DataFrame viewing
+
+At its simplest, reactable allows you to easily view a DataFrame:
+
+```{python}
+lil_cars = cars_93[["manufacturer", "model", "type", "price"]]
+
+Reactable(lil_cars, default_page_size=5, filterable=True)
+```
+
+Note the table above supports these actions:
+
+* Filtering rows using the input boxes below the column names.
+* Paging through data using controls on the bottom right.
+
+### Dispelling the curse of the three dots
+
+Filtering and paging through DataFrames is super handy for getting around the curse of the three dots. That is, the cruel ellipsis (`...`) that DataFrame libraries use to hide the middle rows of data.
+
+For example, here is what the data looks like in pandas:
+
+```{python}
+lil_cars.to_pandas()
+```
+
+## Works with pandas and polars
+
+
+```{python}
+lil_cars[:5]
+```
+
+
+```{python}
+Reactable(lil_cars.to_polars(), default_page_size=5)
+```
+
+## Structure, format, style
+
+### Structure table
+
+```{python}
+# | code-fold: true
+cars = cars_93[["manufacturer", "model", "type", "price", "min_price", "max_price"]]
+
+Reactable(
+    cars,
+    group_by="manufacturer",
+    default_page_size=5,
+)
+```
+
+
+```{python}
+# | code-fold: true
+from react_tables.models import ColGroup, Column
+
+cars = cars_93[["manufacturer", "model", "type", "price", "min_price", "max_price"]]
+
+Reactable(
+    cars,
+    column_groups=[
+        ColGroup("Info", ["manufacturer", "model", "type"]),
+        ColGroup("Price", ["min_price", "price", "max_price"]),
+    ],
+    columns={
+        "manufacturer": Column(name="Manufacturer"),
+        "model": Column(name="Model"),
+        "type": Column(name="Type"),
+        "min_price": Column(name="Min"),
+        "max_price": Column(name="Max"),
+        "price": Column(name="Amount"),
+    },
+)
+
+```
+
+### Format data
+
+```{python}
+from react_tables.data import prices
+from react_tables import Reactable, Column, ColFormat
+
+prices.to_pandas()
+```
+
+```{python}
+# | code-fold: true
+Reactable(
+    data=prices,
+    columns=[
+        Column(id="price_usd", format=ColFormat(prefix="$", separators=True, digits=2)),
+        Column(id="price_inr", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+        Column(id="number_fr", format=ColFormat(locales="fr-FR")),
+        Column(id="temp", format=ColFormat(suffix="°C")),
+        Column(id="percent", format=ColFormat(percent=True, digits=1)),
+        Column(id="date", format=ColFormat(date=True, locales="en-GB")),
+    ],
+)
+```
+
+### Style everything
+
+## Options and themes
+
+## Getting fancy

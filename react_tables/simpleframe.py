@@ -176,6 +176,10 @@ class SimpleFrame:
         elif isinstance(indx, str):
             ii, k = slice(None), indx
 
+        elif isinstance(indx, slice):
+            assert (isinstance(x, (type(None), int)) for x in [indx.start, indx.stop, indx.step])
+            ii, k = indx, slice(None)
+
         else:
             raise TypeError(f"Unknown getitem input type: {type(indx)}")
 

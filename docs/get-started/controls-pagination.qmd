@@ -1,0 +1,38 @@
+---
+title: Pagination
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+{{< embed ../examples/index.qmd#pagination echo=true >}}
+
+{{< embed ../examples/index.qmd#pagination-min-rows echo=true >}}
+
+### Page size options
+
+{{< embed ../examples/index.qmd#pagination-size-options echo=true >}}
+
+### Alternative pagination types
+
+#### Page jump
+
+{{< embed ../examples/index.qmd#pagination-type-jump echo=true >}}
+
+#### Simple
+
+{{< embed ../examples/index.qmd#pagination-type-simple echo=true >}}
+
+### Hide page info
+
+{{< embed ../examples/index.qmd#pagination-page-info-false echo=true >}}
+
+
+{{< embed ../examples/index.qmd#pagination-page-size echo=true >}}
+
+### Always show pagination
+
+{{< embed ../examples/index.qmd#pagination-show echo=true >}}
+
+### No pagination
+
+{{< embed ../examples/index.qmd#pagination-false echo=true >}}
