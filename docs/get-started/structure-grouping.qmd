@@ -1,13 +1,57 @@
 ---
 title: Grouping and aggregation
+jupyter: python3
 ---
 
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
+```{python}
+from react_tables.models import Column, JS
+```
+
+You can group rows in a table by specifying one or more columns in `group_by`:
+
 {{< embed ../examples/index.qmd#group-by echo=true >}}
 
+When rows are grouped, you can aggregate data in a column using an `aggregate` function:
+
 {{< embed ../examples/index.qmd#group-by-aggregate echo=true >}}
+
+You can use one of the built-in aggregate functions:
+
+```{python}
+#| output: hide
+Column(aggregate = "sum")        # Sum of numbers
+Column(aggregate = "mean")       # Mean of numbers
+Column(aggregate = "max")        # Maximum of numbers
+Column(aggregate = "min")        # Minimum of numbers
+Column(aggregate = "median")     # Median of numbers
+Column(aggregate = "count")      # Count of values
+Column(aggregate = "unique")     # Comma-separated list of unique values
+Column(aggregate = "frequency")  # Comma-separated counts of unique values
+```
+
+Or a custom aggregate function in JavaScript:
+
+```{python}
+# | output: hide
+Column(
+    aggregate=JS(
+        """
+    function(values, rows) {
+      // input:
+      //  - values: an array of all values in the group
+      //  - rows: an array of row data values for all rows in the group (optional)
+      //
+      // output:
+      //  - an aggregated value, e.g. a comma-separated list
+      return values.join(', ')
+    }
+  """
+    )
+)
+```
 
 ## Multiple groups
 
@@ -15,7 +59,15 @@ title: Grouping and aggregation
 
 ## Custom aggregate function
 
+Custom aggregate functions are useful when none of the built-in aggregate functions apply, or when you want to aggregate values from multiple columns. For example, when calculating aggregate averages or percentages.
+
+Within a custom aggregate function, you can access the values in the column using the `values` argument, and the values in other columns using the `rows` argument:
+
+TODO
+
 ## Include sub rows in pagination
+
+By default, sub rows are excluded from pagination and always shown on the same page when expanded. To include sub rows in pagination, you can set `paginate_sub_rows=True`. This is recommended for grouped tables with a large number of rows where expanded rows may not all fit on one page.
 
 {{< embed ../examples/index.qmd#group-by-paginate-sub-rows echo=true >}}
 

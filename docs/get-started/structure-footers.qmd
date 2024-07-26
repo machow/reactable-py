@@ -3,6 +3,20 @@ title: Footers
 ---
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
+
+You can add column footers using the `footer` argument in `Column()`.
+
+`footer` can either be custom content to render (e.g., a character string or HTML tag), or a custom render function. See [Custom rendering](./format-custom-rendering.qmd) to learn more about using custom render functions.
+
+## Render function in Python
+
 {{< embed ../examples/index.qmd#footer-render-py echo=true >}}
+
+## Render function in JS
+
 {{< embed ../examples/index.qmd#footer-render-js echo=true >}}
+
+## Embedding widgets
+
+
 {{< embed ../examples/index.qmd#footer-render-widget echo=true >}}

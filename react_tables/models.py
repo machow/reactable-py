@@ -462,19 +462,6 @@ class Props:
         return to_camel_dict(filter_none(out))
 
 
-class Defaults:
-    colDef: None = None
-    colGroup: None = None
-    sortOrder: None = None
-    sorted: None = None
-    pageSize: None = None
-    expanded: None = None
-    selected: None = None
-
-    def to_props(self):
-        return filter_none(asdict(self))
-
-
 @dataclass
 class ColFormat:
     prefix: str | None = None
@@ -636,7 +623,10 @@ class Column:
 
     def to_props(self) -> dict[str, Any]:
 
-        renamed = rename(as_props(self), **{"class": "class_", "selectable": "_selectable"})
+        renamed = rename(
+            as_props(self),
+            **{"class": "class_", "selectable": "_selectable", "header_class": "header_class_name"},
+        )
         return to_camel_dict(filter_none(renamed))
 
 

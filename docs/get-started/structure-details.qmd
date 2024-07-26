@@ -1,23 +1,41 @@
 ---
-title: Details
+title: Expandable details
 ---
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
+
+You can make rows expandable with additional content through details, which takes an R or JavaScript render function. See [Custom Rendering](./format-custom-rendering.qmd) for details on how to use render functions.
+
+## Render details with Python
+
 {{< embed ../examples/index.qmd#details-render-py echo=true >}}
+
+## Render details with JS
+
+The details column can be customized by providing a `Column()` instead. This can be used to add a column name, render HTML content, or change the column width:
+
 {{< embed ../examples/index.qmd#details-render-js echo=true >}}
 
 ## Nested tables
+
+With Python render functions, you can render HTML tags, Widgets (e.g. ipywidget, anywidget), and even nested tables:
 
 {{< embed ../examples/index.qmd#details-nested-tables echo=true >}}
 
 ## Conditional row details
 
+Python render functions support conditional rendering. If a render function returns None, the row won’t be expandable:
+
 {{< embed ../examples/index.qmd#details-conditional-none echo=true >}}
 
 ## Multiple row details
 
+You can add `details` to individual columns, and even show multiple details for a row:
+
 {{< embed ../examples/index.qmd#details-multiple-cols-rows echo=true >}}
 
 ## Default expanded rows
+
+You can expand all rows by default by setting `default_expanded=True`:
 
 {{< embed ../examples/index.qmd#details-default-expanded echo=true >}}

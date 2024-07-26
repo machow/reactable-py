@@ -1,6 +1,15 @@
 project:
   type: website
 
+format:
+  html:
+    toc: true
+    css: styles.css
+
+execute:
+  daemon: false
+
+
 website:
   title: "react_tables" 
   navbar:
@@ -25,6 +34,7 @@ website:
       contents:
         - get-started/index.qmd
         - get-started/overview.qmd
+        - get-started/code-structure.qmd
         - section: "Controls"
           contents:
             - get-started/controls-sorting.qmd
@@ -44,18 +54,19 @@ website:
           contents:
             - get-started/format-columns.qmd
             - get-started/format-custom-rendering.qmd
+        - section: "Style"
+          contents:
+            - get-started/style-conditional.qmd
+            - get-started/style-table.qmd
+            - get-started/style-theming.qmd
+            - get-started/style-custom-sort-indicators.qmd
         - section: "Extra"
           contents:
-            - get-started/extra-custom-rendering.qmd
             - examples/index.qmd
 
 # tell quarto to read the generated sidebar
 #metadata-files:
 #  - _sidebar.yml
-
-format:
-  html:
-    toc: true
 
 quartodoc:
   # the name used to import the package you want to create reference docs for

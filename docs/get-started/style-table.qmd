@@ -1,0 +1,20 @@
+---
+title: Table styling
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+{{< embed ../examples/index.qmd#style-table-highlight echo=true >}}
+{{< embed ../examples/index.qmd#style-table-border echo=true >}}
+{{< embed ../examples/index.qmd#style-table-borderless echo=true >}}
+{{< embed ../examples/index.qmd#style-table-outlined echo=true >}}
+{{< embed ../examples/index.qmd#style-table-striped echo=true >}}
+{{< embed ../examples/index.qmd#style-table-bordered echo=true >}}
+{{< embed ../examples/index.qmd#style-table-outlined-borderless echo=true >}}
+{{< embed ../examples/index.qmd#style-table-compact echo=true >}}
+{{< embed ../examples/index.qmd#style-table-wrap echo=true >}}
+{{< embed ../examples/index.qmd#style-table-height-sticky-footer echo=true >}}
+{{< embed ../examples/index.qmd#style-column-widths echo=true >}}
+{{< embed ../examples/index.qmd#style-full-width echo=true >}}
+{{< embed ../examples/index.qmd#style-min-max-width echo=true >}}
+{{< embed ../examples/index.qmd#style-vertical-alignment echo=true >}}
+{{< embed ../examples/index.qmd#style-custom-css echo=true >}}

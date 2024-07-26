@@ -1,3 +1,9 @@
 ---
 title: Column groups
 ---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+You can create column groups by passing a list of `ColGroup()` definitions to `column_groups=`:
+
+{{< embed ../examples/index.qmd#column-groups echo=true >}}

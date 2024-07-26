@@ -4502,6 +4502,9 @@ import React11, { Fragment as Fragment2 } from "react";
 import React from "react";
 import ReactDOM from "react-dom";
 function hydrate(components, tag) {
+  if (React.isValidElement(tag)) {
+    return tag;
+  }
   if (typeof tag === "string") return tag;
   if (tag.name[0] === tag.name[0].toUpperCase() && !components[tag.name]) {
     throw new Error("Unknown component: " + tag.name);
@@ -10378,6 +10381,7 @@ function Reactable2({
   var tableProps = ["rowStyle", "rowClass", "onClick"];
   var columns = mapReplaceWithEval(columns, colProps);
   var rest = replaceWithEval(rest, tableProps);
+  1 + 1;
   return Reactable({
     data,
     columns,

@@ -5,24 +5,46 @@ jupyter: python3
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
+Tables are sortable by default. You can sort a column by clicking on its header, or sort multiple columns by holding the shift key while sorting.
+
+Sorting toggles between ascending and descending order by default. To clear the sort, hold the shift key while sorting, and the sorting will additionally toggle between ascending, descending, and unsorted order.
+
+::: {.callout-note}
+Ascending order means the lowest, first, or earliest values will appear first. Descending order means the largest, last, or latest values will appear first.
+:::
+
 ### Default sorted columns
 
+Use the `defaultSorted=` argument to sort columns by default:
+
 {{< embed ../examples/index.qmd#default-sorted-columns echo=true >}}
+
+Notice that above column names are passed as a list. You can specify the order to sort, by passing a dictionary mapping column names to sort order (either "asc" for ascending, or "desc" for descending):
 
 {{< embed ../examples/index.qmd#default-sorted-columns2 echo=true >}}
 
 ### Default sort order
 
+Columns are sorted in ascending order first by default. To change the default sort order for all columns in the table, set `default_sort_order=` to "asc" for ascending order, or "desc" for descending order.
+
+To change the sort order of an individual column, set `default_sort_order=` in its `Column()` to "asc" or "desc". The default sort order of the column takes precedence over the table.
+
 {{< embed ../examples/index.qmd#default-sort-order echo=true >}}
 
 ### Sort missing values last
+
+You can ignore missing values when sorting by setting `sort_na_last=` on a column:
 
 {{< embed ../examples/index.qmd#sort-missing echo=true >}}
 
 ### No sorting
 
+You can disable sorting by setting `sortable` to `False` on the table or column. When only some columns are sortable, it can help to indicate sortable columns using `show_sortable`:
+
 {{< embed ../examples/index.qmd#sort-false echo=true >}}
 
 ### Hide sort icons
+
+You can hide sort icons by setting `show_sort_icon` to `False`. This is only recommended when you want to use a [custom sort indicator](./style-custom-sort-indicators.qmd).
 
 {{< embed ../examples/index.qmd#sort-hide echo=true >}}

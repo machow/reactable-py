@@ -12,6 +12,8 @@ cars_93 = SimpleFrame.read_csv(BIG_DATA / "cars_93.csv").cast(
         mpg_city=int,
         mpg_highway=int,
         price=float,
+        min_price=float,
+        max_price=float,
     )
 )
 

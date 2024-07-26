@@ -2,13 +2,23 @@
 title: Filtering
 ---
 
+
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
-{{< embed ../examples/index.qmd#filter >}}
+You can make columns filterable by setting `filterable=True`:
 
-{{< embed ../examples/index.qmd#filter-column >}}
+{{< embed ../examples/index.qmd#filter echo=true >}}
+
+To make specific columns filterable (or not), set filterable in `Column()`:
+
+{{< embed ../examples/index.qmd#filter-column echo=true >}}
 
 ### Custom filtering
 
-{{< embed ../examples/index.qmd#filter-custom >}}
+Column filtering can be customized using the `filter_method` and `filter_input` arguments in `Column()`. See the Custom Filtering guide for more details and examples. (TODO)
+
+This example shows basic usage of a custom filter method, changing filtering on the `"manufacturer"` column to be case-sensitive rather than case-insensitive. (Try filtering for “bmw” and then “BMW”).
+
+
+{{< embed ../examples/index.qmd#filter-custom echo=true >}}
 

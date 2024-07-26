@@ -1,0 +1,154 @@
+---
+title: Code structure
+---
+
+```{python}
+from react_tables import embed_css
+from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+from react_tables.data import cars_93
+
+embed_css()
+
+cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
+```
+
+## Reactable
+
+```{python}
+Reactable(
+    cars,
+    filterable=True,
+)
+
+```
+
+## Column definitions
+
+```{python}
+Reactable(
+    cars,
+    columns={
+        "max_price": Column(
+            name="Max Price",
+            format=ColFormat(prefix="$", digits=2),
+        ),
+    },
+)
+```
+
+* data column name on left
+* relabel using `name=`
+* `format=` takes a ColFormat() object
+
+
+```{python}
+fmt = ColFormat(prefix="$", digits=2)
+
+Reactable(
+    cars,
+    columns={
+        "max_price": Column(name="Max Price", format=fmt),
+        "min_price": Column(name="Min Price", format=fmt),
+        "price": Column(name="Price", format=fmt),
+    },
+)
+```
+
+:::{.callout-note}
+
+### Column arguments take priority
+
+Note that `Reactable` and `Column` share some arguments, like `filterable=`.
+When both specify one of these arguments, `Column()` takes priority:
+
+```{python}
+Reactable(
+    cars,
+    filterable=True,
+    columns={
+        "max_price": Column(filterable=False),
+    },
+)
+```
+
+Notice that the `"max_price"` column is not filterable.
+
+:::
+
+
+
+## Column groups (ColGroup)
+
+```{python}
+Reactable(
+    cars,
+    column_groups=[
+        ColGroup(
+            name="Price",
+            columns=["price", "min_price", "max_price"],
+        ),
+    ],
+)
+```
+
+## Theme
+
+```{python}
+Reactable(
+    cars,
+    bordered=True,
+    theme=Theme(
+        backgroundColor="#ad85ff",
+    ),
+)
+```
+
+## Language
+
+```{python}
+Reactable(
+    cars,
+    language=Language(
+        pageNext="TAKE ME TO THE NEXT PAGE",
+        pagePrevious="GO BACK",
+    ),
+    default_page_size=2,
+)
+
+```
+
+## Renderers
+
+TODO
+
+## Putting it all together
+
+
+```{python}
+Reactable(
+    cars,
+    columns={
+        "max_price": Column(
+            name="Max Price",
+            format=ColFormat(prefix="$", digits=2),
+        ),
+    },
+    column_groups=[
+        ColGroup(
+            name="Price",
+            columns=["price", "min_price", "max_price"],
+        ),
+    ],
+    bordered=True,
+    theme=Theme(
+        backgroundColor="#ad85ff",
+    ),
+    language=Language(
+        pageNext="SLAM THE NEXT PAGE",
+        pagePrevious="GO BACK",
+    ),
+    filterable=True,
+    default_page_size=2,
+)
+
+```

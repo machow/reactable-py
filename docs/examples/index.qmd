@@ -191,8 +191,9 @@ Reactable(
 
 ```{python}
 # | label: filter
+cars = cars_93[:20, ["manufacturer", "model", "type", "air_bags", "price"]]
 Reactable(
-    pl_penguins,
+    cars,
     filterable=True,
     min_rows=10,
 )
@@ -202,9 +203,9 @@ Reactable(
 ```{python}
 # | label: filter-column
 Reactable(
-    pl_penguins,
+    cars,
     filterable=True,
-    columns=[Column(id="Price", filterable=False)],
+    columns=[Column(id="price", filterable=False)],
     default_page_size=5,
 )
 ```
@@ -227,12 +228,9 @@ function(rows, columnId, filterValue) {
 Reactable(
     data=titled.head(2),
     filterable=True,
-    columns=[
-        Column(
-            id="species",
-            filter_method=js_filter,
-        ),
-    ],
+    columns={
+        "manufacturer": Column(filter_method=js_filter),
+    },
     default_page_size=5,
 )
 ```
@@ -242,7 +240,8 @@ Reactable(
 
 ```{python}
 # | label: search
-Reactable(data=pl_penguins, searchable=True, min_rows=10)
+cars = cars_93[:20, ["manufacturer", "model", "type", "air_bags", "price"]]
+Reactable(data=cars, searchable=True, min_rows=10)
 ```
 
 ### Custom searching
@@ -674,24 +673,20 @@ Reactable(
 import plotly.express as px
 import htmltools as h
 
-tips = px.data.tips()
-p = px.histogram(tips, x="tip")
+cars = cars_93[["manufacturer", "type", "price"]]
+p = px.box(cars.to_pandas(), x="price")
 
 import plotly.graph_objects as go
-
-fw = go.FigureWidget(p)
-h.div(p).show()
 
 data = pl.DataFrame({"x": [1]})
 
 Reactable(
-    data,
-    details=lambda indx: go.FigureWidget(p),
+    cars,
+    columns={"price": Column(footer=go.FigureWidget(p))},
+    # details=lambda indx: go.FigureWidget(p),
 )
 
 ```
-
-* TODO: beg shinywidgets for help? ipywidgets I don't think likes being embedded like this?
 
 ## Expanding row details
 
@@ -819,10 +814,11 @@ Reactable(
 
 ## Conditional styling
 
-### Cell styling (R)
+### Cell styling (python)
 
 
 ```{python}
+# | label: style-cond-cell-py
 Reactable(
     sleep[:6, :],
     columns=[
@@ -841,7 +837,7 @@ Reactable(
 
 
 ```{python}
-
+# | label: style-cond-cell-js
 js_style = JS(
     """function(rowInfo) {
       const value = rowInfo.values['extra']
@@ -857,14 +853,14 @@ js_style = JS(
     }"""
 )
 Reactable(
-        sleep[:6, :],
-        columns=[
-            Column(
-                id="extra",
-                style=js_style,
-            )
-        ],
-    )
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=js_style,
+        )
+    ],
+)
 ```
 
 ### Row styling (python)
@@ -872,13 +868,14 @@ Reactable(
 * TODO: somehow set bold css class style
 
 ```{python}
+# | label: style-cond-row-py
 Reactable(
-        sleep[:6, :],
-        row_style=lambda indx: (
-            {"background": "rgba(0, 0, 0, 0.05)"} if sleep[indx, "extra"] < -1 else None
-        ),
-        row_class=lambda indx: "bold" if sleep[indx, "extra"] < -1 else None,
-    )
+    sleep[:6, :],
+    row_style=lambda indx: (
+        {"background": "rgba(0, 0, 0, 0.05)"} if sleep[indx, "extra"] < -1 else None
+    ),
+    row_class=lambda indx: "bold" if sleep[indx, "extra"] < -1 else None,
+)
 ```
 
 
@@ -886,23 +883,25 @@ Reactable(
 
 
 ```{python}
+# | label: style-cond-row-js
+
 Reactable(
-        sleep[:6, :],
-        row_style=JS(
-            """function(rowInfo) {
+    sleep[:6, :],
+    row_style=JS(
+        """function(rowInfo) {
     if (rowInfo.values['extra'] < -1) {
       return { background: 'rgba(0, 0, 0, 0.05)' }
     }
   }"""
-        ),
-        row_class=JS(
-            """function(rowInfo) {
+    ),
+    row_class=JS(
+        """function(rowInfo) {
     if (rowInfo.values['extra'] < -1) {
       return 'bold'
     }
   }"""
-        ),
-    )
+    ),
+)
 ```
 
 ### Custom metadata
@@ -910,6 +909,8 @@ Reactable(
 * TODO: expose Reactable on window
 
 ```{python}
+# | label: style-metadata
+
 from IPython.display import display
 
 cars = cars_93[:6, ["manufacturer", "model", "type", "price", "mpg_city"]]
@@ -927,20 +928,20 @@ js_mpg_background = JS(
 )
 
 bb = Reactable(
-        cars,
-        columns=[
-            Column(
-                id="mpg_city",
-                style=js_mpg_background,
-            )
-        ],
-        meta={
-            # yellow
-            "mpgColor": "#ff9f1a",
-            "showColors": True,
-        },
-        element_id="cars-colors-table",
-    )
+    cars,
+    columns=[
+        Column(
+            id="mpg_city",
+            style=js_mpg_background,
+        )
+    ],
+    meta={
+        # yellow
+        "mpgColor": "#ff9f1a",
+        "showColors": True,
+    },
+    element_id="cars-colors-table",
+)
 
 import htmltools as ht
 
@@ -964,20 +965,22 @@ clicker
 ### Highlight rows on hover
 
 ```{python}
+# | label: style-table-highlight
 Reactable(
-        pl_penguins[:5],
-        highlight=True,
-    )
+    pl_penguins[:5],
+    highlight=True,
+)
 
 ```
 
 ### Bordered
 
 ```{python}
+# | label: style-table-border
 Reactable(
-        pl_penguins[:5],
-        bordered=True,
-    )
+    pl_penguins[:5],
+    bordered=True,
+)
 ```
 
 
@@ -985,129 +988,144 @@ Reactable(
 
 
 ```{python}
+# | label: style-table-borderless
 Reactable(
-        pl_penguins[:5],
-        borderless=True,
-    )
+    pl_penguins[:5],
+    borderless=True,
+)
 
 ```
 
 ### Outlined
 
 ```{python}
+# | label: style-table-outlined
 Reactable(
-        pl_penguins[:5],
-        outlined=True,
-    )
+    pl_penguins[:5],
+    outlined=True,
+)
 ```
 
 ### Striped
 
 
 ```{python}
+# | label: style-table-striped
 Reactable(
-        pl_penguins[:5],
-        striped=True,
-    )
+    pl_penguins[:5],
+    striped=True,
+)
 ```
 
 ### Bordered + striped + highlighting
 
 
 ```{python}
+# | label: style-table-bordered
 Reactable(
-        pl_penguins[:5],
-        bordered=True,
-        striped=True,
-        highlight=True,
-    )
+    pl_penguins[:5],
+    bordered=True,
+    striped=True,
+    highlight=True,
+)
 ```
 
 ### Outlined + borderless
 
 ```{python}
+# | label: style-table-outlined-borderless
 Reactable(
-        pl_penguins[:5],
-        outlined=True,
-        borderless=True,
-    )
+    pl_penguins[:5],
+    outlined=True,
+    borderless=True,
+)
 ```
 
 ### Compact
 
 
 ```{python}
+# | label: style-table-compact
 Reactable(
-        pl_penguins[:5],
-        compact=True,
-    )
+    pl_penguins[:5],
+    compact=True,
+)
 ```
 
 ### No text wrapping
 
 
 ```{python}
+# | label: style-table-wrap
 import polars.selectors as cs
 
 cat_penguins = pl_penguins.group_by("species").agg(cs.ends_with("_mm").str.concat(", "))
 
-Reactable(cat_penguins, wrap=False, resizable=True, bordered=True,)
-
+Reactable(
+    cat_penguins,
+    wrap=False,
+    resizable=True,
+    bordered=True,
+)
 ```
 
 ### Fixed height + sticky header/footer
 
 
 ```{python}
+# | label: style-table-height-sticky-footer
 Reactable(
-        pl_penguins,
-        height=270,
-        striped=True,
-        default_col_def=Column(
-            footer=lambda col_info: htmltools.div(col_info.name, style="font-weight: bold")
-        ),
-    )
+    pl_penguins,
+    height=270,
+    striped=True,
+    default_col_def=Column(
+        footer=lambda col_info: htmltools.div(col_info.name, style="font-weight: bold")
+    ),
+)
 ```
 
 ### Column widths
 
 
 ```{python}
+# | label: style-column-widths
 Reactable(
-        cars_93[:6, ["make", "type", "weight"]],
-        columns=[
-            Column(id="make", min_width=200),
-            Column(id="type", min_width=100),
-            Column(id="weight", min_width=100),
-        ],
-        bordered=True,
-    )
+    cars_93[:6, ["make", "type", "weight"]],
+    columns=[
+        Column(id="make", min_width=200),
+        Column(id="type", min_width=100),
+        Column(id="weight", min_width=100),
+    ],
+    bordered=True,
+)
 ```
 
 ### No full width
 
 
 ```{python}
+# | label: style-full-width
 Reactable(
-        cars_93[:6, :5],
-        full_width=False,
-        bordered=True,
-        default_col_def=Column(min_width=120),
-    )
+    cars_93[:6, :5],
+    full_width=False,
+    bordered=True,
+    default_col_def=Column(min_width=120),
+)
 ```
 
 You can also set a maximum or fixed width on the table:
 
 ```{python}
+# | label: style-min-max-width
 Reactable(
-        cars_93[:6, :5],
-        full_width=False,
-        bordered=True,
-        default_col_def=Column(min_width=120),
-        # Set a maximum width on the table
-        style={"max-width": 650},
-        # or a fixed width:
-        width=650,
+    cars_93[:6, :5],
+    full_width=False,
+    bordered=True,
+    default_col_def=Column(min_width=120),
+    # Set a maximum width on the table
+    style={"max-width": 650},
+    # or a fixed width:
+    width=650,
 )
 
 ```
@@ -1115,6 +1133,7 @@ Reactable(
 ### Vertical alignment
 
 ```{python}
+# | label: style-vertical-alignment
 from htmltools import div
 
 data = starwars[:6, ["name", "height", "mass", "gender", "homeworld", "species"]]
@@ -1130,18 +1149,18 @@ def render_species(ci: CellInfo):
 
 
 Reactable(
-        data,
-        columns=[
-            Column(
-                id="name",
-                name="Character / Species",
-                cell=render_species,
-            ),
-            Column(id="species", show=False),
-        ],
-        default_col_def=Column(v_align="center", header_v_align="bottom"),
-        bordered=True,
-    )
+    data,
+    columns=[
+        Column(
+            id="name",
+            name="Character / Species",
+            cell=render_species,
+        ),
+        Column(id="species", show=False),
+    ],
+    default_col_def=Column(v_align="center", header_v_align="bottom"),
+    bordered=True,
+)
 ```
 
 ### Custom CSS
@@ -1149,6 +1168,7 @@ Reactable(
 
 
 ```{python}
+# | label: style-custom-css
 from IPython.display import display, HTML
 
 display(
@@ -1176,41 +1196,42 @@ display(
 )
 
 Reactable(
-        pl_penguins[:18],
-        default_page_size=6,
-        borderless=True,
-        class_="my-tbl",
-        default_col_def=Column(header_class="my-header"),
-        # columns but for penguins data
-        columns=[
-            Column(id="species", class_="my-col"),
-            Column(id="island", class_="my-col"),
-        ],
-        row_class="my-row",
-    )
+    pl_penguins[:18],
+    default_page_size=6,
+    borderless=True,
+    class_="my-tbl",
+    default_col_def=Column(header_class="my-header"),
+    # columns but for penguins data
+    columns=[
+        Column(id="species", class_="my-col"),
+        Column(id="island", class_="my-col"),
+    ],
+    row_class="my-row",
+)
 
 ```
 
 ## Theming
 
 ```{python}
+# | label: theme
 Reactable(
-        pl_penguins[:30],
-        searchable=True,
-        striped=True,
-        highlight=True,
-        bordered=True,
-        theme=Theme(
-            borderColor="#dfe2e5",
-            stripedColor="#f6f8fa",
-            highlightColor="#f0f5f9",
-            cellPadding="8px 12px",
-            style={
-                "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
-            },
-            searchInputStyle={"width": "100%"},
-        ),
-    )
+    pl_penguins[:30],
+    searchable=True,
+    striped=True,
+    highlight=True,
+    bordered=True,
+    theme=Theme(
+        borderColor="#dfe2e5",
+        stripedColor="#f6f8fa",
+        highlightColor="#f0f5f9",
+        cellPadding="8px 12px",
+        style={
+            "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        },
+        searchInputStyle={"width": "100%"},
+    ),
+)
 
 ```
 
@@ -1218,6 +1239,7 @@ Reactable(
 
 
 ```{python}
+# | label: theme-global
 options.theme = Theme(
     color="hsl(233, 9%, 87%)",
     backgroundColor="hsl(233, 9%, 19%) !important",
@@ -1231,13 +1253,13 @@ options.theme = Theme(
 )
 
 Reactable(
-        pl_penguins[:30],
-        filterable=True,
-        show_page_size_options=True,
-        striped=True,
-        highlight=True,
-        details=lambda index: f"Details for row {index}",
-    )
+    pl_penguins[:30],
+    filterable=True,
+    show_page_size_options=True,
+    striped=True,
+    highlight=True,
+    details=lambda index: f"Details for row {index}",
+)
 ```
 
 ```{python}
@@ -1252,19 +1274,19 @@ options.reset()
 
 
 ```{python}
-# | eval: false
+# | label: column-groups
 Reactable(
-        pl_penguins[:5, ["species", "island", "bill_length_mm", "bill_depth_mm"]],
-        columns=[
-            Column(id="bill_length_mm", name="Length (mm)"),
-            Column(id="bill_depth_mm", name="Depth (mm)"),
-            Column(id="species", name="Species"),
-            Column(id="island", name="Island"),
-        ],
-        column_groups=[
-            ColGroup(name="Bill", columns=["bill_length_mm", "bill_depth_mm"]),
-        ],
-    )
+    pl_penguins[:5, ["species", "island", "bill_length_mm", "bill_depth_mm"]],
+    columns=[
+        Column(id="bill_length_mm", name="Length (mm)"),
+        Column(id="bill_depth_mm", name="Depth (mm)"),
+        Column(id="species", name="Species"),
+        Column(id="island", name="Island"),
+    ],
+    column_groups=[
+        ColGroup(name="Bill", columns=["bill_length_mm", "bill_depth_mm"]),
+    ],
+)
 ```
 
 ## Column resizing
@@ -1352,16 +1374,18 @@ Reactable(
 
 
 ```{python}
+# | label: rownames
 Reactable(
-        pl_penguins[:5],
-        rownames=True,
-    )
+    pl_penguins[:5],
+    rownames=True,
+)
 ```
 
 ### Row headers
 
 
 ```{python}
+#| label: rownames-headers
 data = cars_93[:5, ["manufacturer", "model", "type", "price", "mpg_city", "air_bags"]]
 
 Reactable(
@@ -1380,6 +1404,7 @@ Reactable(
 
 
 ```{python}
+#| label: click-expand
 Reactable(
         pl_penguins[150:155],
         group_by="species",
@@ -1394,18 +1419,18 @@ Reactable(
 
 
 ```{python}
+# | label: click-select
 Reactable(
-        pl_penguins[:5],
-        selection="multiple",
-        on_click="select",
-    )
+    pl_penguins[:5],
+    selection="multiple",
+    on_click="select",
+)
 ```
 
 ### Custom action
 
-
-
 ```{python}
+# | label: click-custom
 data = cars_93[:5, ["manufacturer", "model", "type", "price"]]
 data["details"] = None
 
@@ -1428,16 +1453,16 @@ js_on_click = JS(
 )
 
 Reactable(
-        data,
-        columns=[
-            Column(
-                id="details",
-                name="",
-                sortable=False,
-                cell=lambda ci: htmltools.tags.button("Show details"),
-            )
-        ],
-        on_click=js_on_click,
+    data,
+    columns=[
+        Column(
+            id="details",
+            name="",
+            sortable=False,
+            cell=lambda ci: htmltools.tags.button("Show details"),
+        )
+    ],
+    on_click=js_on_click,
 )
 ```
 

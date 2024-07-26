@@ -1,3 +1,28 @@
 ---
 title: Cell click actions
+jupyter: python3
 ---
+
+You can add cell click actions using the onClick argument, which accepts the following values:
+
+* "expand" to expand the row
+* "select" to select the row
+* A JavaScript function for a custom action, e.g., sending the click event to Shiny
+
+## Expand on click
+
+{{< embed ../examples/index.qmd#click-expand echo=true >}}
+
+## Select on click
+
+{{< embed ../examples/index.qmd#click-select echo=true >}}
+
+## Custom action
+
+This example uses a custom click action to create custom “show details” action buttons in each row of the table:
+
+{{< embed ../examples/index.qmd#click-custom echo=true >}}
+
+:::{.callout-warning}
+Custom click actions are currently not accessible to keyboard users, and are generally not recommended. If they must be used, ensure that they can be triggered by a keyboard through other means, such as a button in the example above.
+:::

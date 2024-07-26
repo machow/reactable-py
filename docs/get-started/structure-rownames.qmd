@@ -1,3 +1,24 @@
 ---
 title: Rownames
 ---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+Row names are shown by default if present. You can customize the row names column by adding a column definition using `".rownames"` as the column name:
+
+TODO: support pandas index.
+
+If row names haven’t been set explicitly, you can force them to show by setting `rownames=True`:
+
+{{< embed ../examples/index.qmd#rownames echo=true >}}
+
+## Row headers
+
+Row headers help users navigate the table using assistive techonologies. When cells are marked up as row headers, assistive technologies will read them aloud while navigating through cells in the table.
+
+You can mark up cells in a column as row headers by setting `row_header` to `True` in `Column()`.
+
+Cells in the row names column are automatically marked up as row headers.
+
+{{< embed ../examples/index.qmd#rownames-headers echo=true >}}
+

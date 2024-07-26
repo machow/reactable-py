@@ -4,15 +4,26 @@ title: Pagination
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
+You can change the default page size by configuring `default_page_size`:
+
 {{< embed ../examples/index.qmd#pagination echo=true >}}
+
+You can also set the minimum rows per page using `min_rows`. This may be useful when rows don’t completely fill the page, or if the table has filtering:
 
 {{< embed ../examples/index.qmd#pagination-min-rows echo=true >}}
 
 ### Page size options
 
+You can show a dropdown of page sizes for users to choose from using `show_page_size_options`. The page size options can be customized through `page_size_options`:
+
 {{< embed ../examples/index.qmd#pagination-size-options echo=true >}}
 
 ### Alternative pagination types
+
+You can use an alternative pagination type by setting `pagination_type` to:
+
+* `"jump"` to show a page jump
+* `"simple"` to show previous/next buttons only
 
 #### Page jump
 
@@ -31,8 +42,16 @@ title: Pagination
 
 ### Always show pagination
 
+By default, pagination is hidden if the table only has one page. To keep the pagination shown, set `show_pagination=True`. This is especially useful if you want to keep the page info showing the number of rows in the table.
+
 {{< embed ../examples/index.qmd#pagination-show echo=true >}}
 
 ### No pagination
 
+Tables are paginated by default, but you can disable pagination by setting `pagination=False`:
+
 {{< embed ../examples/index.qmd#pagination-false echo=true >}}
+
+:::{.callout-tip}
+Disabling pagination is not recommended for large tables with many interactive elements (such as links, expand buttons, or selection checkboxes), as that can make it difficult for keyboard users to navigate the page.
+:::

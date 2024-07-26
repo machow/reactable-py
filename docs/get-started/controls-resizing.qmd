@@ -1,3 +1,27 @@
 ---
 title: Column resizing
 ---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+You can make columns resizable by setting `resizable=True`:
+
+{{< embed ../examples/index.qmd#resize-columns echo=true >}}
+
+## Sticky columns
+
+You can make columns sticky when scrolling horizontally using the `sticky=` argument in `Column` or `ColGroup`. Set sticky to either `"left"` or `"right"` to make the column stick to the left or right side.
+
+{{< embed ../examples/index.qmd#sticky-columns echo=true >}}
+
+Note that the border between two column headers can now be clicked and dragged to change the size of a column.
+
+### Multiple sticky columns
+
+{{< embed ../examples/index.qmd#sticky-columns-multiple echo=true >}}
+
+### Sticky column groups
+
+If a column group is sticky, all columns in the group will automatically be made sticky.
+
+{{< embed ../examples/index.qmd#sticky-column-groups echo=true >}}

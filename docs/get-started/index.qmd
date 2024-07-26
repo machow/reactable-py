@@ -9,13 +9,17 @@ jupyter: python3
 * Working with many DataFrame inputs, including pandas and polars.
 * Extensive customization of table structure, value formats, and targeted styles.
 
+::: {.callout-note}
+This library is a port of the R library `reactable` by Greg Lin. It uses the same underlying javascript code, has adapted its beautiful examples and documentation.
+:::
+
 ## Install
 
 ```bash
 pip install reactable
 ```
 
-## Viewing DataFrames
+## Previewing DataFrames
 
 ```{python}
 from react_tables import Reactable, embed_css
@@ -25,6 +29,7 @@ from react_tables.data import cars_93
 # to put css into notebooks.
 embed_css()
 
+
 Reactable(
     cars_93[["manufacturer", "model", "type", "price"]],
     default_page_size=5,
@@ -33,7 +38,7 @@ Reactable(
 )
 ```
 
-## Many DataFrames
+## Using with pandas and polars
 
 reactable built-in datasets, like `cars_93` don't any DataFrame libraries.
 They include methods like `.to_pandas()` and `.to_polars()`, to quickly try out reactable with your preferred DataFrame tool.
@@ -43,13 +48,14 @@ from react_tables import Reactable, embed_css
 from react_tables.data import cars_93
 
 Reactable(
-    cars_93.to_polars()
+    cars_93.to_polars(),
+    default_page_size=5,
 )
 ```
 
 ## Extensive customization
 
-
+[See twitter demo for more](/demos/twitter-followers.qmd)
 
 <link href = "https://fonts.googleapis.com/css?family=Karla:400,700|Fira+Mono&display=fallback" rel = "stylesheet" />
 

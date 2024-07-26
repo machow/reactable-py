@@ -11,13 +11,20 @@ from react_tables.data import cars_93
 embed_css()
 ```
 
-## Quick DataFrame viewing
+reactable handles the process of visualizing tabular data from preview, to polish, to final display.
 
-At its simplest, reactable allows you to easily view a DataFrame:
+![](/assets/table-process.png)
+
+* **preview**: exploring tables, even if they have many rows or columns. This often involves interactive elements such as filters and pagination.
+* **polish**: customizing the table structure, format of values (e.g. dates), and overall style (e.g. highlighting rows).
+* **display**: publishing the table as part of a notebook or dashboard.
+
+## Preview: quickly explore data
+
+At its simplest, reactable enables you to quickly preview a DataFrame:
 
 ```{python}
 lil_cars = cars_93[["manufacturer", "model", "type", "price"]]
-
 Reactable(lil_cars, default_page_size=5, filterable=True)
 ```
 
@@ -26,9 +33,34 @@ Note the table above supports these actions:
 * Filtering rows using the input boxes below the column names.
 * Paging through data using controls on the bottom right.
 
+The `Reactable` class provides many options for interactive controls like search, sorting, and pagination:
+
+```{python}
+Reactable(
+    lil_cars,
+    default_page_size=5,
+
+    # add search bar ----
+    searchable=True,
+
+    # show sort icon, sort desc when icon clicked ----
+    show_sortable=True,
+    default_sort_order="desc",
+
+    # allow typing in page number ----
+    pagination_type="jump",
+
+    # mouse over row to highlight ----
+    highlight=True,
+)
+
+```
+
+::: {.callout-note}
+
 ### Dispelling the curse of the three dots
 
-Filtering and paging through DataFrames is super handy for getting around the curse of the three dots. That is, the cruel ellipsis (`...`) that DataFrame libraries use to hide the middle rows of data.
+The default DataFrame output in tools like pandas and polars often hides rows and columns with an ellipsis (`...`). reactable is handy for getting around this.
 
 For example, here is what the data looks like in pandas:
 
@@ -36,42 +68,24 @@ For example, here is what the data looks like in pandas:
 lil_cars.to_pandas()
 ```
 
-## Works with pandas and polars
+Notice that the middle rows are hidden with `...`.
 
+:::
 
-```{python}
-lil_cars[:5]
-```
-
-
-```{python}
-Reactable(lil_cars.to_polars(), default_page_size=5)
-```
-
-## Structure, format, style
+## Polish: structure, format, style
 
 ### Structure table
 
 ```{python}
 # | code-fold: true
-cars = cars_93[["manufacturer", "model", "type", "price", "min_price", "max_price"]]
+
+from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+
+cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
 
 Reactable(
     cars,
     group_by="manufacturer",
-    default_page_size=5,
-)
-```
-
-
-```{python}
-# | code-fold: true
-from react_tables.models import ColGroup, Column
-
-cars = cars_93[["manufacturer", "model", "type", "price", "min_price", "max_price"]]
-
-Reactable(
-    cars,
     column_groups=[
         ColGroup("Info", ["manufacturer", "model", "type"]),
         ColGroup("Price", ["min_price", "price", "max_price"]),
@@ -84,21 +98,41 @@ Reactable(
         "max_price": Column(name="Max"),
         "price": Column(name="Amount"),
     },
+    default_page_size=3,
+    default_expanded=True,
 )
 
 ```
 
+* **Column groups**: higher-level grouping of columns (e.g. "Info" label).
+* **Column labels**: human-friendly names for columns (e.g. "Manufacturer" vs "manufacturer").
+* **Row groupings**: expandable grouping of rows. Since the data here is grouped on "manufacturer", clicking `"Acura (2)"` will collapse the rows beneath it.
+
 ### Format data
+
+Formatting means changing the display of information, like a date, number with decimals, or currency. There are two important places formatting occurs:
+
+* The body of the table.
+* Other parts of the table, like column headers or footers.
+
+#### Formatting body
+
+Here's what the data looks like before:
+
 
 ```{python}
 from react_tables.data import prices
-from react_tables import Reactable, Column, ColFormat
 
 prices.to_pandas()
 ```
 
+And here is the data with column formatting applied.
+
 ```{python}
 # | code-fold: true
+from react_tables.data import prices
+from react_tables import Reactable, Column, ColFormat
+
 Reactable(
     data=prices,
     columns=[
@@ -112,8 +146,86 @@ Reactable(
 )
 ```
 
+* `price_usd` and `price_inr` formatted as currencies. `numbers_fr` uses `","` decimal marker.
+* `temp` and `percent` followed by `"°C"` and `"%"`, respectively. Fewer decimals shown.
+* `date` formatted as `day/month/year`.
+
+#### Formatting other parts
+
+```{python}
+# | code-fold: true
+from react_tables.models import ColInfo
+
+
+def fmt_footer(ci: ColInfo):
+    ttl = sum(ci.values)
+    return f"${ttl:.2f}"
+
+
+Reactable(
+    cars,
+    searchable=True,
+    columns={"price": Column(footer=fmt_footer)},
+)
+```
+
+
 ### Style everything
 
-## Options and themes
 
-## Getting fancy
+```{python}
+# | code-fold: true
+from react_tables.data import sleep
+
+
+Reactable(
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=lambda val: {
+                "color": "#008800" if val > 0 else "#e00000",
+                "font-weight": "bold",
+            },
+        )
+    ],
+)
+```
+
+```{python}
+# | code-fold: true
+from react_tables.data import cars_93
+from react_tables.models import Theme
+
+Reactable(
+    cars_93,
+    searchable=True,
+    striped=True,
+    highlight=True,
+    bordered=True,
+    theme=Theme(
+        borderColor="#dfe2e5",
+        stripedColor="#f6f8fa",
+        highlightColor="#f0f5f9",
+        cellPadding="8px 12px",
+        style={
+            "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        },
+        searchInputStyle={"width": "100%"},
+    ),
+    default_page_size=5,
+)
+
+```
+
+## Display: exporting results
+
+reactable currently work in wide range of environments:
+
+* Jupyter Lab
+* VS Code
+* Positron
+* Colab
+* Anywhere AnyWidgets work
+
+## Next steps

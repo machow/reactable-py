@@ -4,6 +4,9 @@ title: Searching
 
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
+
+You can make the entire table searchable by setting `searchable=True`:
+
 {{< embed ../examples/index.qmd#search echo=true >}}
 
 ### Custom searching

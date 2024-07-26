@@ -1,0 +1,7 @@
+---
+title: Theming
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+{{< embed ../examples/index.qmd#theme echo=true >}}
+{{< embed ../examples/index.qmd#theme-global echo=true >}}
