@@ -1,0 +1,26 @@
+---
+title: Rendering cells
+---
+
+```{python}
+import polars as pl
+import htmltools as html
+from react_tables.data import cars_93
+from react_tables import Reactable, reactable, Props, embed_css
+from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+
+embed_css()
+
+data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
+```
+
+```{python}
+def fmt_cell_red(ci: CellInfo):
+    return html.div(ci.value.upper(), style="color: red")
+
+
+Reactable(
+    data,
+    columns={"manufacturer": Column(cell=fmt_cell_red)},
+)
+```

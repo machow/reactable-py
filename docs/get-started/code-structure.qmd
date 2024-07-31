@@ -1,6 +1,60 @@
 ---
-title: Code structure
+title: Code basics
 ---
+
+This page covers the basics of making a simple reactable table:
+
+```{python}
+# | echo: false
+from react_tables import embed_css
+from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+from react_tables.data import cars_93
+
+embed_css()
+
+cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
+
+fmt = ColFormat(prefix="$", digits=2)
+
+Reactable(
+    cars,
+    columns={
+        "manufacturer": Column(name="Manufacturer"),
+        "model": Column(name="Model"),
+        "type": Column(name="Type"),
+        "max_price": Column(name="Max", format=fmt),
+        "min_price": Column(name="Min", format=fmt),
+        "price": Column(name="Amount", format=fmt),
+    },
+    column_groups=[
+        ColGroup(
+            name="Price",
+            columns=["price", "min_price", "max_price"],
+        ),
+    ],
+    bordered=True,
+    theme=Theme(
+        backgroundColor="#ad85ff",
+    ),
+    language=Language(
+        pageNext="SLAM THE NEXT PAGE",
+        pagePrevious="GO BACK",
+    ),
+    filterable=True,
+    default_page_size=2,
+)
+
+```
+
+* **Reactable controls**: filters for each column.
+* **Columns**: custom names, price columns formatted for currency.
+* **Column groups**: `"Price"` label above price related columns.
+* **Theme**: custom background color.
+* **Language**: customized text for next and previous page. 
+
+## Setup and data
+
+In order to create the table, we'll import classes from reactable, along with an example dataset.
 
 ```{python}
 from react_tables import embed_css
@@ -12,17 +66,50 @@ embed_css()
 cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
 ```
 
+Note two important pieces:
+
+* `embed_css()` is currently required once, in order to add the necessary CSS.
+* `cars_93` is a tiny built-in DataFrame implementation called SimpleFrame.
+
+In this walkthrough, we'll turn the `cars` data directly into a reactable table. If you want to explore the data, use methods like `.to_polars()` or `.to_pandas()` to convert it to a Polars or Pandas DataFrame, respectively.
+
+```{python}
+cars.to_polars()
+```
+
+
+
+
 ## Reactable
+
+The `Reactable()` class is responsible for building the table:
 
 ```{python}
 Reactable(
     cars,
     filterable=True,
+    default_page_size=2,
 )
-
 ```
 
+The code above used `filterable=True` argument added filters to the top of each column, and `default_page_size=2` to limit each page to 2 rows.  `Reactable()` has many optional parameters, designed for quick customization of pieces like sorting, filtering, searching, and pagination.
+
+It also has four parameters which combine with other classes for configuration:
+
+| name | description |
+| ---- | ----------- |
+| `columns=` |  use `Column()` to customize column names, format, and more. | 
+| `column_groups=` | use `ColGroup()` to group columns together, with a label. |
+| `theme=` | use `Theme()` to customize table styling. |
+| `language=` | use `Language()` to customize prompts like "Next page". |
+
+The following sections walk through these four parameters in depth.
+
 ## Column definitions
+
+The `columns=` argument uses the `Column()` class to customize pieces like column name and value formatting (e.g. as a date or currency).
+
+Below, we configure the name and format of the `"max_price"` column:
 
 ```{python}
 Reactable(
@@ -36,10 +123,13 @@ Reactable(
 )
 ```
 
-* data column name on left
-* relabel using `name=`
-* `format=` takes a ColFormat() object
+Notice these three pieces above:
 
+* `columns=` maps columns of data to `Column()` configurations.
+* `Column(name=...)` cleans up the name displayed to "Max Price"
+* `Column(format=...)` uses `ColFormat()` to specify how to format column values.
+
+The code above handled a single price column, but there are three related to price that need formatting. To avoid too much duplication, we can assign `ColFormat()` to a variable, and re-use that for each column definition.
 
 ```{python}
 fmt = ColFormat(prefix="$", digits=2)
@@ -79,6 +169,8 @@ Notice that the `"max_price"` column is not filterable.
 
 ## Column groups (ColGroup)
 
+The `column_groups=` argument uses the `ColGroup()` class to create groupings of columns. This allows you to put a custom label over related columns.
+
 ```{python}
 Reactable(
     cars,
@@ -93,6 +185,8 @@ Reactable(
 
 ## Theme
 
+The `theme=` argument uses the `Theme()` class to customize the overall style of the table.
+
 ```{python}
 Reactable(
     cars,
@@ -104,6 +198,8 @@ Reactable(
 ```
 
 ## Language
+
+The `language=` argument uses the `Language()` class to customize text prompts on the table like "Next Page".
 
 ```{python}
 Reactable(
@@ -117,21 +213,22 @@ Reactable(
 
 ```
 
-## Renderers
-
-TODO
-
 ## Putting it all together
 
+In the sections above, we customized the columns, column groupings, theme, and language individually. Now we'll put it all together to make the complete table.
 
 ```{python}
+fmt = ColFormat(prefix="$", digits=2)
+
 Reactable(
     cars,
     columns={
-        "max_price": Column(
-            name="Max Price",
-            format=ColFormat(prefix="$", digits=2),
-        ),
+        "manufacturer": Column(name="Manufacturer"),
+        "model": Column(name="Model"),
+        "type": Column(name="Type"),
+        "max_price": Column(name="Max", format=fmt),
+        "min_price": Column(name="Min", format=fmt),
+        "price": Column(name="Amount", format=fmt),
     },
     column_groups=[
         ColGroup(

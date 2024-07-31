@@ -18,9 +18,20 @@ from react_tables.data import cars_93
 embed_css()
 ```
 
-To use a custom sort indicator, you can hide the default sort icon using reactable(`show_sort_icon=False`) and add your own sort indicator.
+Sometimes, table state is available in ways that allow for easy styling. For example, sorting uses an `aria-sort` proprety, that can be targeted with CSS rules.
 
-This also hides the sort icon when a header is focused, so be sure to add a visual focus indicator to ensure your table is accessible to keyboard users (to test this, click the first table header then press the Tab key to navigate to other headers).
+This page illustrates how to add custom sort indicators by two steps:
+
+* hiding sort icons.
+* targetting headers with the `area-sort` property.
+
+## Hiding sort icon
+
+To hide the default sort indicator, you can hide the default sort icon using reactable(`show_sort_icon=False`).
+
+This also hides the sort icon when a header is focused, so it needs some visual focus indicator to ensure your table is accessible to keyboard users (to test this, click the first table header then press the Tab key to navigate to other headers).
+
+## Example 
 
 Here’s an example that changes the sort indicator to a bar on the top or bottom of the header (indicating an ascending or descending sort), and adds a light background to headers when hovered or focused.
 

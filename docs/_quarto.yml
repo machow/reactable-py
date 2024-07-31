@@ -33,7 +33,7 @@ website:
       id: get-started
       contents:
         - get-started/index.qmd
-        - get-started/overview.qmd
+        #- get-started/overview.qmd
         - get-started/code-structure.qmd
         - section: "Controls"
           contents:
@@ -53,15 +53,21 @@ website:
         - section: "Format"
           contents:
             - get-started/format-columns.qmd
-            - get-started/format-custom-rendering.qmd
+            - get-started/format-aggregated.qmd
+            - get-started/format-cell.qmd
+            - get-started/format-header-footer.qmd
+            - get-started/format-details.qmd
         - section: "Style"
           contents:
-            - get-started/style-conditional.qmd
             - get-started/style-table.qmd
-            - get-started/style-theming.qmd
+            - get-started/style-conditional.qmd
             - get-started/style-custom-sort-indicators.qmd
+            - get-started/style-theming.qmd
         - section: "Extra"
           contents:
+            - get-started/format-custom-rendering-js.qmd
+            - get-started/style-conditional-js.qmd
+            - get-started/extra-advanced-filters.qmd
             - examples/index.qmd
 
 # tell quarto to read the generated sidebar
@@ -76,9 +82,25 @@ quartodoc:
   sidebar: _sidebar.yml
 
   sections:
-    - title: Some functions
-      desc: Functions to inspect docstrings.
+    - title: Create tables
+      desc: Classes to build reactable tables.
       contents:
         # the functions being documented in the package.
         # you can refer to anything: class methods, modules, etc..
         - Reactable
+    - title: Customize columns
+      contents:
+        - Column
+        - ColGroup
+        - ColFormat
+        - ColFormatGroupBy
+    - title: Customize tables
+      contents:
+        - Theme
+        - Language
+      
+    - title: Rendering
+      desc: Classes used in custom rendering functions.
+      contents:
+        - CellInfo
+        - RowInfo

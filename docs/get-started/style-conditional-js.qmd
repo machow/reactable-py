@@ -1,0 +1,27 @@
+---
+title: Javascript styling
+---
+
+{{< embed ../examples/index.qmd#setup echo=true >}}
+
+## Cell style
+
+{{< embed ../examples/index.qmd#style-cond-cell-js echo=true >}}
+
+## Row style
+
+{{< embed ../examples/index.qmd#style-cond-row-js echo=true >}}
+
+## Metadata
+
+You can pass arbitrary data from Python to JavaScript style functions using the `meta` argument in reactable().
+
+meta should be a named list of values that can also be JS() expressions or functions. Custom metadata can be accessed from JavaScript using the state.meta property, and updated using updateReactable() in Shiny or Reactable.setMeta() in the JavaScript API.
+
+Use custom metadata to:
+
+Simplify JavaScript style functions that need access to data outside of the table
+Dynamically change how data is styled without rerendering the table
+Share JavaScript code or data between different style functions
+
+{{< embed ../examples/index.qmd#style-metadata echo=true >}}

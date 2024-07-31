@@ -10,6 +10,9 @@ setup:
 docs-build:
 	cd docs && quarto render
 
+docs-reference:
+	quartodoc build --config docs/_quarto.yml
+
 react_tables/static/reactable-py.esm.%: 
 	cd tmp/reactable
 	npx esbuild \

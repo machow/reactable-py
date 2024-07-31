@@ -1,0 +1,33 @@
+---
+title: Rendering details
+---
+
+
+```{python}
+import polars as pl
+import htmltools as html
+from react_tables.data import cars_93
+from react_tables import Reactable, reactable, Props, embed_css
+from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+
+embed_css()
+
+data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
+```
+
+## Basic expandable row details
+
+
+```{python}
+def fmt_details(ci: RowInfo):
+    return html.div(
+        f"Details for row: {ci.row_index}",
+        reactable(Props(data[ci.row_index, :])),
+    )
+
+
+Reactable(
+    data[["model"]],
+    details=fmt_details,
+)
+```

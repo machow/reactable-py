@@ -1,9 +1,34 @@
 # Function reference {.doc .doc-index}
 
-## Some functions
+## Create tables
 
-Functions to inspect docstrings.
+Classes to build reactable tables.
 
 | | |
 | --- | --- |
 | [Reactable](Reactable.qmd#react_tables.Reactable) | A reactive table. |
+
+## Customize columns
+
+| | |
+| --- | --- |
+| [Column](Column.qmd#react_tables.Column) |  |
+| [ColGroup](ColGroup.qmd#react_tables.ColGroup) |  |
+| [ColFormat](ColFormat.qmd#react_tables.ColFormat) |  |
+| [ColFormatGroupBy](ColFormatGroupBy.qmd#react_tables.ColFormatGroupBy) |  |
+
+## Customize tables
+
+| | |
+| --- | --- |
+| [Theme](Theme.qmd#react_tables.Theme) |  |
+| [Language](Language.qmd#react_tables.Language) |  |
+
+## Rendering
+
+Classes used in custom rendering functions.
+
+| | |
+| --- | --- |
+| [CellInfo](CellInfo.qmd#react_tables.CellInfo) |  |
+| [RowInfo](RowInfo.qmd#react_tables.RowInfo) |  |

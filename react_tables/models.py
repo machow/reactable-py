@@ -304,7 +304,7 @@ class Props:
         # TODO: will fail for data with no columns
         n_rows = len(list(self.data.values())[0])
 
-        # derived ----
+        # simple derived properties ----
         self.default_sort_desc = default_sort_order == "desc"
         self.inline = not full_width
         self.nowrap = not wrap
@@ -571,6 +571,10 @@ class Column:
         if callable(self.cell):
             new_col.cell = self._apply_transform(col_data, self.cell)
 
+        # class to apply to cells ----
+        if callable(self.class_):
+            new_col.class_ = self._apply_transform(col_data, self.class_)
+
         # header: transform or set string as react tag ----
         if callable(self.header):
             # TODO: confusing that the column data name is called id, and label is called name?
@@ -601,7 +605,7 @@ class Column:
         # style: transform ----
         # overall style
         if callable(self.style):
-            new_col.style = [self.style(x) for x in col_data]
+            new_col.style = self._apply_transform(col_data, self.style)
         elif isinstance(self.style, list):
             if len(self.style) != n_rows:
                 raise ValueError(
@@ -625,7 +629,11 @@ class Column:
 
         renamed = rename(
             as_props(self),
-            **{"class": "class_", "selectable": "_selectable", "header_class": "header_class_name"},
+            **{
+                "class_": "class_name",
+                "selectable": "_selectable",
+                "header_class": "header_class_name",
+            },
         )
         return to_camel_dict(filter_none(renamed))
 

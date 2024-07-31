@@ -2,9 +2,28 @@
 title: Column formatting
 ---
 
+You can format data in a column by providing `ColFormat()` options to the format argument in `Column`.
+
+The formatters for numbers, dates, times, and currencies are locale-sensitive and automatically adapt to language preferences of the user’s browser. This means, for example, that users will see dates formatted in their own timezone or numbers formatted in their own locale.
+
+To use a specific locale for data formatting, provide a vector of BCP 47 language tags in the locales argument. See a list of [common BCP 47 language tags](https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oe376/6c085406-a698-4e12-9d4d-c3b0ee3dbc4a) for reference.
+
+:::{.callout-note}
+Column formatters change how data is displayed without affecting the underlying data. Sorting, filtering, and grouping will still work on the original data.
+:::
+
 {{< embed ../examples/index.qmd#setup echo=true >}}
+
 {{< embed ../examples/index.qmd#column-format-overview echo=true >}}
+
+## Date formatting
+
 {{< embed ../examples/index.qmd#column-format-date echo=true >}}
+
+## Currency formatting
+
 {{< embed ../examples/index.qmd#column-format-currency echo=true >}}
-{{< embed ../examples/index.qmd#column-format-aggregate echo=true >}}
+
+## Displaying missing values
+
 {{< embed ../examples/index.qmd#column-format-missing echo=true >}}

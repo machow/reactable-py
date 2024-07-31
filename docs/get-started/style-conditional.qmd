@@ -1,10 +1,130 @@
 ---
-title: Conditional styling
+title: Conditional styling (python)
+jupyter: python3
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
-{{< embed ../examples/index.qmd#style-cond-cell-py echo=true >}}
-{{< embed ../examples/index.qmd#style-cond-cell-js echo=true >}}
-{{< embed ../examples/index.qmd#style-cond-row-py echo=true >}}
-{{< embed ../examples/index.qmd#style-cond-row-js echo=true >}}
-{{< embed ../examples/index.qmd#style-metadata echo=true >}}
+You can conditionally style a table using functions that return inline styles or CSS classes. Just like with custom rendering, style functions can either be in Python or JavaScript.
+
+* `Column()` arguments `style=` and `class_=` customize cell styles.
+* `Reactable()` arguments `row_style=` and `row_class=` customize row styles.
+
+
+```{python}
+from react_tables import Reactable, Column, embed_css
+from react_tables.data import sleep
+
+embed_css()
+```
+
+## Cell styles
+
+Pass a function to the `Column()` parameter `style=` to set conditional CSS styles. The function should take a single `CellInfo` argument.
+
+Below is an example function, which sets the `color` and `font-weight` styles.
+
+```{python}
+# | label: style-cond-cell-py
+from react_tables.models import CellInfo
+
+
+def cond_style(ci: CellInfo):
+    return {
+        "color": "#008800" if ci.value > 0 else "#e00000",
+        "font-weight": "bold",
+    }
+```
+
+Notice these 3 pieces:
+
+* `cond_style` will be applied to every cell in a column.
+* The value of the CSS color depends on `ci.value`, which is the value of the current cell.
+* CSS rules are returned as a dictionary.
+
+Here's the function above used to conditionarlly style the `"extra"` column:
+
+```{python}
+Reactable(
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=cond_style,
+        )
+    ],
+)
+```
+
+## Cell class
+
+Pass a function to the `Column()` parameter `class_=` to set a class attribute on each cell in a column. Similar to `style=`, the function should take a `CellInfo` object.
+
+Here's an example, which sets some CSS, and then renders a table with class set to `"big"` when the extra column is 3.4.
+
+```{python}
+# | echo: false
+from IPython.display import display, HTML
+
+css = """.big {
+  font-weight: bold;
+  color: red;
+}"""
+
+display(HTML(f"\n<style>\n{css}\n</style>\n"))
+```
+
+```{python}
+# | output: asis
+# | echo: false
+
+print(f"```css\n{css}\n```")
+```
+
+```{python}
+def big_class(ci: CellInfo):
+    return "big" if ci.value == 3.4 else None
+
+
+Reactable(
+    sleep[:6, :],
+    columns={
+        "extra": Column(class_=big_class),
+    },
+)
+
+```
+
+## Row styles and class
+
+Pass a function to `row_style=` or `row_class=` to set row-based styles or class names, respectively. The function should take row number as its only argument.
+
+```{python}
+# | output: asis
+# | echo: false
+css = """.bold {
+  font-weight: bold;
+}"""
+
+print(f"\n<style>\n{css}\n</style>\n")
+
+print(f"```css\n{css}\n```")
+```
+
+```{python}
+# define conditional row style and row class functions ----
+def f_row_style(indx: int):
+    if sleep[indx, "extra"] > 0:
+        return {"background": "rgba(0, 0, 0, 0.05)"}
+
+
+def f_row_class(indx: int):
+    if sleep[indx, "extra"] > 0:
+        return "bold"
+
+
+# generate table ----
+Reactable(
+    sleep[:6, :],
+    row_style=f_row_style,
+    row_class=f_row_class,
+)
+```

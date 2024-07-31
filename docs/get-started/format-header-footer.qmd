@@ -1,0 +1,45 @@
+---
+title: Rendering header and footer
+---
+
+```{python}
+import polars as pl
+import htmltools as html
+from react_tables.data import cars_93
+from react_tables import Reactable, reactable, Props, embed_css
+from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+
+embed_css()
+
+data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
+```
+
+## Headers
+
+```{python}
+def fmt_header(ci: HeaderCellInfo):
+    return html.div(f"name: {ci.name}", html.br(), f"value: {ci.value}")
+
+
+Reactable(
+    data,
+    columns={"manufacturer": Column(header=fmt_header, name="Manufacturer")},
+)
+```
+
+## Footers
+
+```{python}
+def fmt_footer(ci: ColInfo):
+    ttl = sum(ci.values)
+    return f"${ttl:.2f}"
+
+
+Reactable(
+    data,
+    searchable=True,
+    columns={"price": Column(footer=fmt_footer)},
+)
+```
+
+Note that a sum of `$79.10` appears at the bottom right of the table. Importantly, if you filter the rows by typing into the search box, the sum won't update. This is because Python footers are rendered only once, when generating the initial table.

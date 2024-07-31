@@ -2,6 +2,16 @@
 title: Theming
 ---
 
+Themes provide a powerful way to customize table styling that can be reused across tables. You can either set theme variables to change the default styles (e.g., row stripe color), or add your own custom CSS to specific elements of the table.
+
+To apply a theme, provide a `Theme()` as the `theme=` argument:
+
 {{< embed ../examples/index.qmd#setup echo=true >}}
 {{< embed ../examples/index.qmd#theme echo=true >}}
+
+## Global theme
+
+To set the default theme for all tables, set the global `reactable.options.theme` attribute:
+
+
 {{< embed ../examples/index.qmd#theme-global echo=true >}}

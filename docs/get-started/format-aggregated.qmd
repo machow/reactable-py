@@ -1,0 +1,66 @@
+---
+title: Column aggregate cells
+---
+
+```{python}
+from react_tables import embed_css, Reactable, Column, ColFormat, ColFormatGroupBy
+from react_tables.data import us_states
+
+embed_css()
+```
+
+Column formatters can be applied to aggregated cells, produced by [grouping data](./structure-grouping.qmd).
+
+
+By default, formatters apply to both standard cells and aggregate cells.
+
+```{python}
+data = us_states
+
+col_format = ColFormat(suffix=" mi²", separators=True)
+
+Reactable(
+    data,
+    group_by="Region",
+    columns=[
+        Column(id="Area", aggregate="sum", format=col_format),
+    ],
+)
+```
+
+Note that the data is collapsed, with aggregate cells displaying the total area per group. The formatter has applied the suffix ` mi²` to the aggregates.
+
+
+## Formatting aggregated cells
+
+If you want to format aggregated cells separately, provide a named list of `cell` and `aggregated` options:
+
+```python
+from react_tables.models import ColFormatGroupBy
+
+Column(
+  format = ColFormatGroupBy(
+    cell = colFormat(...),       # Standard cells
+    aggregated = colFormat(...)  # Aggregated cells
+  )
+)
+```
+
+For example, only the aggregated `States` are formatted here:
+
+```{python}
+data = us_states
+
+Reactable(
+    data,
+    group_by="Region",
+    columns=[
+        Column(
+            id="States",
+            aggregate="count",
+            format=ColFormatGroupBy(aggregated=ColFormat(suffix=" states")),
+        ),
+        Column(id="Area", aggregate="sum", format=ColFormat(suffix=" mi²", separators=True)),
+    ],
+)
+```
