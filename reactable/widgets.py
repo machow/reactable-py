@@ -6,7 +6,7 @@ from importlib_resources import files
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-STATIC_FILES = files("react_tables.static")
+STATIC_FILES = files("reactable.static")
 
 if TYPE_CHECKING:
     from .models import Props

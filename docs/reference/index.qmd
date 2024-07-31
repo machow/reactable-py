@@ -6,23 +6,23 @@ Classes to build reactable tables.
 
 | | |
 | --- | --- |
-| [Reactable](Reactable.qmd#react_tables.Reactable) | A reactive table. |
+| [Reactable](Reactable.qmd#reactable.Reactable) | A reactive table. |
 
 ## Customize columns
 
 | | |
 | --- | --- |
-| [Column](Column.qmd#react_tables.Column) |  |
-| [ColGroup](ColGroup.qmd#react_tables.ColGroup) |  |
-| [ColFormat](ColFormat.qmd#react_tables.ColFormat) |  |
-| [ColFormatGroupBy](ColFormatGroupBy.qmd#react_tables.ColFormatGroupBy) |  |
+| [Column](Column.qmd#reactable.Column) |  |
+| [ColGroup](ColGroup.qmd#reactable.ColGroup) |  |
+| [ColFormat](ColFormat.qmd#reactable.ColFormat) |  |
+| [ColFormatGroupBy](ColFormatGroupBy.qmd#reactable.ColFormatGroupBy) |  |
 
 ## Customize tables
 
 | | |
 | --- | --- |
-| [Theme](Theme.qmd#react_tables.Theme) |  |
-| [Language](Language.qmd#react_tables.Language) |  |
+| [Theme](Theme.qmd#reactable.Theme) |  |
+| [Language](Language.qmd#reactable.Language) |  |
 
 ## Rendering
 
@@ -30,5 +30,5 @@ Classes used in custom rendering functions.
 
 | | |
 | --- | --- |
-| [CellInfo](CellInfo.qmd#react_tables.CellInfo) |  |
-| [RowInfo](RowInfo.qmd#react_tables.RowInfo) |  |
+| [CellInfo](CellInfo.qmd#reactable.CellInfo) |  |
+| [RowInfo](RowInfo.qmd#reactable.RowInfo) |  |

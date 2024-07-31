@@ -1,5 +1,5 @@
 import pytest
-from react_tables.simpleframe import SimpleFrame, SimpleColumn
+from reactable.simpleframe import SimpleFrame, SimpleColumn
 
 data = SimpleFrame({"x": [1, 2], "y": ["a", "b"]})
 

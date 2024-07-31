@@ -5,7 +5,7 @@ from datetime import datetime
 from importlib_resources import files
 from ..simpleframe import SimpleFrame
 
-BIG_DATA = files("react_tables.data")
+BIG_DATA = files("reactable.data")
 
 cars_93 = SimpleFrame.read_csv(BIG_DATA / "cars_93.csv").cast(
     dict(

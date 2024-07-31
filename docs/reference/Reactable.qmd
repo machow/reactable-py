@@ -1,4 +1,4 @@
-# Reactable { #react_tables.Reactable }
+# Reactable { #reactable.Reactable }
 
 `Reactable(data, columns=None, column_groups=None, rownames=False, group_by=None, sortable=True, resizable=None, filterable=None, searchable=None, pagination=None, default_col_def=None, default_sort_order='asc', default_sorted=None, default_page_size=None, show_page_size_options=None, page_size_options=field(default_factory=lambda : [10, 25, 50, 100]), pagination_type='numbers', show_pagination=None, show_page_info=None, min_rows=None, paginate_sub_rows=None, details=field(default=None), default_expanded=None, selection=None, on_click=None, highlight=False, outlined=None, bordered=False, borderless=False, striped=False, compact=True, wrap=True, show_sort_icon=None, show_sortable=None, class_=None, style=None, row_class=None, row_style=None, full_width=True, width=None, height=None, theme=None, language=None, meta=None, element_id=None, static=None, dataKey=None, default_sort_desc=field(init=False), inline=field(init=False), row_class_name=field(init=False), nowrap=field(init=False), class_name=field(init=False))`
 

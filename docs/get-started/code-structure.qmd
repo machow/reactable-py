@@ -6,9 +6,9 @@ This page covers the basics of making a simple reactable table:
 
 ```{python}
 # | echo: false
-from react_tables import embed_css
-from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
-from react_tables.data import cars_93
+from reactable import embed_css
+from reactable.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+from reactable.data import cars_93
 
 embed_css()
 
@@ -57,9 +57,9 @@ Reactable(
 In order to create the table, we'll import classes from reactable, along with an example dataset.
 
 ```{python}
-from react_tables import embed_css
-from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
-from react_tables.data import cars_93
+from reactable import embed_css
+from reactable.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+from reactable.data import cars_93
 
 embed_css()
 

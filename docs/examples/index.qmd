@@ -13,9 +13,9 @@ format:
 # | label: setup
 # | code-fold: true
 import htmltools
-from react_tables import bigblock, RT, options, Reactable
-from react_tables.widgets import BigblockWidget, embed_css
-from react_tables.models import (
+from reactable import bigblock, RT, options, Reactable
+from reactable.widgets import BigblockWidget, embed_css
+from reactable.models import (
     process_data,
     default_columns,
     CellInfo,
@@ -28,7 +28,7 @@ from react_tables.models import (
     JS,
     ColFormatGroupBy,
 )
-from react_tables.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
+from reactable.data import cars_93, co2, prices, sleep, starwars, us_states, us_expenditures
 from htmltools import tags
 from palmerpenguins import load_penguins
 import polars as pl
@@ -510,7 +510,7 @@ Reactable(
 ### Formatting aggregated cells
 
 ```python
-from react_tables.models import ColFormatGroupBy
+from reactable.models import ColFormatGroupBy
 
 Column(
   format = ColFormatGroupBy(
@@ -571,8 +571,8 @@ Reactable(
 
 
 ```{python}
-from react_tables.models import CellInfo
-from react_tables.tags import to_hydrate_format
+from reactable.models import CellInfo
+from reactable.tags import to_hydrate_format
 import htmltools
 
 data = cars_93[:5, ["manufacturer", "model", "type", "air_bags", "price"]]
@@ -819,7 +819,7 @@ Reactable(
 
 ```{python}
 # | label: style-cond-cell-py
-from react_tables.models import CellInfo
+from reactable.models import CellInfo
 
 
 def cond_style(ci: CellInfo):
@@ -1472,7 +1472,7 @@ Reactable(
 
 ```{python}
 #| label: language
-from react_tables.models import Language
+from reactable.models import Language
 
 Reactable(
         pl_penguins[:30],

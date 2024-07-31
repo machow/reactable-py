@@ -10,8 +10,8 @@ You can conditionally style a table using functions that return inline styles or
 
 
 ```{python}
-from react_tables import Reactable, Column, embed_css
-from react_tables.data import sleep
+from reactable import Reactable, Column, embed_css
+from reactable.data import sleep
 
 embed_css()
 ```
@@ -24,7 +24,7 @@ Below is an example function, which sets the `color` and `font-weight` styles.
 
 ```{python}
 # | label: style-cond-cell-py
-from react_tables.models import CellInfo
+from reactable.models import CellInfo
 
 
 def cond_style(ci: CellInfo):

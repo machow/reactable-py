@@ -76,7 +76,7 @@ website:
 
 quartodoc:
   # the name used to import the package you want to create reference docs for
-  package: react_tables
+  package: reactable
 
   # write sidebar data to this file
   sidebar: _sidebar.yml

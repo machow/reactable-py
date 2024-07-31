@@ -3,8 +3,8 @@ title: Column aggregate cells
 ---
 
 ```{python}
-from react_tables import embed_css, Reactable, Column, ColFormat, ColFormatGroupBy
-from react_tables.data import us_states
+from reactable import embed_css, Reactable, Column, ColFormat, ColFormatGroupBy
+from reactable.data import us_states
 
 embed_css()
 ```
@@ -36,7 +36,7 @@ Note that the data is collapsed, with aggregate cells displaying the total area 
 If you want to format aggregated cells separately, provide a named list of `cell` and `aggregated` options:
 
 ```python
-from react_tables.models import ColFormatGroupBy
+from reactable.models import ColFormatGroupBy
 
 Column(
   format = ColFormatGroupBy(

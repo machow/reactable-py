@@ -22,8 +22,8 @@ pip install reactable
 ## Previewing DataFrames
 
 ```{python}
-from react_tables import Reactable, embed_css
-from react_tables.data import cars_93
+from reactable import Reactable, embed_css
+from reactable.data import cars_93
 
 # Note that currently this function is required
 # to put css into notebooks.
@@ -44,8 +44,8 @@ reactable built-in datasets, like `cars_93` don't any DataFrame libraries.
 They include methods like `.to_pandas()` and `.to_polars()`, to quickly try out reactable with your preferred DataFrame tool.
 
 ```{python}
-from react_tables import Reactable, embed_css
-from react_tables.data import cars_93
+from reactable import Reactable, embed_css
+from reactable.data import cars_93
 
 Reactable(
     cars_93.to_polars(),
@@ -128,8 +128,8 @@ Reactable(
 ```{python}
 # | echo: false
 
-from react_tables import bigblock, embed_css
-from react_tables.models import Column, Props, CellInfo, JS
+from reactable import bigblock, embed_css
+from reactable.models import Column, Props, CellInfo, JS
 from htmltools import tags
 
 import polars as pl

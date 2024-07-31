@@ -7,13 +7,13 @@ jupyter: python3
 # | label: setup
 # | code-fold: true
 import htmltools
-from react_tables import bigblock, RT, options, Reactable, embed_css
-from react_tables.models import (
+from reactable import bigblock, RT, options, Reactable, embed_css
+from reactable.models import (
     Column,
     ColFormat,
     ColGroup,
 )
-from react_tables.data import cars_93
+from reactable.data import cars_93
 
 embed_css()
 ```

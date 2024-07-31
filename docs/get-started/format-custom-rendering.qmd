@@ -6,9 +6,9 @@ jupyter: python3
 ```{python}
 import polars as pl
 import htmltools as html
-from react_tables.data import cars_93
-from react_tables import Reactable, reactable, Props, embed_css
-from react_tables.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+from reactable.data import cars_93
+from reactable import Reactable, reactable, Props, embed_css
+from reactable.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
 
 embed_css()
 

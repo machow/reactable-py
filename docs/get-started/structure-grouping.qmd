@@ -7,7 +7,7 @@ jupyter: python3
 {{< embed ../examples/index.qmd#setup echo=true >}}
 
 ```{python}
-from react_tables.models import Column, JS
+from reactable.models import Column, JS
 ```
 
 You can group rows in a table by specifying one or more columns in `group_by`:

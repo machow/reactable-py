@@ -9,7 +9,7 @@ jupyter: python3
 ---
 
 ```{python}
-from react_tables import embed_css, render
+from reactable import embed_css, render
 
 embed_css()
 
@@ -24,7 +24,7 @@ embed_css()
 import polars as pl
 from great_tables import GT, md, html
 from great_tables.data import islands
-from react_tables import render
+from reactable import render
 
 
 islands_mini = pl.from_pandas(islands).sort("size", descending=True).head(10)

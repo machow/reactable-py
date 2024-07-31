@@ -5,8 +5,8 @@ jupyter: python3
 
 ```{python}
 import htmltools
-from react_tables import options, Reactable, Column, embed_css
-from react_tables.data import cars_93
+from reactable import options, Reactable, Column, embed_css
+from reactable.data import cars_93
 
 embed_css()
 ```
@@ -79,7 +79,7 @@ Notice that the middle rows are hidden with `...`.
 ```{python}
 # | code-fold: true
 
-from react_tables.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
+from reactable.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
 
 cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
 
@@ -121,7 +121,7 @@ Here's what the data looks like before:
 
 
 ```{python}
-from react_tables.data import prices
+from reactable.data import prices
 
 prices.to_pandas()
 ```
@@ -130,8 +130,8 @@ And here is the data with column formatting applied.
 
 ```{python}
 # | code-fold: true
-from react_tables.data import prices
-from react_tables import Reactable, Column, ColFormat
+from reactable.data import prices
+from reactable import Reactable, Column, ColFormat
 
 Reactable(
     data=prices,
@@ -154,7 +154,7 @@ Reactable(
 
 ```{python}
 # | code-fold: true
-from react_tables.models import ColInfo
+from reactable.models import ColInfo
 
 
 def fmt_footer(ci: ColInfo):
@@ -175,7 +175,7 @@ Reactable(
 
 ```{python}
 # | code-fold: true
-from react_tables.data import sleep
+from reactable.data import sleep
 
 
 Reactable(
@@ -183,8 +183,8 @@ Reactable(
     columns=[
         Column(
             id="extra",
-            style=lambda val: {
-                "color": "#008800" if val > 0 else "#e00000",
+            style=lambda ci: {
+                "color": "#008800" if ci.value > 0 else "#e00000",
                 "font-weight": "bold",
             },
         )
@@ -194,8 +194,8 @@ Reactable(
 
 ```{python}
 # | code-fold: true
-from react_tables.data import cars_93
-from react_tables.models import Theme
+from reactable.data import cars_93
+from reactable.models import Theme
 
 Reactable(
     cars_93,

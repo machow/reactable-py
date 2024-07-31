@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 
 [tool.setuptools.packages.find]
-include = ["react_tables"]
+include = ["reactable"]
 
 [project]
-name = "react-tables"
+name = "reactable"
 description = "Easily generate information-rich, publication-quality tables from Python."
 readme = "README.md"
 keywords = ["tables"]

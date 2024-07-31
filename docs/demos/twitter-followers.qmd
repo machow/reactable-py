@@ -77,8 +77,8 @@ execute:
 
 ```{python}
 
-from react_tables import bigblock, embed_css
-from react_tables.models import Column, Props, CellInfo, JS
+from reactable import bigblock, embed_css
+from reactable.models import Column, Props, CellInfo, JS
 from htmltools import tags
 
 import polars as pl
