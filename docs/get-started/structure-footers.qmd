@@ -2,7 +2,12 @@
 title: Footers
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, JS, embed_css
+from reactable.data import cars_93
+
+embed_css()
+```
 
 You can add column footers using the `footer` argument in `Column()`.
 
@@ -10,13 +15,65 @@ You can add column footers using the `footer` argument in `Column()`.
 
 ## Render function in Python
 
-{{< embed ../examples/index.qmd#footer-render-py echo=true >}}
+```{python}
+# | label: footer-render-py
+data = cars_93[17:47, ["manufacturer", "model", "type", "price"]]
+
+Reactable(
+    data,
+    default_page_size=5,
+    columns=[
+        Column(id="manufacturer", footer="Total"),
+        Column(id="price", footer=lambda col_info: f"{sum(col_info.values):.2f}"),
+    ],
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
+```
 
 ## Render function in JS
 
-{{< embed ../examples/index.qmd#footer-render-js echo=true >}}
+```{python}
+# | label: footer-render-js
+js_sum_column = JS(
+    """function(column, state) {
+   let total = 0
+   state.sortedData.forEach(function(row) {
+       total += row[column.id]
+   })
+   return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+} """
+)
+
+Reactable(
+    data,
+    default_page_size=5,
+    columns=[
+        Column(id="manufacturer", footer="Total"),
+        Column(id="price", footer=js_sum_column),
+    ],
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
+```
 
 ## Embedding widgets
 
 
-{{< embed ../examples/index.qmd#footer-render-widget echo=true >}}
+```{python}
+# | label: footer-render-widget
+import polars as pl
+import plotly.express as px
+import htmltools as h
+
+cars = cars_93[["manufacturer", "type", "price"]]
+p = px.box(cars.to_pandas(), x="price")
+
+import plotly.graph_objects as go
+
+data = pl.DataFrame({"x": [1]})
+
+Reactable(
+    cars,
+    columns={"price": Column(footer=go.FigureWidget(p))},
+    # details=lambda indx: go.FigureWidget(p),
+)
+```

@@ -9,19 +9,88 @@ You can add cell click actions using the onClick argument, which accepts the fol
 * "select" to select the row
 * A JavaScript function for a custom action, e.g., sending the click event to Shiny
 
+
+```{python}
+import htmltools
+from reactable import Reactable, Column, JS, embed_css
+
+from reactable.data import cars_93
+from palmerpenguins import load_penguins
+import polars as pl
+
+
+embed_css()
+
+penguins = load_penguins()
+pl_penguins = pl.from_pandas(penguins)
+```
+
+
 ## Expand on click
 
-{{< embed ../examples/index.qmd#click-expand echo=true >}}
+```{python}
+#| label: click-expand
+Reactable(
+        pl_penguins[150:155],
+        group_by="species",
+        details=lambda index: f"Details for row: {index}",
+        on_click="expand",
+        row_style={"cursor": "pointer"},
+    )
+
+```
 
 ## Select on click
 
-{{< embed ../examples/index.qmd#click-select echo=true >}}
+```{python}
+# | label: click-select
+Reactable(
+    pl_penguins[:5],
+    selection="multiple",
+    on_click="select",
+)
+```
 
 ## Custom action
 
 This example uses a custom click action to create custom “show details” action buttons in each row of the table:
 
-{{< embed ../examples/index.qmd#click-custom echo=true >}}
+```{python}
+# | label: click-custom
+data = cars_93[:5, ["manufacturer", "model", "type", "price"]]
+data["details"] = None
+
+js_on_click = JS(
+    """function(rowInfo, column) {
+    // Only handle click events on the 'details' column
+    if (column.id !== 'details') {
+      return
+    }
+
+    // Display an alert dialog with details for the row
+    window.alert('Details for row ' + rowInfo.index + ':\\n' + JSON.stringify(rowInfo.values, null, 2))
+
+    // Send the click event to Shiny, which will be available in input$show_details
+    // Note that the row index starts at 0 in JavaScript, so we add 1
+    if (window.Shiny) {
+      Shiny.setInputValue('show_details', { index: rowInfo.index + 1 }, { priority: 'event' })
+    }
+  }"""
+)
+
+Reactable(
+    data,
+    columns=[
+        Column(
+            id="details",
+            name="",
+            sortable=False,
+            cell=lambda ci: htmltools.tags.button("Show details"),
+        )
+    ],
+    on_click=js_on_click,
+)
+```
 
 :::{.callout-warning}
 Custom click actions are currently not accessible to keyboard users, and are generally not recommended. If they must be used, ensure that they can be triggered by a keyboard through other means, such as a button in the example above.

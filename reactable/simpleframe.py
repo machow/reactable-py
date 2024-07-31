@@ -233,7 +233,7 @@ class SimpleFrame:
     def to_polars(self):
         import polars as pl
 
-        return pl.DataFrame(self.to_dict())
+        return pl.DataFrame(self.to_dict(), strict=False)
 
     @classmethod
     def read_csv(cls, fname: str | Path):

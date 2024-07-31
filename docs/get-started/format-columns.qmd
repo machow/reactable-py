@@ -12,18 +12,104 @@ To use a specific locale for data formatting, provide a vector of BCP 47 languag
 Column formatters change how data is displayed without affecting the underlying data. Sorting, filtering, and grouping will still work on the original data.
 :::
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+import polars as pl
 
-{{< embed ../examples/index.qmd#column-format-overview echo=true >}}
+from reactable import Reactable, Column, ColFormat, embed_css
+from reactable.data import prices
+
+embed_css()
+
+```
+
+```{python}
+# | label: column-format-overview
+Reactable(
+    data=prices,
+    columns=[
+        Column(id="price_usd", format=ColFormat(prefix="$", separators=True, digits=2)),
+        Column(id="price_inr", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+        Column(id="number_fr", format=ColFormat(locales="fr-FR")),
+        Column(id="temp", format=ColFormat(suffix="°C")),
+        Column(id="percent", format=ColFormat(percent=True, digits=1)),
+        Column(id="date", format=ColFormat(date=True, locales="en-GB")),
+    ],
+)
+```
 
 ## Date formatting
 
-{{< embed ../examples/index.qmd#column-format-date echo=true >}}
+```{python}
+# | label: column-format-date
+ts = ["2019-01-02 03:22:15", "2019-03-15 09:15:55", "2019-09-22 14:20:00"]
+ser = pl.Series(ts, dtype=pl.Date).str.to_datetime().dt.replace_time_zone("America/New_York")
+
+data = pl.DataFrame(
+    {
+        "datetime": ser,
+        "date": ser,
+        "time": ser,
+        "time_24h": ser,
+        "datetime_pt_BR": ser,
+    }
+)
+
+Reactable(
+    data,
+    columns=[
+        Column(id="datetime", format=ColFormat(datetime=True)),
+        Column(id="date", format=ColFormat(date=True)),
+        Column(id="time", format=ColFormat(time=True)),
+        Column(id="time_24h", format=ColFormat(time=True, hour12=False)),
+        Column(id="datetime_pt_BR", format=ColFormat(datetime=True, locales="pt-BR")),
+    ],
+)
+```
 
 ## Currency formatting
 
-{{< embed ../examples/index.qmd#column-format-currency echo=true >}}
+```{python}
+# | label: column-format-currency
+data = pl.DataFrame(
+    {
+        "USD": [12.12, 2141.213, 0.42, 1.55, 34414],
+        "EUR": [10.68, 1884.27, 0.37, 1.36, 30284.32],
+        "INR": [861.07, 152122.48, 29.84, 110, 2444942.63],
+        "JPY": [1280.0, 226144, 44.36, 164.0, 3634634.61],
+        "MAD": [115.78, 20453.94, 4.01, 15.0, 328739.73],
+    }
+)
+
+Reactable(
+    data,
+    columns=[
+        Column(id="USD", format=ColFormat(currency="USD", separators=True, locales="en-US")),
+        Column(id="EUR", format=ColFormat(currency="EUR", separators=True, locales="de-DE")),
+        Column(id="INR", format=ColFormat(currency="INR", separators=True, locales="hi-IN")),
+        Column(id="JPY", format=ColFormat(currency="JPY", separators=True, locales="ja-JP")),
+        Column(id="MAD", format=ColFormat(currency="MAD", separators=True, locales="ar-MA")),
+    ],
+)
+```
 
 ## Displaying missing values
 
-{{< embed ../examples/index.qmd#column-format-missing echo=true >}}
+```{python}
+# | label: column-format-missing
+data = pl.DataFrame(
+    {
+        "n": [1, 2, None, 4, 5],
+        "x": [55, 27, None, float("nan"), 19],
+        "y": [1, None, 0.25, 0.55, None],
+    },
+    strict=False,
+)
+
+Reactable(
+    data,
+    columns=[
+        Column(id="x", na="-"),
+        Column(id="y", na="NA", format=ColFormat(percent=True)),
+    ],
+)
+```

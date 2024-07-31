@@ -6,12 +6,67 @@ Themes provide a powerful way to customize table styling that can be reused acro
 
 To apply a theme, provide a `Theme()` as the `theme=` argument:
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
-{{< embed ../examples/index.qmd#theme echo=true >}}
+
+```{python}
+from reactable import Reactable, Theme, options, embed_css
+from reactable.data import cars_93
+
+embed_css()
+```
+
+```{python}
+# | label: theme
+Reactable(
+    cars_93,
+    searchable=True,
+    striped=True,
+    highlight=True,
+    bordered=True,
+    theme=Theme(
+        borderColor="#dfe2e5",
+        stripedColor="#f6f8fa",
+        highlightColor="#f0f5f9",
+        cellPadding="8px 12px",
+        style={
+            "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        },
+        searchInputStyle={"width": "100%"},
+    ),
+)
+
+```
 
 ## Global theme
 
 To set the default theme for all tables, set the global `reactable.options.theme` attribute:
 
 
-{{< embed ../examples/index.qmd#theme-global echo=true >}}
+```{python}
+# | label: theme-global
+options.theme = Theme(
+    color="hsl(233, 9%, 87%)",
+    backgroundColor="hsl(233, 9%, 19%) !important",
+    borderColor="hsl(233, 9%, 22%) !important",
+    stripedColor="hsl(233, 12%, 22%)",
+    highlightColor="hsl(233, 12%, 24%)",
+    inputStyle={"background-color": "hsl(233, 9%, 25%) !important"},
+    selectStyle={"background-color": "hsl(233, 9%, 25%)"},
+    pageButtonHoverStyle={"background-color": "hsl(233, 9%, 25%)"},
+    pageButtonActiveStyle={"background-color": "hsl(233, 9%, 28%)"},
+)
+
+Reactable(
+    cars_93,
+    filterable=True,
+    show_page_size_options=True,
+    striped=True,
+    highlight=True,
+    details=lambda index: f"Details for row {index}",
+)
+```
+
+To restore options to the defaults, use the `.reset()` method:
+
+```{python}
+options.reset()
+```

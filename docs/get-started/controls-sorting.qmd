@@ -3,7 +3,18 @@ title: Sorting
 jupyter: python3
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, embed_css
+
+from palmerpenguins import load_penguins
+import polars as pl
+
+
+embed_css()
+
+penguins = load_penguins()
+pl_penguins = pl.from_pandas(penguins)
+```
 
 Tables are sortable by default. You can sort a column by clicking on its header, or sort multiple columns by holding the shift key while sorting.
 
@@ -17,11 +28,25 @@ Ascending order means the lowest, first, or earliest values will appear first. D
 
 Use the `defaultSorted=` argument to sort columns by default:
 
-{{< embed ../examples/index.qmd#default-sorted-columns echo=true >}}
+```{python}
+# | label: default-sorted-columns
+Reactable(
+    pl_penguins,
+    default_sorted=["species", "island"],
+)
+```
 
 Notice that above column names are passed as a list. You can specify the order to sort, by passing a dictionary mapping column names to sort order (either "asc" for ascending, or "desc" for descending):
 
-{{< embed ../examples/index.qmd#default-sorted-columns2 echo=true >}}
+```{python}
+# | label: default-sorted-columns2
+Reactable(
+    pl_penguins,
+    columns=[Column(id="species", default_sort_order="desc")],
+    default_sorted=["species", "island"],
+)
+```
+
 
 ### Default sort order
 
@@ -29,22 +54,65 @@ Columns are sorted in ascending order first by default. To change the default so
 
 To change the sort order of an individual column, set `default_sort_order=` in its `Column()` to "asc" or "desc". The default sort order of the column takes precedence over the table.
 
-{{< embed ../examples/index.qmd#default-sort-order echo=true >}}
+```{python}
+# | label: default-sort-order
+Reactable(
+    pl_penguins,
+    default_sort_order="desc",
+    columns=[Column(id="species", default_sort_order="asc")],
+    default_sorted=["species", "island"],
+)
+```
 
 ### Sort missing values last
 
 You can ignore missing values when sorting by setting `sort_na_last=` on a column:
 
-{{< embed ../examples/index.qmd#sort-missing echo=true >}}
+```{python}
+# | label: sort-missing
+import math
+
+df = pl.DataFrame(
+    {
+        "n": [1.0, 2.0, 3.0, -math.inf, math.inf],
+        "x": [2.0, 3.0, 1.0, None, math.nan],
+        "y": ["aa", "cc", "bb", None, None],
+    },
+    strict=False,
+)
+
+Reactable(
+    df,
+    default_col_def=Column(sort_na_last=True),
+    default_sorted="x",
+)
+```
 
 ### No sorting
 
 You can disable sorting by setting `sortable` to `False` on the table or column. When only some columns are sortable, it can help to indicate sortable columns using `show_sortable`:
 
-{{< embed ../examples/index.qmd#sort-false echo=true >}}
+```{python}
+# | label: sort-false
+Reactable(
+    pl_penguins.head(),
+    sortable=False,
+    show_sortable=True,
+    columns=[
+        Column(id="bill_length_mm", sortable=True),
+        Column(id="bill_depth_mm", sortable=True),
+    ],
+)
+```
 
 ### Hide sort icons
 
 You can hide sort icons by setting `show_sort_icon` to `False`. This is only recommended when you want to use a [custom sort indicator](./style-custom-sort-indicators.qmd).
 
-{{< embed ../examples/index.qmd#sort-hide echo=true >}}
+```{python}
+# | label: sort-hide
+Reactable(
+    pl_penguins.head(),
+    show_sort_icon=False,
+)
+```

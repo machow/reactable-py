@@ -2,40 +2,142 @@
 title: Expandable details
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, ColFormat, JS, embed_css
+
+from palmerpenguins import load_penguins
+import polars as pl
+
+
+embed_css()
+
+penguins = load_penguins()
+pl_penguins = pl.from_pandas(penguins)
+```
 
 You can make rows expandable with additional content through details, which takes an R or JavaScript render function. See [Custom Rendering](./format-custom-rendering.qmd) for details on how to use render functions.
 
 ## Render details with Python
 
-{{< embed ../examples/index.qmd#details-render-py echo=true >}}
+```{python}
+# | label: details-render-py
+import htmltools
+
+Reactable(
+    pl_penguins,
+    details=lambda row_info: htmltools.div(
+        "Details for row: ", row_info.row_index, htmltools.pre("nice")
+    ),
+)
+
+```
 
 ## Render details with JS
 
 The details column can be customized by providing a `Column()` instead. This can be used to add a column name, render HTML content, or change the column width:
 
-{{< embed ../examples/index.qmd#details-render-js echo=true >}}
+```{python}
+# | label: details-render-js
+js_details = JS(
+    """function(rowInfo) {
+  return `Details for row: ${rowInfo.index}` +
+    `<pre>${JSON.stringify(rowInfo.values, null, 2)}</pre>`
+}"""
+)
+
+Reactable(
+    pl_penguins,
+    details=Column(
+        name="more",
+        html=True,
+        width=60,
+        details=js_details,
+    ),
+)
+```
 
 ## Nested tables
 
 With Python render functions, you can render HTML tags, Widgets (e.g. ipywidget, anywidget), and even nested tables:
 
-{{< embed ../examples/index.qmd#details-nested-tables echo=true >}}
+```{python}
+# | label: details-nested-tables
+from htmltools import HTML, div
+
+
+sub_tables = {
+    g: div(Reactable(df, outlined=True).to_widget(), style="padding: 1rem")
+    for g, df in pl_penguins.group_by("species", "island")
+}
+
+df_uniq = pl_penguins.select(["species", "island"]).unique()
+
+Reactable(
+    df_uniq,
+    details=lambda row_info: list(sub_tables.values())[row_info.row_index],
+)
+
+```
 
 ## Conditional row details
 
 Python render functions support conditional rendering. If a render function returns None, the row won’t be expandable:
 
-{{< embed ../examples/index.qmd#details-conditional-none echo=true >}}
+```{python}
+# | label: details-conditional-none
+sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+
+Reactable(
+    pl_penguins[:5],
+    details=lambda row_info: (
+        Reactable(sub_frame, full_width=False).to_widget() if row_info.row_index in [2, 4] else None
+    ),
+)
+```
 
 ## Multiple row details
 
 You can add `details` to individual columns, and even show multiple details for a row:
 
-{{< embed ../examples/index.qmd#details-multiple-cols-rows echo=true >}}
+```{python}
+# | label: details-multiple-cols-rows
+
+sub_frame = pl.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+Reactable(
+    pl_penguins[:5],
+    details=lambda row_info: (
+        Reactable(sub_frame, full_width=False).to_widget() if row_info.row_index in [2, 4] else None
+    ),
+    columns=[
+        Column(
+            id="bill_length_mm",
+            details=lambda row_info: f"bill_length_mm: {pl_penguins[row_info.row_index, 'bill_length_mm']}",
+        ),
+        Column(
+            id="bill_depth_mm",
+            format=ColFormat(digits=1),
+            details=JS(
+                """
+            function(rowInfo) {
+                return 'bill_depth_mm: ' + rowInfo.values['bill_depth_mm']
+            }
+            """
+            ),
+        ),
+    ],
+)
+```
 
 ## Default expanded rows
 
 You can expand all rows by default by setting `default_expanded=True`:
 
-{{< embed ../examples/index.qmd#details-default-expanded echo=true >}}
+```{python}
+# | label: details-default-expanded
+Reactable(
+    pl_penguins[:12],
+    default_page_size=4,
+    details=lambda indx: f"Details for row: {indx}",
+    default_expanded=True,
+)
+```

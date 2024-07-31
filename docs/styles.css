@@ -9,6 +9,10 @@ html { font-family: 'Inter', sans-serif; }
     --bs-body-font-size: 16px;
 }
 
+.Reactable {
+  font-size: 14px;
+}
+
 
 .sidebar a.nav-link {
     font-size: 14.4px;

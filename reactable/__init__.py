@@ -11,6 +11,7 @@ from .models import (
     RowInfo,
     Theme,
     Language,
+    JS,
 )
 from .widgets import BigblockWidget, embed_css, bigblock, RT
 from .options import options
@@ -26,10 +27,9 @@ __all__ = [
     "ColFormatGroupBy",
     "CellInfo",
     "RowInfo",
-    "bigblock",
+    "JS",
     "reactable",
     "options",
-    "Props",
     "Theme",
     "Language",
 ]

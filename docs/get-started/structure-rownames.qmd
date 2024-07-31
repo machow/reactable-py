@@ -2,7 +2,12 @@
 title: Rownames
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, embed_css
+from reactable.data import cars_93
+
+embed_css()
+```
 
 Row names are shown by default if present. You can customize the row names column by adding a column definition using `".rownames"` as the column name:
 
@@ -10,7 +15,13 @@ TODO: support pandas index.
 
 If row names haven’t been set explicitly, you can force them to show by setting `rownames=True`:
 
-{{< embed ../examples/index.qmd#rownames echo=true >}}
+```{python}
+# | label: rownames
+Reactable(
+    cars_93[:5, :],
+    rownames=True,
+)
+```
 
 ## Row headers
 
@@ -20,5 +31,16 @@ You can mark up cells in a column as row headers by setting `row_header` to `Tru
 
 Cells in the row names column are automatically marked up as row headers.
 
-{{< embed ../examples/index.qmd#rownames-headers echo=true >}}
+```{python}
+#| label: rownames-headers
+data = cars_93[:5, ["manufacturer", "model", "type", "price", "mpg_city", "air_bags"]]
+
+Reactable(
+        data,
+        columns=[
+            Column(id="manufacturer", row_header=True, style={"font-weight": "600"}),
+        ],
+        bordered=True,
+    )
+```
 

@@ -7,6 +7,16 @@ from ..simpleframe import SimpleFrame
 
 BIG_DATA = files("reactable.data")
 
+__all__ = [
+    "cars_93",
+    "co2",
+    "prices",
+    "sleep",
+    "starwars",
+    "us_states",
+    "us_expenditures",
+]
+
 cars_93 = SimpleFrame.read_csv(BIG_DATA / "cars_93.csv").cast(
     dict(
         mpg_city=int,

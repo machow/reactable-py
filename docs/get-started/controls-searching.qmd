@@ -2,11 +2,19 @@
 title: Searching
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
-
+```{python}
+from reactable import Reactable
+from reactable.data import cars_93
+```
 
 You can make the entire table searchable by setting `searchable=True`:
 
-{{< embed ../examples/index.qmd#search echo=true >}}
+```{python}
+# | label: search
+cars = cars_93[:20, ["manufacturer", "model", "type", "air_bags", "price"]]
+Reactable(data=cars, searchable=True, min_rows=10)
+```
 
 ### Custom searching
+
+The table search method can be customized using the searchMethod argument in reactable(). See the [Custom filtering](./extra-advanced-filters.qmd) guide for details and examples.

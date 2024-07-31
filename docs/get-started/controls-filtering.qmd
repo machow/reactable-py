@@ -2,16 +2,43 @@
 title: Filtering
 ---
 
+```{python}
+from reactable import Reactable, Column, JS, embed_css
+from reactable.data import cars_93
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+from palmerpenguins import load_penguins
+import polars as pl
+
+embed_css()
+
+penguins = load_penguins()
+pl_penguins = pl.from_pandas(penguins)
+
+cars = cars_93[:20, ["manufacturer", "model", "type", "air_bags", "price"]]
+```
 
 You can make columns filterable by setting `filterable=True`:
 
-{{< embed ../examples/index.qmd#filter echo=true >}}
+```{python}
+# | label: filter
+Reactable(
+    cars,
+    filterable=True,
+    min_rows=10,
+)
+```
 
 To make specific columns filterable (or not), set filterable in `Column()`:
 
-{{< embed ../examples/index.qmd#filter-column echo=true >}}
+```{python}
+# | label: filter-column
+Reactable(
+    cars,
+    filterable=True,
+    columns=[Column(id="price", filterable=False)],
+    default_page_size=5,
+)
+```
 
 ### Custom filtering
 
@@ -20,5 +47,26 @@ Column filtering can be customized using the `filter_method` and `filter_input` 
 This example shows basic usage of a custom filter method, changing filtering on the `"manufacturer"` column to be case-sensitive rather than case-insensitive. (Try filtering for “bmw” and then “BMW”).
 
 
-{{< embed ../examples/index.qmd#filter-custom echo=true >}}
+```{python}
+# | label: filter-custom
+titled = pl_penguins.with_columns(pl.col("species").str.to_titlecase())
+
+js_filter = JS(
+    """
+function(rows, columnId, filterValue) {
+  return rows.filter(function(row) {
+    return row.values[columnId].indexOf(filterValue) !== -1
+  })
+}"""
+)
+
+Reactable(
+    data=titled.head(2),
+    filterable=True,
+    columns={
+        "manufacturer": Column(filter_method=js_filter),
+    },
+    default_page_size=5,
+)
+```
 

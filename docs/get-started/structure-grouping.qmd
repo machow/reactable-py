@@ -1,22 +1,43 @@
 ---
-title: Grouping and aggregation
+title: Row groups and aggregation
 jupyter: python3
 ---
 
-
-{{< embed ../examples/index.qmd#setup echo=true >}}
-
 ```{python}
-from reactable.models import Column, JS
+from reactable import Reactable, Column, ColFormat, ColGroup, JS, embed_css
+from reactable.data import us_states, cars_93
+
+embed_css()
 ```
 
 You can group rows in a table by specifying one or more columns in `group_by`:
 
-{{< embed ../examples/index.qmd#group-by echo=true >}}
+```{python}
+# | label: group-by
+data = cars_93[10:22, ["manufacturer", "model", "type", "price", "mpg_city"]]
+
+Reactable(
+    data,
+    group_by="manufacturer",
+)
+```
 
 When rows are grouped, you can aggregate data in a column using an `aggregate` function:
 
-{{< embed ../examples/index.qmd#group-by-aggregate echo=true >}}
+```{python}
+# | label: group-by-aggregate
+data = cars_93[14:38, ["type", "price", "mpg_city", "drive_train", "man_trans_avail"]]
+Reactable(
+    data,
+    group_by="type",
+    columns=[
+        Column(id="price", aggregate="max"),
+        Column(id="mpg_city", aggregate="mean", format=ColFormat(digits=1)),
+        Column(id="drive_train", aggregate="unique"),
+        Column(id="man_trans_avail", aggregate="frequency"),
+    ],
+)
+```
 
 You can use one of the built-in aggregate functions:
 
@@ -55,7 +76,18 @@ Column(
 
 ## Multiple groups
 
-{{< embed ../examples/index.qmd#group-by-multiple echo=true >}}
+```{python}
+# | label: group-by-multiple
+Reactable(
+    us_states,
+    group_by=["Region", "Division"],
+    columns=[
+        Column(id="Division", aggregate="unique"),
+        Column(id="Area", aggregate="sum", format=ColFormat(separators=True)),
+    ],
+)
+
+```
 
 ## Custom aggregate function
 
@@ -69,8 +101,30 @@ TODO
 
 By default, sub rows are excluded from pagination and always shown on the same page when expanded. To include sub rows in pagination, you can set `paginate_sub_rows=True`. This is recommended for grouped tables with a large number of rows where expanded rows may not all fit on one page.
 
-{{< embed ../examples/index.qmd#group-by-paginate-sub-rows echo=true >}}
+```{python}
+# | label: group-by-paginate-sub-rows
+data = cars_93[["manufacturer", "model", "type", "price", "mpg_city"]]
+
+Reactable(
+    data=cars_93,
+    group_by="type",
+    paginate_sub_rows=True,
+)
+```
 
 ## Sticky column groups
 
-{{< embed ../examples/index.qmd#sticky-column-groups echo=true >}}
+```{python}
+# | label: sticky-column-groups
+Reactable(
+    cars_93[:5, :],
+    column_groups=[
+        ColGroup(name="Make", columns=["manufacturer", "model"], sticky="left"),
+        ColGroup(name="Price", columns=["min_price", "price", "max_price"], sticky="left"),
+    ],
+    default_col_def=Column(footer="Footer"),
+    resizable=True,
+    wrap=False,
+    bordered=True,
+)
+```

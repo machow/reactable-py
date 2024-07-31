@@ -2,26 +2,83 @@
 title: Column resizing
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, ColGroup
+from reactable.data import cars_93
+```
 
 You can make columns resizable by setting `resizable=True`:
 
-{{< embed ../examples/index.qmd#resize-columns echo=true >}}
+```{python}
+# | label: resize-columns
+Reactable(
+    cars_93[:5, :],
+    resizable=True,
+    wrap=False,
+    bordered=True,
+)
+```
+
 
 ## Sticky columns
 
 You can make columns sticky when scrolling horizontally using the `sticky=` argument in `Column` or `ColGroup`. Set sticky to either `"left"` or `"right"` to make the column stick to the left or right side.
 
-{{< embed ../examples/index.qmd#sticky-columns echo=true >}}
+```{python}
+# | label: sticky-columns
+Reactable(
+    cars_93[:5, :],
+    columns=[
+        Column(
+            id="manufacturer",
+            sticky="left",
+            style={"border-right": "1px solid #eee"},
+            header_style={"border-right": "1px solid #eee"},
+        ),
+        Column(
+            id="make",
+            sticky="right",
+            style={"border-left": "1px solid #eee"},
+            header_style={"border-left": "1px solid #eee"},
+        ),
+    ],
+    default_col_def=Column(min_width=150),
+)
+```
 
 Note that the border between two column headers can now be clicked and dragged to change the size of a column.
 
 ### Multiple sticky columns
 
-{{< embed ../examples/index.qmd#sticky-columns-multiple echo=true >}}
+```{python}
+# | label: sticky-columns-multiple
+stick_style = {"background-color": "#f7f7f7"}
+
+Reactable(
+    cars_93[:5, :],
+    columns=[
+        Column(id="manufacturer", sticky="left", style=stick_style, header_style=stick_style),
+        Column(id="make", sticky="left", style=stick_style, header_style=stick_style),
+        Column(id="type", sticky="left", style=stick_style, header_style=stick_style),
+    ],
+)
+```
 
 ### Sticky column groups
 
 If a column group is sticky, all columns in the group will automatically be made sticky.
 
-{{< embed ../examples/index.qmd#sticky-column-groups echo=true >}}
+```{python}
+# | label: sticky-column-groups
+Reactable(
+    cars_93[:5, :],
+    column_groups=[
+        ColGroup(name="Make", columns=["manufacturer", "model"], sticky="left"),
+        ColGroup(name="Price", columns=["min_price", "price", "max_price"], sticky="left"),
+    ],
+    default_col_def=Column(footer="Footer"),
+    resizable=True,
+    wrap=False,
+    bordered=True,
+)
+```

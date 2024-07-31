@@ -4,11 +4,10 @@ jupyter: python3
 ---
 
 ```{python}
-import polars as pl
 import htmltools as html
+
 from reactable.data import cars_93
-from reactable import Reactable, reactable, Props, embed_css
-from reactable.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+from reactable import Reactable, Column, embed_css
 
 embed_css()
 
@@ -18,6 +17,8 @@ data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
 ## Cells
 
 ```{python}
+from reactable.models import CellInfo
+
 def fmt_cell_red(ci: CellInfo):
     return html.div(ci.value.upper(), style="color: red")
 
@@ -31,6 +32,8 @@ Reactable(
 ## Headers
 
 ```{python}
+from reactable.models import  HeaderCellInfo 
+
 def fmt_header(ci: HeaderCellInfo):
     return html.div(f"name: {ci.name}", html.br(), f"value: {ci.value}")
 
@@ -44,6 +47,8 @@ Reactable(
 ## Footers
 
 ```{python}
+from reactable.models import ColInfo
+
 def fmt_footer(ci: ColInfo):
     ttl = sum(ci.values)
     return f"${ttl:.2f}"
@@ -61,10 +66,14 @@ Note that a sum of `$79.10` appears at the bottom right of the table. Importantl
 ## Expandable row details
 
 ```{python}
+from reactable.models import RowInfo
+
+
+# TODO: explain use of to_widget
 def fmt_details(ci: RowInfo):
     return html.div(
         f"Details for row: {ci.row_index}",
-        reactable(Props(data[ci.row_index, :])),
+        Reactable(data[ci.row_index, :]).to_widget(),
     )
 
 
@@ -74,10 +83,15 @@ Reactable(
 )
 ```
 
+
+
+
 ## Why use javascript? Dynamic filtering
 
 
 ```{python}
+from reactable.models import JS
+
 js_footer = JS(
     """
 function(column, state) {

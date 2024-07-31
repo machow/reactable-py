@@ -3,11 +3,10 @@ title: Rendering header and footer
 ---
 
 ```{python}
-import polars as pl
 import htmltools as html
+
 from reactable.data import cars_93
-from reactable import Reactable, reactable, Props, embed_css
-from reactable.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
+from reactable import Reactable, Column, embed_css
 
 embed_css()
 
@@ -17,6 +16,8 @@ data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
 ## Headers
 
 ```{python}
+from reactable.models import HeaderCellInfo
+
 def fmt_header(ci: HeaderCellInfo):
     return html.div(f"name: {ci.name}", html.br(), f"value: {ci.value}")
 
@@ -30,6 +31,9 @@ Reactable(
 ## Footers
 
 ```{python}
+from reactable.models import ColInfo
+
+
 def fmt_footer(ci: ColInfo):
     ttl = sum(ci.values)
     return f"${ttl:.2f}"

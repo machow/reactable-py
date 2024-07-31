@@ -2,19 +2,263 @@
 title: Table styling
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
-{{< embed ../examples/index.qmd#style-table-highlight echo=true >}}
-{{< embed ../examples/index.qmd#style-table-border echo=true >}}
-{{< embed ../examples/index.qmd#style-table-borderless echo=true >}}
-{{< embed ../examples/index.qmd#style-table-outlined echo=true >}}
-{{< embed ../examples/index.qmd#style-table-striped echo=true >}}
-{{< embed ../examples/index.qmd#style-table-bordered echo=true >}}
-{{< embed ../examples/index.qmd#style-table-outlined-borderless echo=true >}}
-{{< embed ../examples/index.qmd#style-table-compact echo=true >}}
-{{< embed ../examples/index.qmd#style-table-wrap echo=true >}}
-{{< embed ../examples/index.qmd#style-table-height-sticky-footer echo=true >}}
-{{< embed ../examples/index.qmd#style-column-widths echo=true >}}
-{{< embed ../examples/index.qmd#style-full-width echo=true >}}
-{{< embed ../examples/index.qmd#style-min-max-width echo=true >}}
-{{< embed ../examples/index.qmd#style-vertical-alignment echo=true >}}
-{{< embed ../examples/index.qmd#style-custom-css echo=true >}}
+```{python}
+from reactable import Reactable, Column, embed_css
+from reactable.data import cars_93, starwars
+
+
+embed_css()
+
+starwars_small = starwars[:5, :10]
+```
+
+
+### Highlight rows on hover
+
+```{python}
+# | label: style-table-highlight
+Reactable(
+    starwars_small,
+    highlight=True,
+)
+
+```
+
+### Bordered
+
+```{python}
+# | label: style-table-border
+Reactable(
+    starwars_small,
+    bordered=True,
+)
+```
+
+
+### Borderless
+
+
+```{python}
+# | label: style-table-borderless
+Reactable(
+    starwars_small,
+    borderless=True,
+)
+
+```
+
+### Outlined
+
+```{python}
+# | label: style-table-outlined
+Reactable(
+    starwars_small,
+    outlined=True,
+)
+```
+
+### Striped
+
+
+```{python}
+# | label: style-table-striped
+Reactable(
+    starwars_small,
+    striped=True,
+)
+```
+
+### Bordered + striped + highlighting
+
+
+```{python}
+# | label: style-table-bordered
+Reactable(
+    starwars_small,
+    bordered=True,
+    striped=True,
+    highlight=True,
+)
+```
+
+### Outlined + borderless
+
+```{python}
+# | label: style-table-outlined-borderless
+Reactable(
+    starwars_small,
+    outlined=True,
+    borderless=True,
+)
+```
+
+### Compact
+
+
+```{python}
+# | label: style-table-compact
+Reactable(
+    starwars_small,
+    compact=True,
+)
+```
+
+### No text wrapping
+
+
+```{python}
+# | label: style-table-wrap
+import polars as pl
+import polars.selectors as cs
+
+Reactable(
+    starwars[["name", "species", "films"]],
+    wrap=False,
+    resizable=True,
+    bordered=True,
+    default_page_size=5,
+)
+```
+
+### Fixed height + sticky header/footer
+
+
+```{python}
+# | label: style-table-height-sticky-footer
+import htmltools
+
+Reactable(
+    starwars_small,
+    height=270,
+    striped=True,
+    default_col_def=Column(
+        footer=lambda col_info: htmltools.div(col_info.name, style="font-weight: bold")
+    ),
+)
+```
+
+### Column widths
+
+
+```{python}
+# | label: style-column-widths
+Reactable(
+    cars_93[:6, ["make", "type", "weight"]],
+    columns=[
+        Column(id="make", min_width=200),
+        Column(id="type", min_width=100),
+        Column(id="weight", min_width=100),
+    ],
+    bordered=True,
+)
+```
+
+### No full width
+
+
+```{python}
+# | label: style-full-width
+Reactable(
+    cars_93[:6, :5],
+    full_width=False,
+    bordered=True,
+    default_col_def=Column(min_width=120),
+)
+```
+
+You can also set a maximum or fixed width on the table:
+
+```{python}
+# | label: style-min-max-width
+Reactable(
+    cars_93[:6, :5],
+    full_width=False,
+    bordered=True,
+    default_col_def=Column(min_width=120),
+    # Set a maximum width on the table
+    style={"max-width": 650},
+    # or a fixed width:
+    width=650,
+)
+
+```
+
+### Vertical alignment
+
+```{python}
+# | label: style-vertical-alignment
+from htmltools import div
+from reactable.models import CellInfo
+
+data = starwars[:6, ["name", "height", "mass", "gender", "homeworld", "species"]]
+
+
+def render_species(ci: CellInfo):
+    species = data[ci.row_index, "species"]
+    species_name = species if species else "Unknown"
+    return div(
+        div(ci.value, style="font-weight: 600"),
+        div(species_name, style="font-size: 0.75rem"),
+    )
+
+
+Reactable(
+    data,
+    columns=[
+        Column(
+            id="name",
+            name="Character / Species",
+            cell=render_species,
+        ),
+        Column(id="species", show=False),
+    ],
+    default_col_def=Column(v_align="center", header_v_align="bottom"),
+    bordered=True,
+)
+```
+
+### Custom CSS
+
+
+
+```{python}
+# | label: style-custom-css
+from IPython.display import display, HTML
+
+display(
+    HTML(
+        """
+<style>
+.my-tbl {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.my-header {
+  border-width: 1px;
+}
+
+.my-col {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.my-row:hover {
+  background-color: #f5f8ff;
+}
+</style>
+"""
+    )
+)
+
+Reactable(
+    starwars_small,
+    default_page_size=6,
+    borderless=True,
+    class_="my-tbl",
+    default_col_def=Column(header_class="my-header"),
+    columns=[
+        Column(id="name", class_="my-col"),
+    ],
+    row_class="my-row",
+)
+
+```

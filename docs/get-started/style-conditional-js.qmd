@@ -2,15 +2,66 @@
 title: Javascript styling
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable, Column, JS, embed_css
+from reactable.data import cars_93, sleep
+
+embed_css()
+
+```
 
 ## Cell style
 
-{{< embed ../examples/index.qmd#style-cond-cell-js echo=true >}}
+```{python}
+# | label: style-cond-cell-js
+js_style = JS(
+    """function(rowInfo) {
+      const value = rowInfo.values['extra']
+      let color
+      if (value > 0) {
+        color = '#008000'
+      } else if (value < 0) {
+        color = '#e00000'
+      } else {
+        color = '#777'
+      }
+      return { color: color, fontWeight: 'bold' }
+    }"""
+)
+Reactable(
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=js_style,
+        )
+    ],
+)
+```
 
 ## Row style
 
-{{< embed ../examples/index.qmd#style-cond-row-js echo=true >}}
+```{python}
+# | label: style-cond-row-js
+
+Reactable(
+    sleep[:6, :],
+    row_style=JS(
+        """function(rowInfo) {
+    if (rowInfo.values['extra'] < -1) {
+      return { background: 'rgba(0, 0, 0, 0.05)' }
+    }
+  }"""
+    ),
+    row_class=JS(
+        """function(rowInfo) {
+    if (rowInfo.values['extra'] < -1) {
+      return 'bold'
+    }
+  }"""
+    ),
+)
+```
 
 ## Metadata
 
@@ -24,4 +75,54 @@ Simplify JavaScript style functions that need access to data outside of the tabl
 Dynamically change how data is styled without rerendering the table
 Share JavaScript code or data between different style functions
 
-{{< embed ../examples/index.qmd#style-metadata echo=true >}}
+```{python}
+# | label: style-metadata
+
+from IPython.display import display
+
+cars = cars_93[:6, ["manufacturer", "model", "type", "price", "mpg_city"]]
+
+js_mpg_background = JS(
+    """function(rowInfo, column, state) {
+        const { showColors, mpgColor } = state.meta
+        if (showColors) {
+            return { 
+              backgroundColor: rowInfo.values[column.id] > 20 ? mpgColor : 'transparent'
+            }
+        }
+    }
+"""
+)
+
+bb = Reactable(
+    cars,
+    columns=[
+        Column(
+            id="mpg_city",
+            style=js_mpg_background,
+        )
+    ],
+    meta={
+        # yellow
+        "mpgColor": "#ff9f1a",
+        "showColors": True,
+    },
+    element_id="cars-colors-table",
+)
+
+import htmltools as ht
+
+clicker = ht.TagList(
+    ht.tags.label(
+        ht.tags.input(
+            type="checkbox",
+            checked=None,
+            onclick="Reactable.setMeta('cars-colors-table', function(prevMeta) { return { showColors: !prevMeta.showColors } })",
+        ),
+        "Show color scale",
+    ),
+)
+
+display(bb)
+clicker
+```

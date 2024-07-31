@@ -5,13 +5,15 @@ format:
   html:
     toc: true
     css: styles.css
+    grid:
+      body-width: 850px
 
 execute:
   daemon: false
 
 
 website:
-  title: "react_tables" 
+  title: "reactable-py" 
   navbar:
     left:
       - text: Get Started
@@ -45,10 +47,10 @@ website:
             - get-started/controls-click-actions.qmd
         - section: "Structure"
           contents:
-            - get-started/structure-grouping.qmd
-            - get-started/structure-footers.qmd
-            - get-started/structure-details.qmd
             - get-started/structure-column-groups.qmd
+            - get-started/structure-grouping.qmd
+            - get-started/structure-details.qmd
+            - get-started/structure-footers.qmd
             - get-started/structure-rownames.qmd
         - section: "Format"
           contents:

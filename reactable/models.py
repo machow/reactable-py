@@ -1019,7 +1019,14 @@ class Reactable(Props):
 
     """
 
+    def tagify(self) -> str:
+        # to appease htmltools
+        return str(self)
+
     def _repr_mimebundle_(self, **kwargs: dict) -> tuple[dict, dict] | None:
+        return self.to_widget()._repr_mimebundle_()
+
+    def to_widget(self):
         from .widgets import BigblockWidget
 
-        return BigblockWidget(props=self.to_props())._repr_mimebundle_()
+        return BigblockWidget(props=self.to_props())

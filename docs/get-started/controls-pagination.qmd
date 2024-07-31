@@ -2,21 +2,40 @@
 title: Pagination
 ---
 
-{{< embed ../examples/index.qmd#setup echo=true >}}
+```{python}
+from reactable import Reactable
+from reactable.data import cars_93
+
+```
 
 You can change the default page size by configuring `default_page_size`:
 
-{{< embed ../examples/index.qmd#pagination echo=true >}}
+```{python}
+# | label: pagination
+Reactable(cars_93, default_page_size=4)
+```
 
 You can also set the minimum rows per page using `min_rows`. This may be useful when rows don’t completely fill the page, or if the table has filtering:
 
-{{< embed ../examples/index.qmd#pagination-min-rows echo=true >}}
+```{python}
+# | label: pagination-min-rows
+Reactable(cars_93, default_page_size=4, min_rows=4, searchable=True)
+
+```
 
 ### Page size options
 
 You can show a dropdown of page sizes for users to choose from using `show_page_size_options`. The page size options can be customized through `page_size_options`:
 
-{{< embed ../examples/index.qmd#pagination-size-options echo=true >}}
+```{python}
+# | label: pagination-size-options
+Reactable(
+    cars_93,
+    show_page_size_options=True,
+    page_size_options=[4, 8, 12],
+    default_page_size=4,
+)
+```
 
 ### Alternative pagination types
 
@@ -27,30 +46,73 @@ You can use an alternative pagination type by setting `pagination_type` to:
 
 #### Page jump
 
-{{< embed ../examples/index.qmd#pagination-type-jump echo=true >}}
+```{python}
+# | label: pagination-type-jump
+Reactable(
+    cars_93,
+    pagination_type="jump",
+    default_page_size=4,
+)
+```
 
 #### Simple
 
-{{< embed ../examples/index.qmd#pagination-type-simple echo=true >}}
+```{python}
+# | label: pagination-type-simple
+Reactable(
+    cars_93,
+    pagination_type="simple",
+    default_page_size=4,
+)
+```
 
 ### Hide page info
 
-{{< embed ../examples/index.qmd#pagination-page-info-false echo=true >}}
+```{python}
+# | label: pagination-page-info-false
+Reactable(
+    cars_93,
+    show_page_info=False,
+    default_page_size=4,
+)
+```
 
 
-{{< embed ../examples/index.qmd#pagination-page-size echo=true >}}
+```{python}
+# | label: pagination-page-size
+Reactable(
+    cars_93,
+    show_page_info=False,
+    show_page_size_options=True,
+    default_page_size=4,
+)
+```
 
 ### Always show pagination
 
 By default, pagination is hidden if the table only has one page. To keep the pagination shown, set `show_pagination=True`. This is especially useful if you want to keep the page info showing the number of rows in the table.
 
-{{< embed ../examples/index.qmd#pagination-show echo=true >}}
+```{python}
+# | label: pagination-show
+Reactable(
+    cars_93,
+    show_pagination=True,
+)
+```
 
 ### No pagination
 
 Tables are paginated by default, but you can disable pagination by setting `pagination=False`:
 
-{{< embed ../examples/index.qmd#pagination-false echo=true >}}
+```{python}
+# | label: pagination-false
+Reactable(
+    cars_93,
+    pagination=False,
+    highlight=True,
+    height=250,
+)
+```
 
 :::{.callout-tip}
 Disabling pagination is not recommended for large tables with many interactive elements (such as links, expand buttons, or selection checkboxes), as that can make it difficult for keyboard users to navigate the page.

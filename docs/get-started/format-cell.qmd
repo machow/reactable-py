@@ -3,11 +3,9 @@ title: Rendering cells
 ---
 
 ```{python}
-import polars as pl
 import htmltools as html
+from reactable import Reactable, Column, embed_css
 from reactable.data import cars_93
-from reactable import Reactable, reactable, Props, embed_css
-from reactable.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
 
 embed_css()
 
@@ -15,6 +13,9 @@ data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
 ```
 
 ```{python}
+from reactable.models import CellInfo
+
+
 def fmt_cell_red(ci: CellInfo):
     return html.div(ci.value.upper(), style="color: red")
 
