@@ -216,7 +216,7 @@ class Props:
     pagination: bool | None = None
     default_col_def: InitVar[Column | None] = None
     default_sort_order: InitVar[Literal["asc", "desc"]] = "asc"
-    default_sorted: list[str] | None = None
+    default_sorted: list[str] | dict[str, str] | None = None
     default_page_size: int | None = None
     show_page_size_options: bool | None = None
     page_size_options: list[int] = field(default_factory=lambda: [10, 25, 50, 100])
@@ -238,7 +238,7 @@ class Props:
     bordered: bool = False
     borderless: bool = False
     striped: bool = False
-    compact: bool = True
+    compact: bool = False
 
     wrap: InitVar[bool] = True
 
@@ -322,7 +322,7 @@ class Props:
                 resizable=False,
                 width=45,
                 align="center",
-            )
+            ).merge(default_col_def)
 
             if isinstance(details, Column):
                 col_details = details.merge(details_default)
@@ -412,9 +412,15 @@ class Props:
     def derive_default_sorted(self, default_sort_order: Literal["asc", "desc"]):
         if self.default_sorted is None:
             return
+        elif isinstance(self.default_sorted, str):
+            raise TypeError(
+                "default_sorted must be a list or dictionary,"
+                f" but received string: {self.default_sorted}"
+            )
 
         out = []
         for col in self.columns:
+            # TODO: should raise if no match in any columns
             if col.id in self.default_sorted:
                 out.append(
                     dict(
@@ -621,7 +627,10 @@ class Column:
     def infer_type(self, series):
         return replace(self, type=col_type(series))
 
-    def merge(self, other: Column):
+    def merge(self, other: Column | None):
+        if other is None:
+            return self
+
         field_attrs = {field.name: getattr(self, field.name) for field in fields(self)}
         return replace(other, **filter_none(field_attrs))
 

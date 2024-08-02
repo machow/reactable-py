@@ -19,12 +19,18 @@ def embed_css():
 
     p_css = Path(STATIC_FILES / "reactable-py.esm.css")
 
+    # TODO: the link tag exists, because reactable expects it as part
+    # of its theme css loading process
+    # see https://github.com/glin/reactable/blob/363068caab2fa708b247a4ab0f73cdc694223587/srcjs/theme.js#L239
     display(
         HTML(
             f"""
+    <div>
     <style>
     {p_css.read_text()}
     </style>
+    <link href="/reactable.css" rel="stylesheet">
+    </div>
     """
         )
     )

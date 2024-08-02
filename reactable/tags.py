@@ -20,6 +20,25 @@ def to_hydrate_format(el: htmltools.Tag | str):
     }
 
 
+def to_widget(el: htmltools.Tag):
+    import ipyreact
+    from reactable import Reactable
+
+    if isinstance(el, htmltools.TagList):
+        raise NotImplementedError()
+
+    elif isinstance(el, Reactable):
+        return el.to_widget()
+    elif not isinstance(el, htmltools.Tag):
+        return el
+
+    return ipyreact.Widget(
+        _type=el.name,
+        props=process_attrs(el.attrs),
+        children=[to_widget(child) for child in el.children],
+    )
+
+
 def process_attrs(attrs: dict):
     res = {k: v if k != "style" else as_react_style(v) for k, v in attrs.items()}
 
