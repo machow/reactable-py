@@ -1,0 +1,5 @@
+# CellInfo { #reactable.CellInfo }
+
+`CellInfo(value, row_index, column_name)`
+
+Cell data for custom rendering of cells, class_, and style.

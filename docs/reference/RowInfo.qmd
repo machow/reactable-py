@@ -1,0 +1,5 @@
+# RowInfo { #reactable.RowInfo }
+
+`RowInfo(row_index, column_name)`
+
+Row data for custom rendering of details.

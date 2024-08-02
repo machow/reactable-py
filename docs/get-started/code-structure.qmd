@@ -34,11 +34,11 @@ Reactable(
     ],
     bordered=True,
     theme=Theme(
-        backgroundColor="#ad85ff",
+        background_color="#ad85ff",
     ),
     language=Language(
-        pageNext="SLAM THE NEXT PAGE",
-        pagePrevious="GO BACK",
+        page_next="SLAM THE NEXT PAGE",
+        page_previous="GO BACK",
     ),
     filterable=True,
     default_page_size=2,
@@ -192,7 +192,7 @@ Reactable(
     cars,
     bordered=True,
     theme=Theme(
-        backgroundColor="#ad85ff",
+        background_color="#ad85ff",
     ),
 )
 ```
@@ -205,8 +205,8 @@ The `language=` argument uses the `Language()` class to customize text prompts o
 Reactable(
     cars,
     language=Language(
-        pageNext="TAKE ME TO THE NEXT PAGE",
-        pagePrevious="GO BACK",
+        page_next="TAKE ME TO THE NEXT PAGE",
+        page_previous="GO BACK",
     ),
     default_page_size=2,
 )
@@ -238,11 +238,11 @@ Reactable(
     ],
     bordered=True,
     theme=Theme(
-        backgroundColor="#ad85ff",
+        background_color="#ad85ff",
     ),
     language=Language(
-        pageNext="SLAM THE NEXT PAGE",
-        pagePrevious="GO BACK",
+        page_next="SLAM THE NEXT PAGE",
+        page_previous="GO BACK",
     ),
     filterable=True,
     default_page_size=2,

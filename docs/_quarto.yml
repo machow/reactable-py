@@ -107,3 +107,6 @@ quartodoc:
       contents:
         - CellInfo
         - RowInfo
+        - ColInfo
+        - HeaderCellInfo
+        - JS

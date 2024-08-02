@@ -1,0 +1,5 @@
+# HeaderCellInfo { #reactable.HeaderCellInfo }
+
+`HeaderCellInfo(value, name=None)`
+
+Header cell data for custom rendering of column header (column labels).

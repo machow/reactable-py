@@ -23,14 +23,14 @@ Reactable(
     highlight=True,
     bordered=True,
     theme=Theme(
-        borderColor="#dfe2e5",
-        stripedColor="#f6f8fa",
-        highlightColor="#f0f5f9",
-        cellPadding="8px 12px",
+        border_color="#dfe2e5",
+        striped_color="#f6f8fa",
+        highlight_color="#f0f5f9",
+        cell_padding="8px 12px",
         style={
             "font-family": "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
         },
-        searchInputStyle={"width": "100%"},
+        search_input_style={"width": "100%"},
     ),
 )
 
@@ -45,14 +45,14 @@ To set the default theme for all tables, set the global `reactable.options.theme
 # | label: theme-global
 options.theme = Theme(
     color="hsl(233, 9%, 87%)",
-    backgroundColor="hsl(233, 9%, 19%) !important",
-    borderColor="hsl(233, 9%, 22%) !important",
-    stripedColor="hsl(233, 12%, 22%)",
-    highlightColor="hsl(233, 12%, 24%)",
-    inputStyle={"background-color": "hsl(233, 9%, 25%) !important"},
-    selectStyle={"background-color": "hsl(233, 9%, 25%)"},
-    pageButtonHoverStyle={"background-color": "hsl(233, 9%, 25%)"},
-    pageButtonActiveStyle={"background-color": "hsl(233, 9%, 28%)"},
+    background_color="hsl(233, 9%, 19%) !important",
+    border_color="hsl(233, 9%, 22%) !important",
+    striped_color="hsl(233, 12%, 22%)",
+    highlight_color="hsl(233, 12%, 24%)",
+    input_style={"background-color": "hsl(233, 9%, 25%) !important"},
+    select_style={"background-color": "hsl(233, 9%, 25%)"},
+    page_button_hover_style={"background-color": "hsl(233, 9%, 25%)"},
+    page_button_active_style={"background-color": "hsl(233, 9%, 28%)"},
 )
 
 Reactable(

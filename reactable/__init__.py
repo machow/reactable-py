@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from .models import (
-    Props,
     Reactable,
     Column,
     ColGroup,
     ColFormat,
     ColFormatGroupBy,
     CellInfo,
+    ColInfo,
+    HeaderCellInfo,
     RowInfo,
     Theme,
     Language,
@@ -26,6 +27,8 @@ __all__ = [
     "ColFormat",
     "ColFormatGroupBy",
     "CellInfo",
+    "ColInfo",
+    "HeaderCellInfo",
     "RowInfo",
     "JS",
     "reactable",

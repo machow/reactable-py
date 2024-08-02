@@ -135,6 +135,15 @@ def str_to_list(x: str | list[str]) -> list[str]:
 
 @dataclass
 class JS:
+    """A javascript function for rendering.
+
+    Parameters:
+    -----------
+    code:
+        The javascript code. This should be a javascript function, and will be evaluated
+        when the Reactable table is rendered.
+    """
+
     code: str
 
     def to_props(self):
@@ -175,12 +184,16 @@ class TableInfo:
 
 @dataclass
 class HeaderCellInfo:
+    """Header cell data for custom rendering of column header (column labels)."""
+
     value: Any
     name: str | None = None
 
 
 @dataclass
 class CellInfo:
+    """Cell data for custom rendering of cells, class_, and style."""
+
     value: Any
     row_index: Any
     column_name: Any
@@ -188,12 +201,16 @@ class CellInfo:
 
 @dataclass
 class RowInfo:
+    """Row data for custom rendering of details."""
+
     row_index: int
     column_name: str
 
 
 @dataclass
 class ColInfo:
+    """Column data for custom rendering of footers."""
+
     values: list[Any]
     name: str
 
@@ -468,8 +485,52 @@ class Props:
         return to_camel_dict(filter_none(out))
 
 
+"""
+prefix
+Prefix string.
+
+"""
+
+
 @dataclass
 class ColFormat:
+    """Specify formatting for a Column.
+
+    Parameters
+    ----------
+    prefix:
+        Prefix string.
+    suffix:
+        Suffix string.
+    digits:
+        Number of decimal digits to use for numbers.
+    separators:
+        Whether to use grouping separators for numbers, such as thousands separators or
+        thousand/lakh/crore separators. The format is locale-dependent.
+    percent:
+        Format number as a percentage? The format is locale-dependent.
+    currency:
+        Currency format. An ISO 4217 currency code such as "USD" for the US dollar,
+        "EUR" for the euro, or "CNY" for the Chinese RMB. The format is locale-dependent.
+    datetime:
+        Whether to format as a locale-dependent date-time.
+    date:
+        Whether to format as a locale-dependent date.
+    time:
+        Whether to format as a locale-dependent time.
+    hour12:
+        Whether to use 12-hour time (True) or 24-hour time (False). The default time convention is locale-dependent.
+    locales:
+        Locales to use for number, date, time, and currency formatting. A character vector of
+        BCP 47 language tags, such as "en-US" for English (United States), "hi" for Hindi,
+        or "sv-SE" for Swedish (Sweden). Defaults to the locale of the user's browser.
+
+        Multiple locales may be specified to provide a fallback language in case a locale is
+        unsupported. When multiple locales are specified, the first supported locale will be used.
+
+        See a list of common BCP 47 language tags for reference.
+    """
+
     prefix: str | None = None
     suffix: str | None = None
     digits: int | None = None
@@ -488,6 +549,16 @@ class ColFormat:
 
 @dataclass
 class ColFormatGroupBy:
+    """Specify formatters for standard and aggregate cells.
+
+    Parameters
+    ----------
+    cell:
+        Column formatting options for standard cells.
+    aggregated:
+        Column formatting options for aggregated cells.
+    """
+
     cell: ColFormat | None = None
     aggregated: ColFormat | None = None
 
@@ -497,7 +568,109 @@ class ColFormatGroupBy:
 
 @dataclass
 class Column:
-    id: str | None = None
+    """Configure a table column.
+
+    Parameters
+    ----------
+    name:
+        The name to display in the header.
+    aggregate:
+        Aggregate function to use when rows are grouped. The name of a built-in aggregate
+        function or a custom JS() aggregate function. Built-in aggregate functions are:
+        "mean", "sum", "max", "min", "median", "count", "unique", and "frequency".
+
+        To enable row grouping, use the group_by argument in `Reactable()`.
+    sortable:
+        Whether to enable sorting. Overrides the table option.
+    resizable:
+        Whether to enable column resizing. Overrides the table option.
+    filterable:
+        Whether to enable column filtering. Overrides the table option.
+    searchable:
+        Whether to enable global table searching for this column. By default, global searching
+        applies to all visible columns. Set this to False to exclude a visible column from searching,
+        or True to include a hidden column in searching.
+    filter_method:
+        Custom filter method to use for column filtering. A `JS()` function that takes an array of
+        row objects, the column ID, and the filter value as arguments, and returns the filtered
+        array of row objects.
+    show:
+        Whether to show the column.
+    default_sort_order:
+        Default sort order. Either "asc" for ascending order or "desc" for descending order.
+        Overrides the table option.
+    sort_na_last:
+        Always sort missing values (e.g. None, nan, NAs) last?
+    format:
+        Column formatting options. A `ColFormat()` object to format all cells, or a
+        `ColFormatGroupBy()` to format standard cells ("cell") and aggregated cells ("aggregated")
+        separately.
+    cell:
+        Custom cell renderer. A Python function that takes a `CellInfo()` object, or
+        a `JS()` function that takes a cell info object and table state object as arguments.
+    grouped:
+        Custom grouped cell renderer. A `JS()` function that takes a cell info object
+        and table state object as arguments.
+    aggregated:
+        Custom aggregated cell renderer. A `JS()` function that takes a cell info object
+        and table state object as arguments.
+    header:
+        Custom header renderer. A Python function that takes a `HeaderCellInfo()` object or a
+        `JS()` function that takes a column object and table state object as arguments.
+    footer:
+        Footer content or render function. Render functions can be a Python function that takes
+        a `ColInfo()` object, or a `JS()` function that takes a column object and table state object
+        as arguments.
+    details:
+        Additional content to display when expanding a row. A Python function that takes a `RowInfo()`
+        object, or a `JS()` function that takes a row info object and table state object as arguments.
+    html:
+        Whether to render content as HTML. Raw HTML strings are escaped by default.
+    na:
+        String to display for missing values (e.g. None, nan, NAs). By default, missing values are
+        displayed as blank cells.
+    row_header:
+        Whether to mark up cells in this column as row headers. Set this to True to help users
+        navigate the table using assistive technologies. When cells are marked up as row headers,
+        assistive technologies will read them aloud while navigating through cells in the table.
+        Cells in the row names column are automatically marked up as row headers.
+    min_width:
+        Minimum width of the column in pixels. Defaults to 100.
+    max_width:
+        Maximum width of the column in pixels.
+    width:
+        Fixed width of the column in pixels. Overrides min_width and max_width.
+    align:
+        Horizontal alignment of content in the column. One of "left", "right", "center".
+        By default, all numbers are right-aligned, while all other content is left-aligned.
+    v_align:
+        Vertical alignment of content in data cells. One of "top" (the default), "center", "bottom".
+    header_v_align:
+        Vertical alignment of content in header cells. One of "top" (the default), "center", "bottom".
+    sticky:
+        Make the column sticky when scrolling horizontally. Either "left" or "right" to make the
+        column stick to the left or right side. If a sticky column is in a column group, all columns
+        in the group will automatically be made sticky, including the column group header.
+    class_:
+        Additional CSS classes to apply to cells. Can also be a Python function that takes
+        a `CellInfo()` object, or a `JS()` function that takes a row info object, column object,
+        and table state object as arguments.
+    style:
+        Inline styles to apply to cells. A named list or character string. Can also be a Python
+        function that takes the cell value, or a `JS()` function that takes a row info object,
+        column object, and table state object as arguments.
+    header_class:
+        Additional CSS classes to apply to the header.
+    header_style:
+        Inline styles to apply to the header. A named list or character string.
+    footer_class:
+        Additional CSS classes to apply to the footer.
+    footer_style:
+        Inline styles to apply to the footer. A named list or character string.
+    id:
+        This is currently used internally, and should not be set by the user.
+    """
+
     name: str | None = None
     aggregate: (
         Literal["mean", "sum", "max", "min", "median", "count", "unique", "frequency"]
@@ -536,6 +709,7 @@ class Column:
     header_style: CssStyles | None = None
     footer_class: list[str] | None = None
     footer_style: CssRules | None = None
+    id: str | None = None
 
     # internal ----
     # TODO: ideally this cannot be specified in the constructor
@@ -649,55 +823,141 @@ class Column:
 
 @dataclass
 class ColGroup:
+    """Configure a column group (spanner).
+
+    Parameters
+    ----------
+    name:
+        Column group header name.
+    columns:
+        Character vector of column names in the group.
+    header:
+        Custom header renderer. A Python function that takes a `HeaderCellInfo()` object, or
+        a JS() function that takes a column object and table state object as arguments.
+    html:
+        Render header content as HTML? Raw HTML strings are escaped by default.
+    align:
+        Horizontal alignment of content in the column group header.
+        One of "left", "right", "center" (the default).
+    header_v_align:
+        Vertical alignment of content in the column group header.
+        One of "top" (the default), "center", "bottom".
+    sticky:
+        Make the column group sticky when scrolling horizontally?  Either "left" or "right".
+
+        If a column group is sticky, all columns in the group will automatically be made sticky.
+    header_class:
+        Additional CSS classes to apply to the header.
+    header_style:
+        Inline styles to apply to the header. A dictionary mapping CSS style names to values.
+    """
+
     name: str | None = None
     columns: list[str] | None = None
     header: Callable[[HeaderCellInfo], HTML] | JsFunction | None = None
     html: bool | None = None
     align: Literal["left", "right", "center"] | None = None
-    headerVAlign: Literal["top", "center", "bottom"] | None = None
+    header_v_align: Literal["top", "center", "bottom"] | None = None
     sticky: Literal["left", "right"] | None = None
-    headerClass: list[str] | None = None
-    headerStyle: CssStyles | None = None
+    header_class: list[str] | None = None
+    header_style: CssStyles | None = None
 
     def to_props(self):
-        return filter_none(asdict(self))
+        return to_camel_dict(filter_none(asdict(self)))
 
 
 @dataclass
 class Theme:
+    """Theme configuration.
+
+    Parameters
+    ----------
+    color:
+        Default text color.
+    background_color:
+        Default background color.
+    border_color:
+        Default border color.
+    border_width:
+        Default border width.
+    striped_color:
+        Default row stripe color.
+    highlight_color:
+        Default row highlight color.
+    cell_padding:
+        Default cell padding.
+    style:
+        Additional CSS for the table.
+    table_style:
+        Additional CSS for the table element (excludes the pagination bar and search input).
+    header_style:
+        Additional CSS for header cells.
+    group_header_style:
+        Additional CSS for group header cells.
+    table_body_style:
+        Additional CSS for the table body element.
+    row_group_style:
+        Additional CSS for row groups.
+    row_style:
+        Additional CSS for rows.
+    row_striped_style:
+        Additional CSS for striped rows.
+    row_highlight_style:
+        Additional CSS for highlighted rows.
+    row_selected_style:
+        Additional CSS for selected rows.
+    cell_style:
+        Additional CSS for cells.
+    footer_style:
+        Additional CSS for footer cells.
+    input_style:
+        Additional CSS for inputs.
+    filter_input_style:
+        Additional CSS for filter inputs.
+    search_input_style:
+        Additional CSS for the search input.
+    select_style:
+        Additional CSS for table select controls.
+    pagination_style:
+        Additional CSS for the pagination bar.
+    page_button_style, page_button_hover_style, page_button_active_style, page_button_current_style:
+        Additional CSS for page buttons, page buttons with hover or active states, and the current page button.
+
+    """
+
     color: str | None = None
-    backgroundColor: str | None = None
-    borderColor: str | None = None
-    borderWidth: int | None = None
-    stripedColor: str | None = None
-    highlightColor: str | None = None
-    cellPadding: str | None = None
+    background_color: str | None = None
+    border_color: str | None = None
+    border_width: int | None = None
+    striped_color: str | None = None
+    highlight_color: str | None = None
+    cell_padding: str | None = None
     style: CssRules | None = None
 
-    borderColor: str | None = None
-    borderWidth: str | None = None
-    tableStyle: CssRules | None = None
+    border_color: str | None = None
+    border_width: str | None = None
+    table_style: CssRules | None = None
 
-    headerStyle: CssRules | None = None
-    groupHeaderStyle: CssRules | None = None
-    tableBodyStyle: CssRules | None = None
-    rowGroupStyle: CssRules | None = None
-    rowStyle: CssRules | None = None
-    rowStripedStyle: CssRules | None = None
-    rowHighlightStyle: CssRules | None = None
-    rowSelectedStyle: CssRules | None = None
-    cellStyle: CssRules | None = None
-    footerStyle: CssRules | None = None
-    inputStyle: CssRules | None = None
-    filterInputStyle: CssRules | None = None
-    searchInputStyle: CssRules | None = None
-    selectStyle: CssRules | None = None
+    header_style: CssRules | None = None
+    group_header_style: CssRules | None = None
+    table_body_style: CssRules | None = None
+    row_group_style: CssRules | None = None
+    row_style: CssRules | None = None
+    row_striped_style: CssRules | None = None
+    row_highlight_style: CssRules | None = None
+    row_selected_style: CssRules | None = None
+    cell_style: CssRules | None = None
+    footer_style: CssRules | None = None
+    input_style: CssRules | None = None
+    filter_input_style: CssRules | None = None
+    search_input_style: CssRules | None = None
+    select_style: CssRules | None = None
 
-    paginationStyle: CssRules | None = None
-    pageButtonStyle: CssRules | None = None
-    pageButtonHoverStyle: CssRules | None = None
-    pageButtonActiveStyle: CssRules | None = None
-    pageButtonCurrentStyle: CssRules | None = None
+    pagination_style: CssRules | None = None
+    page_button_style: CssRules | None = None
+    page_button_hover_style: CssRules | None = None
+    page_button_active_style: CssRules | None = None
+    page_button_current_style: CssRules | None = None
 
     def __post_init__(self):
         # TODO: reactable does manual validation, but we could harness
@@ -724,204 +984,101 @@ class Theme:
             # footerBorderWidth="borderWidth",
         )
 
-        return filter_none(renamed)
+        return to_camel_dict(filter_none(renamed))
 
 
 @dataclass
 class Language:
+    """Language options.
+
+    Parameters
+    ----------
+    sort_label:
+        Accessible label for column sort buttons. Takes a `{name}` parameter for the column name.
+    filter_placeholder:
+        Placeholder for column filter inputs.
+    filter_label:
+        Accessible label for column filter inputs. Takes a `{name}` parameter for the column name.
+    search_placeholder:
+        Placeholder for the table search input.
+    search_label:
+        Accessible label for the table search input.
+    no_data:
+        Placeholder text when the table has no data.
+    page_next:
+        Text for the next page button.
+    page_previous:
+        Text for the previous page button.
+    page_numbers:
+        Text for the page numbers info. Only used with the "jump" and "simple" pagination types. Takes the following parameters:
+        {page} for the current page, {pages} for the total number of pages.
+    page_info:
+        Text for the page info. Takes the following parameters:
+        `{rowStart}` for the starting row of the page, `{rowEnd}` for the ending row of the page,
+        `{rows}` for the total number of rows.
+    page_size_options:
+        Text for the page size options input. Takes a {rows} parameter for the page size options input.
+    page_next_label:
+        Accessible label for the next page button.
+    page_previous_label:
+        Accessible label for the previous page button.
+    page_number_label:
+        Accessible label for the page number buttons. Only used with the the "numbers" pagination type. Takes a {page} parameter for the page number.
+    page_jump_label:
+        Accessible label for the page jump input. Only used with the "jump" pagination type.
+    page_size_options_label:
+        Accessible label for the page size options input.
+    group_expand_label:
+        Accessible label for the row group expand button.
+    details_expand_label:
+        Accessible label for the row details expand button.
+    select_all_rows_label:
+        Accessible label for the select all rows checkbox.
+    select_all_sub_rows_label:
+        Accessible label for the select all sub rows checkbox.
+    select_row_label:
+        Accessible label for the select row checkbox.
+    """
+
     # Sorting
-    sortLabel: str = "Sort {name}"
+    sort_label: str = "Sort {name}"
 
     # Filters
-    filterPlaceholder: str = ""
-    filterLabel: str = "Filter {name}"
+    filter_placeholder: str = ""
+    filter_label: str = "Filter {name}"
 
     # Search
-    searchPlaceholder: str = "Search"
-    searchLabel: str = "Search"
+    search_placeholder: str = "Search"
+    search_label: str = "Search"
 
     # Tables
-    noData: str = "No rows found"
+    no_data: str = "No rows found"
 
     # Pagination
-    pageNext: str = "Next"
-    pagePrevious: str = "Previous"
-    pageNumbers: str = "{page} of {pages}"
-    pageInfo: str = "{rowStart}\u2013{rowEnd} of {rows} rows"
-    pageSizeOptions: str = "Show {rows}"
-    pageNextLabel: str = "Next page"
-    pagePreviousLabel: str = "Previous page"
-    pageNumberLabel: str = "Page {page}"
-    pageJumpLabel: str = "Go to page"
-    pageSizeOptionsLabel: str = "Rows per page"
+    page_next: str = "Next"
+    page_previous: str = "Previous"
+    page_numbers: str = "{page} of {pages}"
+    page_info: str = "{rowStart}\u2013{rowEnd} of {rows} rows"
+    page_size_options: str = "Show {rows}"
+    page_next_label: str = "Next page"
+    page_previous_label: str = "Previous page"
+    page_number_label: str = "Page {page}"
+    page_jump_label: str = "Go to page"
+    page_size_options_label: str = "Rows per page"
 
     # Row grouping
-    groupExpandLabel: str = "Toggle group"
+    group_expand_label: str = "Toggle group"
 
     # Row details
-    detailsExpandLabel: str = "Toggle details"
+    details_expand_label: str = "Toggle details"
 
     # Selection
-    selectAllRowsLabel: str = "Select all rows"
-    selectAllSubRowsLabel: str = "Select all rows in group"
-    selectRowLabel: str = "Select row"
+    select_all_rows_label: str = "Select all rows"
+    select_all_sub_rows_label: str = "Select all rows in group"
+    select_row_label: str = "Select row"
 
     def to_props(self):
-        return asdict(self)
-
-
-"""R documentation for reactable function
-
-data
-A data frame or matrix.
-
-Can also be a crosstalk::SharedData object that wraps a data frame.
-
-columns
-Named list of column definitions. See colDef().
-
-columnGroups
-List of column group definitions. See colGroup().
-
-rownames
-Show row names? Defaults to TRUE if the data has row names.
-
-To customize the row names column, add a column definition using ".rownames" as the column name.
-
-Cells in the row names column are automatically marked up as row headers for assistive technologies.
-
-groupBy
-Character vector of column names to group by.
-
-To aggregate data when rows are grouped, use the aggregate argument in colDef().
-
-sortable
-Enable sorting? Defaults to TRUE.
-
-resizable
-Enable column resizing?
-
-filterable
-Enable column filtering?
-
-searchable
-Enable global table searching?
-
-searchMethod
-Custom search method to use for global table searching. A JS() function that takes an array of row objects, an array of column IDs, and the search value as arguments, and returns the filtered array of row objects.
-
-defaultColDef
-Default column definition used by every column. See colDef().
-
-defaultColGroup
-Default column group definition used by every column group. See colGroup().
-
-defaultSortOrder
-Default sort order. Either "asc" for ascending order or "desc" for descending order. Defaults to "asc".
-
-defaultSorted
-Character vector of column names to sort by default. Or to customize sort order, a named list with values of "asc" or "desc".
-
-pagination
-Enable pagination? Defaults to TRUE.
-
-defaultPageSize
-Default page size for the table. Defaults to 10.
-
-showPageSizeOptions
-Show page size options?
-
-pageSizeOptions
-Page size options for the table. Defaults to 10, 25, 50, 100.
-
-paginationType
-Pagination control to use. Either "numbers" for page number buttons (the default), "jump" for a page jump, or "simple" to show 'Previous' and 'Next' buttons only.
-
-showPagination
-Show pagination? Defaults to TRUE if the table has more than one page.
-
-showPageInfo
-Show page info? Defaults to TRUE.
-
-minRows
-Minimum number of rows to show per page. Defaults to 1.
-
-paginateSubRows
-When rows are grouped, paginate sub rows? Defaults to FALSE.
-
-details
-Additional content to display when expanding a row. An R function that takes the row index and column name as arguments, or a JS() function that takes a row info object as an argument. Can also be a colDef() to customize the details expander column.
-
-defaultExpanded
-Expand all rows by default?
-
-selection
-Enable row selection? Either "multiple" or "single" for multiple or single row selection.
-
-To get the selected rows in Shiny, use getReactableState().
-
-To customize the selection column, use ".selection" as the column name.
-
-defaultSelected
-A numeric vector of default selected row indices.
-
-onClick
-Action to take when clicking a cell. Either "expand" to expand the row, "select" to select the row, or a JS() function that takes a row info object, column object, and table state object as arguments.
-
-highlight
-Highlight table rows on hover?
-
-outlined
-Add borders around the table?
-
-bordered
-Add borders around the table and every cell?
-
-borderless
-Remove inner borders from table?
-
-striped
-Add zebra-striping to table rows?
-
-compact
-Make tables more compact?
-
-wrap
-Enable text wrapping? If TRUE (the default), long text will be wrapped to multiple lines. If FALSE, text will be truncated to fit on one line.
-
-showSortIcon
-Show a sort icon when sorting columns?
-
-showSortable
-Show an indicator on sortable columns?
-
-class
-Additional CSS classes to apply to the table.
-
-style
-Inline styles to apply to the table. A named list or character string.
-
-Note that if style is a named list, property names should be camelCased.
-
-rowClass
-Additional CSS classes to apply to table rows. A character string, a JS() function that takes a row info object and table state object as arguments, or an R function that takes a row index argument.
-
-rowStyle
-Inline styles to apply to table rows. A named list, character string, JS() function that takes a row info object and table state object as arguments, or an R function that takes a row index argument.
-
-Note that if rowStyle is a named list, property names should be camelCased. If rowStyle is a JS() function, it should return a JavaScript object with camelCased property names.
-
-fullWidth
-Stretch the table to fill the full width of its container? Defaults to TRUE.
-
-width
-Width of the table in pixels. Defaults to "auto" for automatic sizing.
-
-To set the width of a column, see colDef().
-
-height
-Height of the table in pixels. Defaults to "auto" for automatic sizing.
-"""
+        return to_camel_dict(asdict(self))
 
 
 @dataclass
@@ -1023,6 +1180,25 @@ class Reactable(Props):
     element_id:
         Element ID for the widget
 
+
+    Examples
+    --------
+
+    ```{python}
+    from reactable import Reactable, Column, ColFormat
+    from reactable.data import cars_93
+
+    Reactable(
+        cars_93[:, ["manufacturer", "model", "price"]],
+        columns = {
+            "price": Column(
+                name="Price",
+                format=ColFormat(prefix="$", digits=2),
+            ),
+        },
+        filterable=True
+    )
+    ```
 
 
 

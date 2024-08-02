@@ -18,6 +18,9 @@ website:
     - contents:
       - reference/CellInfo.qmd
       - reference/RowInfo.qmd
+      - reference/ColInfo.qmd
+      - reference/HeaderCellInfo.qmd
+      - reference/JS.qmd
       section: Rendering
     id: reference
   - id: dummy-sidebar

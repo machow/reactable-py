@@ -1,0 +1,19 @@
+# ColGroup { #reactable.ColGroup }
+
+`ColGroup(name=None, columns=None, header=None, html=None, align=None, header_v_align=None, sticky=None, header_class=None, header_style=None)`
+
+Configure a column group (spanner).
+
+## Parameters
+
+| Name             | Type                                                       | Description                                                                                                                                                                    | Default   |
+|------------------|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `name`           | str \| None                                                | Column group header name.                                                                                                                                                      | `None`    |
+| `columns`        | list\[str\] \| None                                        | Character vector of column names in the group.                                                                                                                                 | `None`    |
+| `header`         | Callable\[\[HeaderCellInfo\], HTML\] \| JsFunction \| None | Custom header renderer. A Python function that takes a `HeaderCellInfo()` object, or a JS() function that takes a column object and table state object as arguments.           | `None`    |
+| `html`           | bool \| None                                               | Render header content as HTML? Raw HTML strings are escaped by default.                                                                                                        | `None`    |
+| `align`          | Literal\['left', 'right', 'center'\] \| None               | Horizontal alignment of content in the column group header. One of "left", "right", "center" (the default).                                                                    | `None`    |
+| `header_v_align` | Literal\['top', 'center', 'bottom'\] \| None               | Vertical alignment of content in the column group header. One of "top" (the default), "center", "bottom".                                                                      | `None`    |
+| `sticky`         | Literal\['left', 'right'\] \| None                         | Make the column group sticky when scrolling horizontally?  Either "left" or "right".  If a column group is sticky, all columns in the group will automatically be made sticky. | `None`    |
+| `header_class`   | list\[str\] \| None                                        | Additional CSS classes to apply to the header.                                                                                                                                 | `None`    |
+| `header_style`   | CssStyles \| None                                          | Inline styles to apply to the header. A dictionary mapping CSS style names to values.                                                                                          | `None`    |

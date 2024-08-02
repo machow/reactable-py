@@ -51,7 +51,7 @@ def create_details(entry: RowInfo):
             "published_at": Column(name="Published", align="right"),
         },
         class_="archived-table",
-        theme=Theme(cellPadding="8px 16px"),
+        theme=Theme(cell_padding="8px 16px"),
     )
     return ht.div(
         ht.div(
@@ -166,7 +166,7 @@ display(HTML(html))
 ```
 
 ```{python}
-#| echo: false
+# | echo: false
 tbl = Reactable(
     outer.head(50),
     default_sorted=["downloads_month"],
@@ -196,7 +196,7 @@ tbl = Reactable(
     details=create_details,
     class_="packages-table",
     row_style={"cursor": "pointer"},
-    theme=Theme(cellPadding="8px 12px"),
+    theme=Theme(cell_padding="8px 12px"),
 )
 
 

@@ -1,0 +1,13 @@
+# JS { #reactable.JS }
+
+`JS(code)`
+
+A javascript function for rendering.
+
+
+
+## Parameters:
+
+code:
+    The javascript code. This should be a javascript function, and will be evaluated
+    when the Reactable table is rendered.

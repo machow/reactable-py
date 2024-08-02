@@ -1,0 +1,38 @@
+# Theme { #reactable.Theme }
+
+`Theme(color=None, background_color=None, border_color=None, border_width=None, striped_color=None, highlight_color=None, cell_padding=None, style=None, table_style=None, header_style=None, group_header_style=None, table_body_style=None, row_group_style=None, row_style=None, row_striped_style=None, row_highlight_style=None, row_selected_style=None, cell_style=None, footer_style=None, input_style=None, filter_input_style=None, search_input_style=None, select_style=None, pagination_style=None, page_button_style=None, page_button_hover_style=None, page_button_active_style=None, page_button_current_style=None)`
+
+Theme configuration.
+
+## Parameters
+
+| Name                        | Type             | Description                                                                                             | Default   |
+|-----------------------------|------------------|---------------------------------------------------------------------------------------------------------|-----------|
+| `color`                     | str \| None      | Default text color.                                                                                     | `None`    |
+| `background_color`          | str \| None      | Default background color.                                                                               | `None`    |
+| `border_color`              | str \| None      | Default border color.                                                                                   | `None`    |
+| `border_width`              | str \| None      | Default border width.                                                                                   | `None`    |
+| `striped_color`             | str \| None      | Default row stripe color.                                                                               | `None`    |
+| `highlight_color`           | str \| None      | Default row highlight color.                                                                            | `None`    |
+| `cell_padding`              | str \| None      | Default cell padding.                                                                                   | `None`    |
+| `style`                     | CssRules \| None | Additional CSS for the table.                                                                           | `None`    |
+| `table_style`               | CssRules \| None | Additional CSS for the table element (excludes the pagination bar and search input).                    | `None`    |
+| `header_style`              | CssRules \| None | Additional CSS for header cells.                                                                        | `None`    |
+| `group_header_style`        | CssRules \| None | Additional CSS for group header cells.                                                                  | `None`    |
+| `table_body_style`          | CssRules \| None | Additional CSS for the table body element.                                                              | `None`    |
+| `row_group_style`           | CssRules \| None | Additional CSS for row groups.                                                                          | `None`    |
+| `row_style`                 | CssRules \| None | Additional CSS for rows.                                                                                | `None`    |
+| `row_striped_style`         | CssRules \| None | Additional CSS for striped rows.                                                                        | `None`    |
+| `row_highlight_style`       | CssRules \| None | Additional CSS for highlighted rows.                                                                    | `None`    |
+| `row_selected_style`        | CssRules \| None | Additional CSS for selected rows.                                                                       | `None`    |
+| `cell_style`                | CssRules \| None | Additional CSS for cells.                                                                               | `None`    |
+| `footer_style`              | CssRules \| None | Additional CSS for footer cells.                                                                        | `None`    |
+| `input_style`               | CssRules \| None | Additional CSS for inputs.                                                                              | `None`    |
+| `filter_input_style`        | CssRules \| None | Additional CSS for filter inputs.                                                                       | `None`    |
+| `search_input_style`        | CssRules \| None | Additional CSS for the search input.                                                                    | `None`    |
+| `select_style`              | CssRules \| None | Additional CSS for table select controls.                                                               | `None`    |
+| `pagination_style`          | CssRules \| None | Additional CSS for the pagination bar.                                                                  | `None`    |
+| `page_button_style`         | CssRules \| None | Additional CSS for page buttons, page buttons with hover or active states, and the current page button. | `None`    |
+| `page_button_hover_style`   | CssRules \| None | Additional CSS for page buttons, page buttons with hover or active states, and the current page button. | `None`    |
+| `page_button_active_style`  | CssRules \| None | Additional CSS for page buttons, page buttons with hover or active states, and the current page button. | `None`    |
+| `page_button_current_style` | CssRules \| None | Additional CSS for page buttons, page buttons with hover or active states, and the current page button. | `None`    |

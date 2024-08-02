@@ -1,0 +1,12 @@
+# ColFormatGroupBy { #reactable.ColFormatGroupBy }
+
+`ColFormatGroupBy(cell=None, aggregated=None)`
+
+Specify formatters for standard and aggregate cells.
+
+## Parameters
+
+| Name         | Type              | Description                                     | Default   |
+|--------------|-------------------|-------------------------------------------------|-----------|
+| `cell`       | ColFormat \| None | Column formatting options for standard cells.   | `None`    |
+| `aggregated` | ColFormat \| None | Column formatting options for aggregated cells. | `None`    |

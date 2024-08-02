@@ -1,0 +1,5 @@
+# ColInfo { #reactable.ColInfo }
+
+`ColInfo(values, name)`
+
+Column data for custom rendering of footers.

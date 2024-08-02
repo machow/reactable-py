@@ -1,6 +1,6 @@
 # Reactable { #reactable.Reactable }
 
-`Reactable(data, columns=None, column_groups=None, rownames=False, group_by=None, sortable=True, resizable=None, filterable=None, searchable=None, pagination=None, default_col_def=None, default_sort_order='asc', default_sorted=None, default_page_size=None, show_page_size_options=None, page_size_options=field(default_factory=lambda : [10, 25, 50, 100]), pagination_type='numbers', show_pagination=None, show_page_info=None, min_rows=None, paginate_sub_rows=None, details=field(default=None), default_expanded=None, selection=None, on_click=None, highlight=False, outlined=None, bordered=False, borderless=False, striped=False, compact=True, wrap=True, show_sort_icon=None, show_sortable=None, class_=None, style=None, row_class=None, row_style=None, full_width=True, width=None, height=None, theme=None, language=None, meta=None, element_id=None, static=None, dataKey=None, default_sort_desc=field(init=False), inline=field(init=False), row_class_name=field(init=False), nowrap=field(init=False), class_name=field(init=False))`
+`Reactable(data, columns=None, column_groups=None, rownames=False, group_by=None, sortable=True, resizable=None, filterable=None, searchable=None, pagination=None, default_col_def=None, default_sort_order='asc', default_sorted=None, default_page_size=None, show_page_size_options=None, page_size_options=field(default_factory=lambda : [10, 25, 50, 100]), pagination_type='numbers', show_pagination=None, show_page_info=None, min_rows=None, paginate_sub_rows=None, details=field(default=None), default_expanded=None, selection=None, on_click=None, highlight=False, outlined=None, bordered=False, borderless=False, striped=False, compact=False, wrap=True, show_sort_icon=None, show_sortable=None, class_=None, style=None, row_class=None, row_style=None, full_width=True, width=None, height=None, theme=None, language=None, meta=None, element_id=None, static=None, dataKey=None, default_sort_desc=field(init=False), inline=field(init=False), row_class_name=field(init=False), nowrap=field(init=False), class_name=field(init=False))`
 
 A reactive table.
 
@@ -18,7 +18,7 @@ A reactive table.
 | `pagination`             | bool \| None                                                       | Whether to enable pagination.                                                                                                                                       | `None`                |
 | `default_col_def`        | InitVar\[Column \| None\]                                          | Default column definition used by every column.                                                                                                                     | `None`                |
 | `default_sort_order`     | InitVar\[Literal\['asc', 'desc'\]\]                                | Default sort order. Either "asc" for ascending order or "desc" for descending order. Defaults to "asc".                                                             | `'asc'`               |
-| `default_sorted`         | list\[str\] \| None                                                | List of column names to sort by default. Or to customize sort order, a dictionary mapping column names to "asc" or "desc".                                          | `None`                |
+| `default_sorted`         | list\[str\] \| dict\[str, str\] \| None                            | List of column names to sort by default. Or to customize sort order, a dictionary mapping column names to "asc" or "desc".                                          | `None`                |
 | `default_page_size`      | int \| None                                                        | Default page size for the table. Defaults to 10.                                                                                                                    | `None`                |
 | `show_page_size_options` | bool \| None                                                       | Whether to show page size options.                                                                                                                                  | `None`                |
 | `pagination_type`        | Literal\['numbers', 'jump', 'simple'\]                             | Pagination control to use. Either "numbers" for page number buttons (the default), "jump" for a page jump, or "simple" to show 'Previous' and 'Next' buttons only.  | `'numbers'`           |
@@ -35,7 +35,7 @@ A reactive table.
 | `bordered`               | bool                                                               | Whether to add borders around the table and every cell.                                                                                                             | `False`               |
 | `borderless`             | bool                                                               | Whether to remove inner borders from table.                                                                                                                         | `False`               |
 | `striped`                | bool                                                               | Whether to add zebra-striping to table rows.                                                                                                                        | `False`               |
-| `compact`                | bool                                                               | Whether to make tables more compact.                                                                                                                                | `True`                |
+| `compact`                | bool                                                               | Whether to make tables more compact.                                                                                                                                | `False`               |
 | `wrap`                   | InitVar\[bool\]                                                    | Whether to enable text wrapping. If `True` (the default), long text will be wrapped to multiple lines. If `False`, text will be truncated to fit on one line.       | `True`                |
 | `show_sort_icon`         | bool \| None                                                       | Whether to show a sort icon when sorting columns.                                                                                                                   | `None`                |
 | `show_sortable`          | bool \| None                                                       | Whether to show an indicator on sortable columns.                                                                                                                   | `None`                |
@@ -50,3 +50,21 @@ A reactive table.
 | `language`               | str \| None                                                        | Language options for the table, specified by `Language()`. Defaults to the global `reactable.language` option.                                                      | `None`                |
 | `meta`                   | dict\[str, Any\] \| None                                           | Custom metadata to pass to JavaScript render functions or style functions.                                                                                          | `None`                |
 | `element_id`             | str \| None                                                        | Element ID for the widget                                                                                                                                           | `None`                |
+
+## Examples
+
+```{python}
+from reactable import Reactable, Column, ColFormat
+from reactable.data import cars_93
+
+Reactable(
+    cars_93[:, ["manufacturer", "model", "price"]],
+    columns = {
+        "price": Column(
+            name="Price",
+            format=ColFormat(prefix="$", digits=2),
+        ),
+    },
+    filterable=True
+)
+```
