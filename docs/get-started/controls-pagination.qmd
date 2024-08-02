@@ -3,9 +3,10 @@ title: Pagination
 ---
 
 ```{python}
-from reactable import Reactable
+from reactable import Reactable, embed_css
 from reactable.data import cars_93
 
+embed_css()
 ```
 
 You can change the default page size by configuring `default_page_size`:

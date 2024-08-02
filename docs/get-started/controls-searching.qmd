@@ -3,8 +3,10 @@ title: Searching
 ---
 
 ```{python}
-from reactable import Reactable
+from reactable import Reactable, embed_css
 from reactable.data import cars_93
+
+embed_css()
 ```
 
 You can make the entire table searchable by setting `searchable=True`:

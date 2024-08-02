@@ -15,7 +15,7 @@ penguins = load_penguins()
 pl_penguins = pl.from_pandas(penguins)
 ```
 
-You can make rows expandable with additional content through details, which takes an R or JavaScript render function. See [Custom Rendering](./format-custom-rendering.qmd) for details on how to use render functions.
+You can make rows expandable with additional content through details, which takes an Python or JavaScript render function. See [Custom Rendering](./format-custom-rendering.qmd) for details on how to use render functions.
 
 ## Render details with Python
 

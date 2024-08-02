@@ -3,8 +3,10 @@ title: Column resizing
 ---
 
 ```{python}
-from reactable import Reactable, Column, ColGroup
+from reactable import Reactable, Column, ColGroup, embed_css
 from reactable.data import cars_93
+
+embed_css()
 ```
 
 You can make columns resizable by setting `resizable=True`:
