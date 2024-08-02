@@ -1,0 +1,227 @@
+---
+title: PyPI Downloads
+jupyter: python3
+format:
+  html:
+    page-layout: full
+---
+
+```{python}
+# | echo: false
+import json
+import polars as pl
+import polars.selectors as cs
+from reactable import Reactable, Column, Theme, embed_css
+from reactable.tags import to_widget
+from reactable.models import RowInfo
+import htmltools as ht
+
+embed_css()
+
+monthly = pl.read_csv("./pypi-monthly.csv", row_index_name=None)
+details = json.load(open("./pypi-details.json"))
+outer_details = pl.DataFrame(
+    [
+        {
+            "package": x["name"].lower().replace("_", "-"),
+            "version": x["version"],
+            "summary": x["summary"],
+            "published_at": x["releases"][0]["published_at"],
+        }
+        for x in details
+    ]
+)
+
+outer = monthly.join(outer_details, "package")
+
+
+def detail_label(title, content):
+    return ht.div(title, class_="detail-label"), content
+
+
+def create_details(entry: RowInfo):
+    pkg = details[entry.row_index]
+    sub_frame = pl.DataFrame(pkg["releases"])
+
+    sub_tbl = Reactable(
+        sub_frame,
+        pagination=False,
+        default_col_def=Column(header_class="header"),
+        columns={
+            "published_at": Column(name="Published", align="right"),
+        },
+        class_="archived-table",
+        theme=Theme(cellPadding="8px 16px"),
+    )
+    return ht.div(
+        ht.div(
+            pkg["name"],
+            # ht.span(pkg["summary"], class_="detail-title"),
+            class_="detail-header",
+        ),
+        ht.div(
+            (pkg["summary"] or [])[:200],
+            class_="detail-description",
+        ),
+        *detail_label("Version", pkg["version"]),
+        *detail_label("Python Depends", pkg["requires_python"]),
+        *detail_label("Depends", pkg["requires_dist"]),
+        # *detail_label("Suggests", pkg[""]),
+        *detail_label("AUTHOR", pkg["author"]),
+        *detail_label("License", pkg["license"]),
+        *detail_label("URL", pkg["home_page"]),
+        *detail_label("Recent Versions", sub_tbl.to_widget()),
+        class_="package-detail",
+    )
+```
+
+```{python}
+# | echo: false
+html = """
+<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=fallback rel="stylesheet">
+
+<style>
+.cran-packages {
+  font-family: Nunito, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.packages-table {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  border: 1px solid hsl(213, 33%, 93%);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  background-color: hsl(213, 45%, 97%);
+  border-bottom-color: hsl(213, 33%, 93%);
+  border-bottom-width: 1px;
+  color: hsl(213, 13%, 33%);
+}
+
+.header[aria-sort]:hover,
+.header[aria-sort]:focus {
+  color: hsl(213, 55%, 50%);
+}
+
+.units {
+  margin-left: 0.15em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.package-title {
+  font-size: 0.875rem;
+}
+
+.package-detail {
+  padding: 24px;
+  box-shadow: inset 0 1px 3px #dbdbdb;
+  background: hsl(213, 20%, 99%);
+}
+
+.detail-label {
+  margin: 1.25rem 0 0.25rem;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-header {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.detail-title {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-description {
+  font-size: 0.875rem;
+}
+
+.archived-table {
+  max-width: 15rem;
+  border: 1px solid hsl(213, 33%, 93%);
+  border-radius: 4px;
+  box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
+}
+</style>
+"""
+```
+
+```{python}
+#| echo: false
+from IPython.display import HTML, display
+
+display(HTML(html))
+```
+
+```{python}
+#| echo: false
+tbl = Reactable(
+    outer.head(50),
+    default_sorted=["downloads_month"],
+    default_page_size=20,
+    show_page_size_options=True,
+    page_size_options=[10, 20, 50, 100],
+    on_click="expand",
+    resizable=True,
+    default_col_def=Column(header_class="header"),
+    columns={
+        "summary": Column(
+            name="Summary",
+            min_width=250,
+            class_="package-title",
+            cell=lambda ci: ht.span(ci.value, title=ci.value),
+        ),
+        "published_at": Column(name="Published", align="right"),
+        "downloads_month": Column(
+            name="Downloads",
+            default_sort_order="desc",
+            cell=lambda ci: f"{ci.value // 1_000_000:,}M",
+        ),
+        "package": Column(name="Package"),
+        "version": Column(name="Version"),
+    },
+    wrap=False,
+    details=create_details,
+    class_="packages-table",
+    row_style={"cursor": "pointer"},
+    theme=Theme(cellPadding="8px 12px"),
+)
+
+
+to_widget(
+    ht.div(
+        # ht.h2("Top PyPI Monthly Downloads (Aug 1, 2024)"),
+        tbl,
+        class_="cran-packages",
+    )
+)
+```
+
+
+```{python}
+# | output: asis
+# | echo: false
+setup_cell, code_cell = _ih[1], _ih[-2]
+
+
+def print_pre(name, code):
+    print(f"\n```{name}\n{code}\n```\n\n")
+
+
+print_pre("python", setup_cell)
+print_pre("python", code_cell)
+print_pre("html", html)
+```
+

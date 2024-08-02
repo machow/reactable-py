@@ -21,6 +21,7 @@ website:
       - text: Examples
         menu: 
           - demos/twitter-followers.qmd
+          - demos/pypi-downloads/index.qmd
           - demos/great-tables.qmd
       - text: Reference
         file: reference/index.qmd

@@ -7,7 +7,7 @@ jupyter: python3
 # | label: setup
 # | code-fold: true
 import htmltools
-from reactable import bigblock, RT, options, Reactable, embed_css
+from reactable import options, Reactable, embed_css
 from reactable.models import (
     Column,
     ColFormat,
@@ -75,7 +75,7 @@ Reactable(
     cars_93[:5, ["manufacturer", "model", "type", "min_price", "price"]],
     show_sort_icon=False,
     bordered=True,
-    default_sorted="type",
+    default_sorted=["type"],
     default_col_def=Column(header_class="bar-sort-header"),
 )
 ```
@@ -90,12 +90,12 @@ print(f"```html{css}\n```")
 
 
 ```{python}
-#| echo: false
+# | echo: false
 Reactable(
     cars_93[:5, ["manufacturer", "model", "type", "min_price", "price"]],
     show_sort_icon=False,
     bordered=True,
-    default_sorted="type",
+    default_sorted=["type"],
     default_col_def=Column(header_class="bar-sort-header"),
 )
 ```

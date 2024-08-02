@@ -110,7 +110,7 @@ tbl = bigblock(
     Props(
         data,
         pagination=False,
-        default_sorted="exclusive_followers_pct",
+        default_sorted=["exclusive_followers_pct"],
         default_col_def=Column(header_class="header", align="left"),
         columns=dict(
             account=Column(

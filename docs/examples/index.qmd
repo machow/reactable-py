@@ -156,7 +156,7 @@ df = pl.DataFrame(
 Reactable(
     df,
     default_col_def=Column(sort_na_last=True),
-    default_sorted="x",
+    default_sorted=["x"],
 )
 ```
 

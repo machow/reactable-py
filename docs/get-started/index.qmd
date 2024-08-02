@@ -128,7 +128,7 @@ Reactable(
 ```{python}
 # | echo: false
 
-from reactable import bigblock, embed_css
+from reactable import Reactable, embed_css
 from reactable.models import Column, Props, CellInfo, JS
 from htmltools import tags
 
@@ -157,29 +157,28 @@ def f_followers(ci: CellInfo):
     )
 
 
-tbl = bigblock(
-    Props(
-        data,
-        pagination=False,
-        default_sorted="exclusive_followers_pct",
-        default_col_def=Column(header_class="header", align="left"),
-        columns=dict(
-            account=Column(
-                cell=lambda ci: (
-                    tags.a(
-                        f"@{ci.value}",
-                        href=f"https://twitter.com/{ci.value}",
-                        target="_blank",
-                    )
-                ),
-                width=150,
+tbl = Reactable(
+    data,
+    pagination=False,
+    default_sorted=["exclusive_followers_pct"],
+    default_col_def=Column(header_class="header", align="left"),
+    columns=dict(
+        account=Column(
+            cell=lambda ci: (
+                tags.a(
+                    f"@{ci.value}",
+                    href=f"https://twitter.com/{ci.value}",
+                    target="_blank",
+                )
             ),
-            followers=Column(default_sort_order="desc", cell=f_followers),
-            exclusive_followers_pct=Column(
-                name="Exclusive Followers",
-                default_sort_order="desc",
-                cell=JS(
-                    """function(cellInfo) {
+            width=150,
+        ),
+        followers=Column(default_sort_order="desc", cell=f_followers),
+        exclusive_followers_pct=Column(
+            name="Exclusive Followers",
+            default_sort_order="desc",
+            cell=JS(
+                """function(cellInfo) {
         // Format as percentage
         const pct = (cellInfo.value * 100).toFixed(1) + "%"
         // Pad single-digit numbers
@@ -198,14 +197,13 @@ tbl = bigblock(
           </div>
         `
       }"""
-                ),
-                html=True,
             ),
+            html=True,
         ),
-        compact=True,
-        class_="followers-tbl",
-        static=True,
-    )
+    ),
+    compact=True,
+    class_="followers-tbl",
+    static=True,
 )
 
 # tags.div(
