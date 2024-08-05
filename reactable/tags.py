@@ -8,7 +8,10 @@ import htmltools
 # in react
 def to_hydrate_format(el: htmltools.Tag | str):
     if isinstance(el, htmltools.TagList):
-        raise NotImplementedError()
+        return {
+            "name": "Fragment",
+            "children": [to_hydrate_format(child) for child in el],
+        }
 
     if not isinstance(el, htmltools.Tag):
         return el

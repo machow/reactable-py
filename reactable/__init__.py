@@ -21,18 +21,22 @@ from .render_gt import render
 reactable = bigblock
 
 __all__ = [
+    # table classes ----
     "Reactable",
     "Column",
     "ColGroup",
     "ColFormat",
     "ColFormatGroupBy",
+    "Theme",
+    "Language",
+    # renderer data classes ----
     "CellInfo",
     "ColInfo",
     "HeaderCellInfo",
     "RowInfo",
     "JS",
-    "reactable",
+    # global options ----
     "options",
-    "Theme",
-    "Language",
+    # TODO: remove ----
+    "reactable",
 ]

@@ -6,7 +6,7 @@ title: Javascript formatters
 import polars as pl
 import htmltools as html
 from reactable.data import cars_93
-from reactable import Reactable, reactable, Props, embed_css
+from reactable import Reactable, reactable, embed_css
 from reactable.models import Column, ColInfo, CellInfo, HeaderCellInfo, RowInfo, JS
 
 embed_css()

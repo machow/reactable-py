@@ -12,6 +12,8 @@ embed_css()
 data = cars_93[20:25, ["manufacturer", "model", "type", "price"]]
 ```
 
+## Using custom HTML to color text
+
 ```{python}
 from reactable.models import CellInfo
 
@@ -23,5 +25,35 @@ def fmt_cell_red(ci: CellInfo):
 Reactable(
     data,
     columns={"manufacturer": Column(cell=fmt_cell_red)},
+)
+```
+
+## Inserting links and emoji
+
+```{python}
+from reactable.models import CellInfo
+import htmltools
+
+data = cars_93[:5, ["manufacturer", "model", "type", "air_bags", "price"]]
+
+
+def render_link(ci: CellInfo) -> htmltools.Tag:
+    manufacturer = data[ci.row_index, "manufacturer"]
+    url = htmltools.a(
+        ci.value,
+        href=f"https://wikipedia.org/wiki/{manufacturer}_{ci.value}",
+        target="blank_",
+    )
+
+    return url
+
+
+Reactable(
+    data=data,
+    columns=[
+        Column(id="model", cell=render_link),
+        Column(id="air_bags", cell=lambda ci: "❌ No" if ci.value == "None" else f"✅ Yes"),
+        Column(id="price", cell=lambda ci: f"${int(ci.value*1000):,}"),
+    ],
 )
 ```

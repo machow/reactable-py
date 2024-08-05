@@ -10,6 +10,7 @@ BIG_DATA = files("reactable.data")
 __all__ = [
     "cars_93",
     "co2",
+    "nottem",
     "prices",
     "sleep",
     "starwars",
@@ -31,6 +32,24 @@ co2 = SimpleFrame.read_csv(BIG_DATA / "co2.csv").cast(
     dict(
         conc=int,
         uptake=float,
+    )
+)
+
+nottem = SimpleFrame.read_csv(BIG_DATA / "nottem.csv").cast(
+    dict(
+        year=int,
+        Jan=float,
+        Feb=float,
+        Mar=float,
+        Apr=float,
+        May=float,
+        Jun=float,
+        Jul=float,
+        Aug=float,
+        Sep=float,
+        Oct=float,
+        Nov=float,
+        Dec=float,
     )
 )
 

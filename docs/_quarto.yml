@@ -1,6 +1,7 @@
 project:
   type: website
 
+
 format:
   html:
     toc: true
@@ -23,6 +24,7 @@ website:
           - demos/twitter-followers.qmd
           - demos/pypi-downloads/index.qmd
           - demos/great-tables.qmd
+          - demos/cookbook/index.qmd
       - text: Reference
         file: reference/index.qmd
       #- href: reference/index.qmd

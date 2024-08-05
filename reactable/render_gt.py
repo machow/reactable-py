@@ -13,7 +13,7 @@ from great_tables._gt_data import ColInfoTypeEnum
 from typing import TYPE_CHECKING
 
 from .models import Column, Language, Theme, ColGroup
-from . import bigblock, Props
+from . import Reactable
 from .tags import as_react_style
 
 if TYPE_CHECKING:
@@ -246,15 +246,15 @@ def _render(self: GT):
     opts = self._options
     theme = Theme(
         color=opts["table_font_color"],
-        backgroundColor=opts["table_background_color"],
-        borderColor=None,
-        borderWidth=None,
+        background_color=opts["table_background_color"],
+        border_color=None,
+        border_width=None,
         # stripedColor=opts["row_striping_background_color"],
-        highlightColor=None,
-        cellPadding=None,
+        highlight_color=None,
+        cell_padding=None,
         # style = {"font-family": font_family_str},
-        tableStyle=None,
-        headerStyle=dict(
+        table_style=None,
+        header_style=dict(
             borderTopStyle=opts["column_labels_border_top_style"],
             borderTopWidth=opts["column_labels_border_top_width"],
             borderTopColor=opts["column_labels_border_top_color"],
@@ -262,84 +262,64 @@ def _render(self: GT):
             borderBottomWidth=opts["column_labels_border_bottom_width"],
             borderBottomColor=opts["column_labels_border_bottom_color"],
         ),
-        groupHeaderStyle=None,
-        tableBodyStyle=None,
-        rowGroupStyle=None,
-        rowStyle=None,
-        rowStripedStyle=None,
-        rowHighlightStyle=None,
-        rowSelectedStyle=None,
-        cellStyle=None,
-        footerStyle=None,
-        inputStyle=None,
-        filterInputStyle=None,
-        searchInputStyle=None,
-        selectStyle=None,
-        paginationStyle=None,
-        pageButtonStyle=None,
-        pageButtonHoverStyle=None,
-        pageButtonActiveStyle=None,
-        pageButtonCurrentStyle=None,
     )
 
-    itable = bigblock(
-        Props(
-            data=data,
-            columns=columns,
-            column_groups=col_groups,
-            default_expanded=True,
-            rownames=None,
-            # TODO: reactable always puts groupBy cols first, even before rowname cols
-            group_by=groupname_col,
-            # TODO: no ihtml options
-            # sortable=opts["ihtml_use_sorting"],
-            # resizable=opts["ihtml_use_resizing"],
-            # filterable=opts["ihtml_use_filters"],
-            # searchable=opts["ihtml_use_search"],
-            # TODO: searchMethod not yet implemented
-            # searchMethod=None,
-            # pagination=opts["ihtml_use_pagination"],
-            # defaultPageSize=opts["ihtml_page_size_default"],
-            # showPageSizeOptions=opts["ihtml_use_page_size_select"],
-            # pageSizeOptions=opts["ihtml_page_size_values"],
-            # paginationType=opts["ihtml_pagination_type"],
-            show_pagination=True,
-            # showPageInfo=opts["ihtml_use_pagination_info"],
-            min_rows=1,
-            paginate_sub_rows=False,
-            details=None,
-            selection=None,
-            # TODO: selectionId not implemented
-            # selectionId=None,
-            # defaultSelected=None,
-            on_click=None,
-            # highlight=opts["ihtml_use_highlighting"],
-            outlined=False,
-            bordered=False,
-            borderless=False,
-            # striped=opts["row_striping_include_table_body"],
-            # compact=opts["ihtml_use_compact_mode"],
-            # text_wrapping=opts["ihtml_use_text_wrapping"],
-            # showSortIcon=True,
-            # showSortable=True,
-            class_=None,
-            style=None,
-            row_class=None,
-            row_style=None,
-            full_width=True,
-            width=opts["table_width"],
-            height="auto",
-            theme=theme,
-            language=lang_defs,
-            element_id=table_id,
-            static=False,
-            #  use_page_size_select <- opt_val(data = data, option = "ihtml_use_page_size_select")
-            #  page_size_default <- opt_val(data = data, option = "ihtml_page_size_default")
-            #  page_size_values <- opt_val(data = data, option = "ihtml_page_size_values")
-            #  pagination_type <- opt_val(data = data, option = "ihtml_pagination_type")
-            #
-            #  use_row_striping <- opt_val(data = data, option = "row_striping_include_table_body")
-        )
+    itable = Reactable(
+        data=data,
+        columns=columns,
+        column_groups=col_groups,
+        default_expanded=True,
+        rownames=None,
+        # TODO: reactable always puts groupBy cols first, even before rowname cols
+        group_by=groupname_col,
+        # TODO: no ihtml options
+        # sortable=opts["ihtml_use_sorting"],
+        # resizable=opts["ihtml_use_resizing"],
+        # filterable=opts["ihtml_use_filters"],
+        # searchable=opts["ihtml_use_search"],
+        # TODO: searchMethod not yet implemented
+        # searchMethod=None,
+        # pagination=opts["ihtml_use_pagination"],
+        # defaultPageSize=opts["ihtml_page_size_default"],
+        # showPageSizeOptions=opts["ihtml_use_page_size_select"],
+        # pageSizeOptions=opts["ihtml_page_size_values"],
+        # paginationType=opts["ihtml_pagination_type"],
+        show_pagination=True,
+        # showPageInfo=opts["ihtml_use_pagination_info"],
+        min_rows=1,
+        paginate_sub_rows=False,
+        details=None,
+        selection=None,
+        # TODO: selectionId not implemented
+        # selectionId=None,
+        # defaultSelected=None,
+        on_click=None,
+        # highlight=opts["ihtml_use_highlighting"],
+        outlined=False,
+        bordered=False,
+        borderless=False,
+        # striped=opts["row_striping_include_table_body"],
+        # compact=opts["ihtml_use_compact_mode"],
+        # text_wrapping=opts["ihtml_use_text_wrapping"],
+        # showSortIcon=True,
+        # showSortable=True,
+        class_=None,
+        style=None,
+        row_class=None,
+        row_style=None,
+        full_width=True,
+        width=opts["table_width"],
+        height="auto",
+        theme=theme,
+        language=lang_defs,
+        element_id=table_id,
+        static=False,
+        #  use_page_size_select <- opt_val(data = data, option = "ihtml_use_page_size_select")
+        #  page_size_default <- opt_val(data = data, option = "ihtml_page_size_default")
+        #  page_size_values <- opt_val(data = data, option = "ihtml_page_size_values")
+        #  pagination_type <- opt_val(data = data, option = "ihtml_pagination_type")
+        #
+        #  use_row_striping <- opt_val(data = data, option = "row_striping_include_table_body")
     )
 
     return el_header, itable, el_footer
@@ -348,7 +328,7 @@ def _render(self: GT):
 def render(self: GT) -> ipyreact.Widget:
     el_header, itable, el_footer = _render(self)
 
-    res = [itable]
+    res = [itable.to_widget()]
 
     if el_header:
         res = [ipywidgets.HTML(str(el_header))] + res
