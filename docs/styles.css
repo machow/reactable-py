@@ -71,3 +71,9 @@ div.sidebar-item-container .active {
 .sidebar-section {
   padding-left: 0px !important;
 }
+
+/* Examples */
+
+.shrink-example .cell-output {
+  zoom: 75%;
+}

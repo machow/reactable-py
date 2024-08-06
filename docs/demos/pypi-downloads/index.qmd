@@ -7,6 +7,7 @@ format:
 ---
 
 ```{python}
+# | label: setup
 # | echo: false
 import json
 import polars as pl
@@ -159,18 +160,26 @@ html = """
 ```
 
 ```{python}
-#| echo: false
+# | label: css
+# | echo: false
 from IPython.display import HTML, display
 
 display(HTML(html))
 ```
 
+
 ```{python}
 # | echo: false
+# | label: table
+
+from IPython.display import HTML, display
+
+display(HTML(html))
+
 tbl = Reactable(
     outer.head(50),
     default_sorted=["downloads_month"],
-    default_page_size=20,
+    default_page_size=10,
     show_page_size_options=True,
     page_size_options=[10, 20, 50, 100],
     on_click="expand",
@@ -199,7 +208,6 @@ tbl = Reactable(
     theme=Theme(cell_padding="8px 12px"),
 )
 
-
 to_widget(
     ht.div(
         # ht.h2("Top PyPI Monthly Downloads (Aug 1, 2024)"),
@@ -225,3 +233,10 @@ print_pre("python", code_cell)
 print_pre("html", html)
 ```
 
+
+
+```{python}
+# | label: zzz
+print("yo2")
+
+```

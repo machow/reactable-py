@@ -1,0 +1,11 @@
+---
+pagetitle: Twitter followers
+navbar: false
+jupyter: python3
+---
+
+:::{.shrink-example}
+{{< embed ../twitter-followers.qmd#setup >}}
+{{< embed ../twitter-followers.qmd#css >}}
+{{< embed ../twitter-followers.qmd#table >}}
+:::

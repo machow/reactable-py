@@ -1,0 +1,645 @@
+---
+title: Cookbook
+resources:
+  - "images/beaver.png"
+  - "images/cow.png"
+  - "images/goat.png"
+  - "images/wolf.png"
+jupyter: python3
+
+---
+
+
+```{python}
+# | label: setup
+from reactable import embed_css
+
+embed_css()
+```
+
+## Insert links
+
+
+```{python}
+# | label: insert-links
+import polars as pl
+import htmltools as ht
+
+from reactable import Reactable, Column
+
+data = pl.DataFrame(
+    {
+        "Address": ["https://google.com", "https://yahoo.com", "https://duckduckgo.com"],
+        "Site": ["Google", "Yahoo", "DuckDuckGo"],
+    }
+)
+
+Reactable(
+    data,
+    columns={
+        "Address": Column(
+            cell=lambda info: ht.a(info.value, href=info.value, target="_blank"),
+        ),
+        "Site": Column(
+            html=True,
+            cell=lambda info: f'<a href="{info.value}" target="_blank">{info.value}</a>',
+        ),
+    },
+)
+
+```
+
+## Format color scales
+
+### Single column
+
+```{python}
+# | label: format-color-scales
+from reactable import Reactable, Column, CellInfo
+from reactable.data import cars_93
+
+from mizani.palettes import gradient_n_pal
+
+
+data = cars_93[["manufacturer", "model", "price"]]
+
+pal = gradient_n_pal(["#ffe4cc", "#ff9500"])
+
+
+def fmt_fill(ci: CellInfo):
+    val_range = max(data["price"]) - min(data["price"])
+    normalized = (ci.value - min(data["price"])) / val_range
+    return {"background": pal(normalized)}
+
+
+Reactable(
+    data,
+    columns={"price": Column(style=fmt_fill)},
+    default_page_size=5,
+)
+```
+
+### Grid
+
+```{python}
+# | label: format-color-scales2
+from reactable import Reactable, Column, ColFormat, CellInfo
+from reactable.data import nottem
+
+from mizani.palettes import gradient_n_pal
+
+pal = gradient_n_pal(["#7fb7d7", "#ffffbf", "#fc8d59"])
+
+# flatten out monthly columns into a single list
+# this lets us calculate the overall min and max
+flat_vals = sum(nottem[:, 1:].to_dict().values(), [])
+
+
+def fmt_fill(ci: CellInfo):
+    if not isinstance(ci.value, float):
+        return
+
+    val_range = max(flat_vals) - min(flat_vals)
+    normalized = (ci.value - min(flat_vals)) / val_range
+    color = pal(normalized)
+
+    return {"background": color}
+
+
+Reactable(
+    nottem,
+    default_col_def=Column(
+        style=fmt_fill,
+        format=ColFormat(digits=1),
+        min_width=50,
+    ),
+    # TODO: make year rowname
+    columns={
+        "year": Column(
+            format=ColFormat(digits=0),
+            row_header=True,
+        ),
+    },
+    bordered=True,
+    default_page_size=5,
+)
+
+```
+
+## Format changes
+
+```{python}
+# | label: format-changes
+import polars as pl
+from reactable import Reactable, Column, CellInfo
+
+data = pl.DataFrame(
+    {
+        "Symbol": ["GOOG", "FB", "AMZN", "NFLX", "TSLA"],
+        "Price": [1265.13, 187.89, 1761.33, 276.82, 328.13],
+        "Change": [4.14, 1.51, -19.45, 5.32, -12.45],
+    }
+)
+
+Reactable(
+    data,
+    columns={
+        "Change": Column(
+            # TODO: we should stringify, so people can
+            # return ci.value directly
+            cell=lambda ci: f"+{ci.value}" if ci.value >= 0 else str(ci.value),
+            style=lambda ci: {
+                "font-weight": 600,
+                "color": "#008000" if ci.value > 0 else "#e00000",
+            },
+        )
+    },
+)
+```
+
+## Format tags and badges
+
+
+```{python}
+import polars as pl
+from reactable import Reactable, Column, CellInfo
+
+orders = pl.DataFrame(
+    {
+        "Order": [2300, 2301, 2302, 2303, 2304],
+        "Created": ["2019-04-01", "2019-04-02", "2019-04-03", "2019-04-04", "2019-04-05"],
+        # "Customer": ["Degas", "Cezanne", "Monet", "Manet", "Renoir"],
+        "Status": ["Pending", "Paid", "Canceled", "Pending", "Paid"],
+    }
+)
+
+tbl = Reactable(
+    orders,
+    columns={
+        "Status": Column(
+            cell=lambda ci: f'<span class="tag status-{ci.value.lower()}">{ci.value}</span>',
+            html=True,
+        )
+    },
+)
+```
+
+```{python}
+# | label: format-tags
+from IPython.display import display, HTML
+
+display(
+    HTML(
+        """
+<style>
+.tag {
+  display: inline-block;
+  padding: 0.125rem 0.75rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.status-paid {
+  background: hsl(116, 60%, 90%);
+  color: hsl(116, 30%, 25%);
+}
+
+.status-pending {
+  background: hsl(230, 70%, 90%);
+  color: hsl(230, 45%, 30%);
+}
+
+.status-canceled {
+  background: hsl(350, 70%, 90%);
+  color: hsl(350, 45%, 30%);
+}
+</style>
+"""
+    )
+)
+
+tbl
+```
+
+
+
+
+
+```{python}
+# | label: format-badge
+import htmltools
+
+
+def status_badge(color="#aaa", width="0.55rem", height=None):
+    height = height or width
+    return htmltools.span(
+        style=(
+            "display: inline-block;"
+            "margin-right: 0.5rem;"
+            f"width: {width};"
+            f"height: {height};"
+            f"background-color: {color};"
+            "border-radius: 50%"
+        )
+    )
+
+
+status_hsl = {
+    "Paid": "hsl(214, 45%, 50%)",
+    "Pending": "hsl(30, 97%, 70%)",
+    "Canceled": "hsl(3, 69%, 50%)",
+}
+
+Reactable(
+    orders,
+    columns={
+        "Status": Column(
+            cell=lambda ci: htmltools.div(status_badge(color=status_hsl[ci.value]), str(ci.value)),
+            html=True,
+        )
+    },
+)
+```
+
+## Bar charts
+
+
+```{python}
+# | label: bar-charts
+import htmltools
+
+from reactable import Reactable, Column, CellInfo
+from reactable.data import cars_93
+
+data = cars_93[:5, ["make", "mpg_city", "mpg_highway"]]
+
+
+def html_barchart(label, width="100%", height="1rem", fill="#00bfc4", background=None):
+    """Create general purpose html fill bar."""
+
+    bar = htmltools.div(style=f"background: {fill}; width: {width}; height: {height}")
+    chart = htmltools.div(
+        bar,
+        style=htmltools.css(
+            flex_grow=1,
+            margin_left="0.5rem",
+            background=background,
+        ),
+    )
+    return htmltools.div(
+        label,
+        chart,
+        style=htmltools.css(
+            display="flex",
+            align_items="center",
+        ),
+    )
+
+
+def fmt_barchart(ci: CellInfo, **kwargs):
+    """Format cell value into html fill bar."""
+
+    width = f"{ci.value / max(data['mpg_city']) * 100}%"
+    return html_barchart(ci.value, width=width, **kwargs)
+
+
+Reactable(
+    data,
+    columns={
+        "mpg_city": Column(
+            name="MPG (city)",
+            align="left",
+            cell=fmt_barchart,
+        ),
+        "mpg_highway": Column(
+            name="MPG (highway)",
+            align="left",
+            cell=lambda ci: fmt_barchart(ci, fill="#fc5185", background="#e1e1e1"),
+        ),
+    },
+    default_page_size=5,
+)
+```
+
+
+
+### Positive and negative values
+
+TODO
+
+### Background bar charts
+
+TODO
+
+## Embed images
+
+
+```{python}
+# | label: embed-images
+import polars as pl
+import htmltools
+
+from reactable import Reactable, Column, CellInfo
+
+data = pl.DataFrame(
+    {
+        "Animal": ["beaver", "cow", "wolf", "goat"],
+        "Body": [1.35, 465, 36.33, 27.66],
+        "Brain": [8.1, 423, 119.5, 115],
+    }
+)
+
+
+def fmt_image(ci: CellInfo):
+    image = htmltools.img(
+        src=f"/demos/cookbook/images/{ci.value}.png",
+        style="height: 24px;",
+        alt=ci.value,
+    )
+    return htmltools.TagList(
+        htmltools.div(
+            image,
+            style="display: inline-block; width: 45px;",
+        ),
+        ci.value,
+    )
+
+
+Reactable(
+    data,
+    columns={
+        "Animal": Column(cell=fmt_image),
+        "Body": Column(name="Body (kg)"),
+        "Brain": Column(name="Brain (g)"),
+    },
+)
+
+```
+
+Note that this example assumes the images are available (we did that by setting the `resources:` field in quarto).
+
+## Rating stars
+
+
+```{python}
+# | label: rating-stars
+# pip install faicons
+import polars as pl
+import htmltools
+
+from faicons import icon_svg
+from reactable import Reactable, Column, CellInfo
+
+ratings = pl.DataFrame(
+    {
+        "Movie": [
+            "Silent Serpent",
+            "Nowhere to Hyde",
+            "The Ape-Man Goes to Mars",
+            "A Menace in Venice",
+        ],
+        "Rating": [3.65, 2.35, 4.5, 1.4],
+        "Votes": [115, 37, 60, 99],
+    }
+)
+
+
+def rating_stars(ci: CellInfo):
+    to_fill = round(ci.value)
+    # TODO: how to set aria?
+    stars = [
+        icon_svg(
+            "star", stroke="orange" if ii <= to_fill else "#edf0f2", stroke_width=100, fill="white"
+        )
+        for ii in range(1, 6)
+    ]
+    return htmltools.div(*stars, title="{ci.value} out of 5 stars")
+
+
+Reactable(
+    ratings,
+    columns={
+        "Rating": Column(
+            cell=rating_stars,
+            html=True,
+        )
+    },
+)
+
+
+
+```
+
+
+## Show data from other columns
+
+```{python}
+#| label: show-data-from-other-columns
+import htmltools
+
+from reactable import Reactable, Column, CellInfo
+from reactable.data import starwars
+
+data = starwars[["name", "height", "mass", "gender", "homeworld", "species"]]
+
+
+def fmt_name(ci: CellInfo):
+    species = data["species"][ci.row_index]
+    species = species if species is not None else "Unknown"
+
+    return htmltools.div(
+        htmltools.div(ci.value, style="font-weight: 600;"),
+        htmltools.div(species, style="font-size: 0.75rem;"),
+    )
+
+
+Reactable(
+    data,
+    columns={
+        "name": Column(
+            cell=fmt_name,
+            name="Character",
+        ),
+        "species": Column(show=False),
+    },
+    default_col_def=Column(v_align="center"),
+    default_page_size=6,
+)
+```
+
+
+```{python}
+from reactable import Reactable, Column, JS
+from reactable.data import starwars
+
+data = starwars[["name", "height", "mass", "gender", "homeworld", "species"]]
+
+js_name = JS(
+    """
+    function(cellInfo) {
+        const species = cellInfo.row["species"] || "Unknown"
+        return `
+            <div>
+                <div style="font-weight: 600">${cellInfo.value}</div>
+                <div style="font-size: 0.75rem">${species}</div>
+            </div>
+        `
+    }
+    """
+)
+
+Reactable(
+    data,
+    columns={
+        "name": Column(
+            cell=js_name,
+            html=True,
+        ),
+        "species": Column(show=False),
+    },
+    default_col_def=Column(v_align="center"),
+    default_page_size=6,
+)
+
+```
+
+## Total rows
+
+### Fixed
+
+```{python}
+# | label: total-rows
+from reactable import Reactable, Column
+from reactable.data import cars_93
+
+data = cars_93[["manufacturer", "model", "type", "price"]]
+
+Reactable(
+    data,
+    default_page_size=5,
+    columns={
+        "manufacturer": Column(footer="Total"),
+        "price": Column(footer=f"${sum(data['price']):.2f}"),
+    },
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
+```
+
+### Dynamic
+
+```{python}
+from reactable import JS
+
+js_sum_price = JS(
+    """
+    function(column, state) {
+        let total = 0
+        state.sortedData.forEach(function(row) {
+            total += row[column.id]
+        })
+        return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+    }
+    """
+)
+
+Reactable(
+    data,
+    searchable=True,
+    default_page_size=5,
+    min_rows=5,
+    columns={
+        "manufacturer": Column(footer="Total"),
+        "price": Column(footer=js_sum_price),
+    },
+    default_col_def=Column(footer_style={"font-weight": "bold"}),
+)
+```
+
+## Nested tables
+
+```{python}
+# | label: nested-tables
+import polars as pl
+import polars.selectors as cs
+
+from reactable import Reactable, Column
+from reactable.data import us_expenditures
+
+data = (
+    us_expenditures.to_polars()
+    # tidy years from columns into rows
+    .unpivot(cs.starts_with("19"), index="index")
+)
+
+year_dfs = list(g for k, g in data.group_by("variable"))
+summary_df = data.group_by("variable").agg(n=pl.count())
+
+Reactable(
+    summary_df,
+    # TODO: details should accept a function
+    details=Column(
+        details=lambda ri: Reactable(year_dfs[ri.row_index]).to_widget(),
+    ),
+)
+```
+
+## Units on first row only
+
+```{python}
+# | label: units-on-first-row
+from reactable.data import cars_93
+from reactable import Reactable, Column
+
+data = cars_93[40:44, ["make", "length", "luggage_room"]]
+
+
+def fmt_length(ci):
+    return f"{ci.value}″"
+
+
+def fmt_ft(ci):
+    return f"{ci.value} <div class='units'>ft³</div>"
+
+
+Reactable(
+    data,
+    class_="car-specs",
+    columns={
+        "length": Column(
+            cell=lambda ci: fmt_length(ci) if ci.row_index == 0 else str(ci.value),
+            class_="number",
+        ),
+        "luggage_room": Column(
+            name="Luggage Room",
+            cell=lambda ci: fmt_ft(ci) if ci.row_index == 0 else str(ci.value),
+            html=True,
+        ),
+    },
+)
+```
+
+## Tooltips
+
+## Highlight cells
+
+## Highlight columns
+
+## Highlight rows
+
+## Highlight sorted headers
+
+## Highlight sorted columns
+
+## Borders between groups of data
+
+## Merge cells
+
+## Borders between columns
+
+## Style nested rows
+
+## Custom fonts
+
+## Custom sort indicators
+

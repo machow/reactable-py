@@ -1,6 +1,7 @@
 project:
   type: website
 
+notebook-links: false
 
 format:
   html:
@@ -20,11 +21,7 @@ website:
       - text: Get Started
         file: get-started/index.qmd
       - text: Examples
-        menu: 
-          - demos/twitter-followers.qmd
-          - demos/pypi-downloads/index.qmd
-          - demos/great-tables.qmd
-          - demos/cookbook/index.qmd
+        file: demos/index.qmd
       - text: Reference
         file: reference/index.qmd
       #- href: reference/index.qmd

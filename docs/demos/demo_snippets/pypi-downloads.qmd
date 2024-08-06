@@ -1,0 +1,10 @@
+---
+pagetitle: PyPI Downloads
+jupyter: python3
+navbar: false
+---
+
+:::{.shrink-example}
+{{< embed ../pypi-downloads/index.qmd#setup >}}
+{{< embed ../pypi-downloads/index.qmd#table >}}
+:::
