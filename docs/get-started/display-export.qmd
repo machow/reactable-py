@@ -72,6 +72,8 @@ Notice two important pieces:
 * `h3()` allows setting the html style attribute using the `style=` argument.
 * `to_widget()` is necessary to convert htmltools objects with reactable tables inside them, into a widget that can be displayed in the notebook.
 
+See ["Using reactable with htmltools"](./extra-htmltools.qmd) for more examples.
+
 
 ## Using with ipyreact
 
