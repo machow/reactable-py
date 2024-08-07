@@ -1,0 +1,91 @@
+---
+title: Displaying tables
+jupyter: python3
+---
+
+reactable tables can be displayed in a number of environments, include Jupyter notebooks, VS Code, and quarto documents (.qmd).
+Moreover, the package htmltools can be used to customize HTML in and around the table.
+
+For the examples on this page, we'll use some commen reactable functions, and the sleep dataset.
+
+```{python}
+from reactable import Reactable, embed_css, to_widget
+from reactable.data import sleep
+```
+
+
+## Basics
+
+In order to display a table, be sure to call `embed_css()` once per notebook or qmd file.
+
+```{python}
+embed_css()
+
+Reactable(sleep[:3])
+```
+
+Embedding css adds the necessary CSS styles to the document, so that the table is laid out correctly.
+
+
+## Custom CSS styles
+
+In order to apply custom CSS styles, they need to be added to the notebook or qmd file. One way to do this is using the `display()` function from IPython.
+
+```{python}
+from IPython.display import display, HTML
+
+display(
+    HTML(
+        """
+    <style>
+    .sleep-table {
+      font-family: Courier New, sans-serif;
+    }
+    </style>
+    """
+    )
+)
+
+Reactable(sleep[:3], class_="sleep-table")
+```
+
+## Using with htmltools
+
+Oftentimes, it's useful to wrap tables in additional HTML elements, like a div with a title in it. This can be done using the htmltools package.
+
+The example below shows adding an `<h3>` title to a table.
+
+```{python}
+import htmltools as ht
+
+
+tag = ht.div(
+    ht.h3("Sleep data", style=ht.css(color="red")),
+    Reactable(sleep[:3]),
+)
+
+to_widget(tag)
+```
+
+Notice two important pieces:
+
+* `h3()` allows setting the html style attribute using the `style=` argument.
+* `to_widget()` is necessary to convert htmltools objects with reactable tables inside them, into a widget that can be displayed in the notebook.
+
+
+## Using with ipyreact
+
+reactable uses ipyreact under the hood to render tables. This means that you can use `ipyreact.Widget` to create additional HTML elements and react components around the table.
+
+```{python}
+import anywidget
+import ipyreact
+
+ipyreact.Widget(
+    _type="div",
+    children=[
+        ipyreact.Widget(_type="h3", children="Sleep data"),
+        Reactable(sleep[:3]).to_widget(),
+    ],
+)
+```
