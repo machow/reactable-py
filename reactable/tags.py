@@ -29,8 +29,10 @@ def to_widget(el: htmltools.Tag):
     from reactable import Reactable
 
     if isinstance(el, htmltools.TagList):
-        raise NotImplementedError()
-
+        return ipyreact.Widget(
+            _type="Fragment",
+            children=[to_widget(child) for child in el],
+        )
     elif isinstance(el, Reactable):
         return el.to_widget()
     elif not isinstance(el, htmltools.Tag):

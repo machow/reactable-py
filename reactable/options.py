@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from .models import Theme, Language
 
@@ -16,6 +18,7 @@ class Options:
 
     def reset(self):
         self.theme = Theme()
+        self.language = Language()
 
 
 options = Options()

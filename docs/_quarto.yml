@@ -39,6 +39,7 @@ website:
         - get-started/index.qmd
         #- get-started/overview.qmd
         - get-started/code-structure.qmd
+        - get-started/display-export.qmd
         - section: "Controls"
           contents:
             - get-started/controls-sorting.qmd

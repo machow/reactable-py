@@ -12,6 +12,11 @@ if TYPE_CHECKING:
     from .models import Props
 
 
+# This ensures that the javascript is only loaded once, rather
+# than included in every widget instance. Note that
+ipyreact.define_module("reactable", Path(str(STATIC_FILES / "reactable-py.esm.js")))
+
+
 def embed_css():
     # https://github.com/widgetti/ipyreact/issues/39
     from IPython.display import HTML, display
@@ -36,12 +41,24 @@ def embed_css():
     )
 
 
-class BigblockWidget(ipyreact.Widget):
-    _esm = Path(str(STATIC_FILES / "reactable-py.esm.js"))
+class ReactableWidget(ipyreact.Widget):
+    # _esm = Path(str(STATIC_FILES / "reactable-py.esm.js"))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, _module="reactable", _type="default")
 
     def tagify(self) -> str:
         # to appease htmltools
         return str(self)
+
+    def _repr_mimebundle_(self, **kwargs: dict) -> tuple[dict, dict] | None:
+        # import os
+        # from reactable import options
+        #
+        # if options.path_js is not None:
+        #     self._esm = options.path_js
+        # elif os.environ.get("REACTABLE_PATH_JS"):
+        #     self._esm = os.environ["REACTABLE_PATH_JS"]
+        return super()._repr_mimebundle_(**kwargs)
 
     # def to_tag(self):
     #    return htmltool.Tag("Reactable", )
@@ -49,21 +66,4 @@ class BigblockWidget(ipyreact.Widget):
 
 def bigblock(props: Props):
 
-    return BigblockWidget(props=props.to_props())
-
-
-class RT:
-    props: Props
-    widget: "None | BigblockWidget"
-
-    def __init__(self, props: Props):
-        self.props = Props
-        self._widget = None
-
-    def _repr_mimebundle_(self, **kwargs: dict) -> tuple[dict, dict] | None:
-        # TODO: note that this means updates to props won't affect widget
-        if self._widget is not None:
-            return self._widget._repr_mimebundle_(**kwargs)
-
-        self._widget = BigblockWidget(props=self.props.to_props())
-        return self._widget._repr_mimebundle_(**kwargs)
+    return ReactableWidget(props=props.to_props())

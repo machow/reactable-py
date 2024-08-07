@@ -14,7 +14,7 @@ from .models import (
     Language,
     JS,
 )
-from .widgets import BigblockWidget, embed_css, bigblock, RT
+from .widgets import ReactableWidget, embed_css, bigblock
 from .tags import to_widget
 from .options import options
 from .render_gt import render

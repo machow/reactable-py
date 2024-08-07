@@ -1212,6 +1212,6 @@ class Reactable(Props):
         return self.to_widget()._repr_mimebundle_()
 
     def to_widget(self):
-        from .widgets import BigblockWidget
+        from .widgets import ReactableWidget
 
-        return BigblockWidget(props=self.to_props())
+        return ReactableWidget(props=self.to_props())

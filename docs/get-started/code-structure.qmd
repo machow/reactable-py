@@ -5,7 +5,7 @@ title: Code basics
 This page covers the basics of making a simple reactable table:
 
 ```{python}
-# | echo: false
+# | code-fold: true
 from reactable import embed_css
 from reactable.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
 from reactable.data import cars_93
