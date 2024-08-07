@@ -48,6 +48,7 @@ requires-python = ">=3.9"
 
 [project.optional-dependencies]
 all = [
+    "reactable[dev]"
 ]
 
 extra = [
