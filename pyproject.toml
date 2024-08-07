@@ -9,7 +9,7 @@ include = ["reactable"]
 
 [project]
 name = "reactable"
-description = "Easily generate information-rich, publication-quality tables from Python."
+description = "Interactive tables for Python."
 readme = "README.md"
 keywords = ["tables"]
 license.file = "LICENSE"
@@ -60,6 +60,7 @@ dev = [
     "quartodoc>=0.7.1; python_version >= '3.9'",
     "faicons",
     "griffe==0.38.1",
+    "great-tables",
     "mizani",
     "pandas",
     "polars",
@@ -74,8 +75,8 @@ dev = [
 
 
 [project.urls]
-homepage = "https://github.com/posit-dev/great-tables"
-documentation = "https://posit-dev.github.io/great-tables/"
+homepage = "https://github.com/machow/reactable-py"
+documentation = "https://machow.github.io/reactable-py"
 
 [tool.flake8]
 exclude = ["docs", ".venv", "tests/*"]
