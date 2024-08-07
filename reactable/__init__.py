@@ -15,6 +15,7 @@ from .models import (
     JS,
 )
 from .widgets import BigblockWidget, embed_css, bigblock, RT
+from .tags import to_widget
 from .options import options
 from .render_gt import render
 
@@ -37,6 +38,7 @@ __all__ = [
     "JS",
     # global options ----
     "options",
+    "to_widget",
     # TODO: remove ----
     "reactable",
 ]

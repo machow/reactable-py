@@ -1,0 +1,202 @@
+---
+title: Using reactable with htmltools
+---
+
+The htmltools package provides classes for representing HTML elements in Python. It is used in two ways in reactable:
+
+* Wrapping `Reactable()` tables (e.g. to put a title above the table).
+* Customizing rendering inside a table (e.g. custom html in cells).
+
+This page covers the basics of using htmltools with reactable.
+
+## htmltools basics
+
+htmltools provides many functions whose names match the HTML elements they create.
+
+For example, `div()` creates a `<div>` tag, `p()` creates a `<p>` tag, and so on.
+
+```{python}
+import htmltools as ht
+
+ht.div(
+    ht.strong("strong tag"),
+    ht.p("This is a paragraph"),
+)
+```
+
+It also provides options for customizing HTML attributes (like class and id), creating custom elements, and representing siblings.
+
+### Setting attributes
+
+Keyword arguments become attributes on the HTML element:
+
+```{python}
+tag = ht.p(
+    "This is a paragraph",
+    id="para1",
+    class_="a-paragraph",
+)
+
+print(tag)
+```
+
+### Tag: custom elements
+
+If there's no function for specific tag name, you can specify it manually with the `Tag` class:
+
+```{python}
+ht.Tag("div", "some content")
+```
+
+### TagList: creating siblings
+
+Use `TagList` to represent two elements side-by-side, without a containing element.
+
+```{python}
+tag = ht.TagList(
+    ht.strong("strong tag"),
+    ht.p("This is a paragraph"),
+)
+
+print(tag)
+```
+
+### tags: lots of pre-defined tags
+
+The `htmltools.tags` submodule has a much bigger set of tag functions to choose from!
+
+```{python}
+ht.tags.sub("sub tag")
+```
+
+### styling with CSS
+
+In order to apply CSS styles, use `ht.tags.style`:
+
+```{python}
+ht.TagList(
+    ht.tags.style(
+        """
+        .a-paragraph {
+            color: red;
+        }
+        """
+    ),
+    ht.p("a paragraph", class_="a-paragraph"),
+)
+```
+
+Note that we used a `TagList`, so that there's a single output. This is important in Jupyter notebooks, since the last output is what gets displayed.
+
+(We also could have used the `IPython.display.display` function to manually display each tag.)
+
+## Wrapping a table with htmltools
+
+Use `to_widget()` when wrapping a `Reactable()` table in htmltools tags.
+
+
+```{python}
+import htmltools as ht
+from reactable import Reactable, embed_css, to_widget
+from reactable.data import sleep
+
+embed_css()
+
+tbl = Reactable(sleep, default_page_size=5)
+
+to_widget(
+    ht.div(
+        ht.div(
+            ht.h3("This is the title of the table", class_="title"),
+            "This is the subtitle.",
+            class_="table-header",
+        ),
+        tbl,
+        class_="table-wrapper",
+    )
+)
+```
+
+Notice that the table rendered inside a div, with a title and subtitle.
+
+The `to_widget()` function is needed because `Reactable()` uses `ipyreact` to render the table. Since it expects an `ipyreact.Widget()` to represent every html element, `to_widget()` converts all htmltools elements to widgets.
+
+The conversion looks like this:
+
+```{python}
+import ipyreact
+import htmltools as ht
+
+# htmltools representation ----
+ht.div(
+    ht.span(
+        "content",
+    ),
+    class_="some-div",
+)
+
+# ipyreact representation ----
+ipyreact.Widget(
+    _type="div",
+    props={"class": "some-div"},
+    children=[
+        ipyreact.Widget(
+            _type="span",
+            children=["content"],
+        ),
+    ],
+)
+```
+
+## Customizing rendering
+
+htmltools can also customize content rendered inside a table. 
+
+Here's an example of a custom render function that returns a span tag with a custom css class, depending on whether the cell value is positive or negative:
+
+```{python}
+import htmltools as ht
+from reactable import Reactable, Column, CellInfo, embed_css
+from reactable.data import sleep
+
+embed_css()
+
+
+def fmt_cell(ci: CellInfo):
+    if ci.value > 0:
+        return ht.span(str(ci.value), class_="positive")
+    else:
+        return ht.span(str(ci.value), class_="negative")
+
+
+tag = fmt_cell(CellInfo(2, row_index=0, column_name=None))
+str(tag)
+```
+
+Notice that we set a custom css class using the `class_` argument. In order to set css, we need to create a style tag. Assuming you are in a Jupyter notebook, you can use the `IPython.display` module:
+
+```{python}
+from IPython.display import display, HTML
+
+display(HTML(
+    """
+<style>
+.positive {
+    color: green;
+}
+</style>
+"""
+))
+
+tag
+```
+
+With the css set, we can plug the renderer into the table:
+
+```{python}
+Reactable(
+    sleep,
+    default_page_size=5,
+    columns={"extra": Column(cell=fmt_cell)},
+)
+```

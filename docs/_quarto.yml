@@ -72,7 +72,7 @@ website:
             - get-started/format-custom-rendering-js.qmd
             - get-started/style-conditional-js.qmd
             - get-started/extra-advanced-filters.qmd
-            - examples/index.qmd
+            - get-started/extra-htmltools.qmd
 
 # tell quarto to read the generated sidebar
 #metadata-files:
@@ -111,3 +111,6 @@ quartodoc:
         - ColInfo
         - HeaderCellInfo
         - JS
+    - title: Helpers
+      contents:
+        - to_widget

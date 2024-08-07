@@ -34,7 +34,7 @@ Reactable(
     ],
     bordered=True,
     theme=Theme(
-        background_color="#ad85ff",
+        cell_padding="8px 12px",
     ),
     language=Language(
         page_next="SLAM THE NEXT PAGE",
@@ -61,7 +61,7 @@ from reactable import embed_css
 from reactable.models import Reactable, ColGroup, Column, ColFormat, Theme, Language
 from reactable.data import cars_93
 
-embed_css()
+# embed_css()
 
 cars = cars_93[:3, ["manufacturer", "model", "type", "price", "min_price", "max_price"]]
 ```
@@ -192,7 +192,7 @@ Reactable(
     cars,
     bordered=True,
     theme=Theme(
-        background_color="#ad85ff",
+        cell_padding="8px 12px",
     ),
 )
 ```
@@ -238,7 +238,7 @@ Reactable(
     ],
     bordered=True,
     theme=Theme(
-        background_color="#ad85ff",
+        cell_padding="8px 12px",
     ),
     language=Language(
         page_next="SLAM THE NEXT PAGE",

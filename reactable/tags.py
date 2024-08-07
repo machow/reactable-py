@@ -24,6 +24,7 @@ def to_hydrate_format(el: htmltools.Tag | str):
 
 
 def to_widget(el: htmltools.Tag):
+    """Convert htmltools element to ipyreact widget"""
     import ipyreact
     from reactable import Reactable
 
