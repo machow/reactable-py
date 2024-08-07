@@ -16,6 +16,8 @@ execute:
 
 website:
   title: "reactable-py" 
+  search:
+    show-item-context: true
   navbar:
     left:
       - text: Get Started
