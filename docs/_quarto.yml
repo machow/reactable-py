@@ -1,5 +1,7 @@
 project:
   type: website
+  resources:
+    - "assets/sleep-table.png"
 
 notebook-links: false
 
