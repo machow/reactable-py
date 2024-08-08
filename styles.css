@@ -1,0 +1,79 @@
+@import url('https://rsms.me/inter/inter.css');
+html { font-family: 'Inter', sans-serif; }
+@supports (font-variation-settings: normal) {
+  html { font-family: 'Inter var', sans-serif; }
+}
+
+:root {
+    --bs-body-font-family: inter;
+    --bs-body-font-size: 16px;
+}
+
+.Reactable {
+  font-size: 14px;
+}
+
+
+.sidebar a.nav-link {
+    font-size: 14.4px;
+    font-weight: 400;
+}
+  
+.nav-item .nav-link.active {
+  /*background-color: #EE8320;*/
+  border-bottom: white 2px solid;
+}
+
+
+.sidebar nav[role=doc-toc] ul>li>a.active, .sidebar nav[role=doc-toc] ul>li>ul>li>a.active
+{
+  color: black !important;
+  /*color: #4D9089 !important;*/
+  border-left: 2px solid #4D9089 !important;
+}
+
+.sidebar nav[role=doc-toc]>ul a {
+  border-left: 2px solid white;
+}
+
+/*
+div.sidebar-item-container .active {
+  color: black;
+  background-color: var(--site-color-secondary);
+}
+
+.sidebar nav[role=doc-toc] ul>li>a.active {
+    border-left: 1px solid var(--site-color-secondary);
+    color: var(--site-color-secondary) !important;
+}
+*/
+
+.sidebar-item {
+    margin-top: 0px;
+}
+
+.sidebar-item-container .text-start {
+  font-weight: 600;
+  font-size: 14.4px !important;
+}
+
+.sidebar-item-text {
+  /*color: rgba(60, 60, 60, 0.7);*/
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.sidebar-item-section {
+  padding-top: 16px;
+}
+
+.sidebar-section {
+  padding-left: 0px !important;
+}
+
+/* Examples */
+
+.shrink-example .cell-output {
+  zoom: 75%;
+}
