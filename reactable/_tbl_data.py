@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from polars import DataFrame as PlDataFrame, Series as PlSeries
-from pandas import DataFrame as PdDataFrame, Series as PdSeries
 from .simpleframe import SimpleFrame, SimpleColumn
 
 from datetime import datetime, date, time
