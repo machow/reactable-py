@@ -5,9 +5,7 @@ from typing_extensions import TypeAlias
 
 from dataclasses import asdict, dataclass, field, fields, replace, InitVar
 
-from polars import DataFrame as PlDataFrame
-from .data import SimpleFrame
-from ._tbl_data import col_type
+from ._tbl_data import DataFrameLike, col_type, column_names, to_dict
 from .tags import to_hydrate_format
 
 if TYPE_CHECKING:
@@ -32,24 +30,10 @@ def filter_none(d: dict[str, Any]):
     return {k: v for k, v in d.items() if v is not None}
 
 
-def process_data(d: PlDataFrame | SimpleFrame) -> dict[str, list[Any]]:
-    if isinstance(d, PlDataFrame):
-        return d.to_dict(as_series=False)
-    elif isinstance(d, SimpleFrame):
-        return d.to_dict()
+def process_data(d: DataFrameLike) -> dict[str, list[Any]]:
+    return to_dict(d)
 
     raise TypeError(f"Unsupported type: {type(d)}")
-
-
-def get_column_names(d: PlDataFrame | SimpleFrame | dict[str, Any]) -> list[str]:
-    if isinstance(d, PlDataFrame):
-        names = [col.name for col in d]
-    elif isinstance(d, SimpleFrame):
-        names = list(d.columns)
-    else:
-        names = list(d)
-
-    return names
 
 
 def cols_dict_to_list(cols: dict[str, Column] | list[Column]) -> list[Column]:
@@ -75,14 +59,14 @@ def cols_dict_to_list(cols: dict[str, Column] | list[Column]) -> list[Column]:
 
 
 def default_columns(
-    d: PlDataFrame | SimpleFrame | dict[str, Any], default: Column | None = None
+    d: DataFrameLike | dict[str, Any], default: Column | None = None
 ) -> list[Column]:
     if default is None:
         default = Column()
     if isinstance(d, dict):
         return [Column(name=k, id=k).infer_type(v).merge(default) for k, v in d.items()]
 
-    names = get_column_names(d)
+    names = column_names(d)
 
     out = []
     for name in names:
@@ -220,7 +204,7 @@ class ColInfo:
 
 @dataclass
 class Props:
-    data: dict[str, list[Any]] | PlDataFrame
+    data: dict[str, list[Any]] | DataFrameLike
     columns: list[Column] | None = None
     column_groups: list[ColGroup] | None = None
     rownames: InitVar[bool] = False
@@ -310,7 +294,8 @@ class Props:
         self.validate_columns()
 
         # data ----
-        if isinstance(self.data, (PlDataFrame, SimpleFrame)):
+        # from this point on, self.data is a dictionary
+        if isinstance(self.data, DataFrameLike):
             self.data = process_data(self.data)
 
         self.default_sorted = self.derive_default_sorted(default_sort_order)
@@ -449,7 +434,7 @@ class Props:
         return out
 
     def validate_columns(self):
-        names = set(get_column_names(self.data))
+        names = set(column_names(self.data))
         for col in self.columns:
             if col.id not in names:
                 raise ValueError(f"Column id '{col.id}' is not a column name in the data.")
