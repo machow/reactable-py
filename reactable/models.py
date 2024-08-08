@@ -5,9 +5,6 @@ from typing_extensions import TypeAlias
 
 from dataclasses import asdict, dataclass, field, fields, replace, InitVar
 
-from polars import DataFrame as PlDataFrame
-from pandas import DataFrame as PdDataFrame
-from .data import SimpleFrame
 from ._tbl_data import DataFrameLike, col_type, column_names, to_dict
 from .tags import to_hydrate_format
 
@@ -62,7 +59,7 @@ def cols_dict_to_list(cols: dict[str, Column] | list[Column]) -> list[Column]:
 
 
 def default_columns(
-    d: PlDataFrame | SimpleFrame | dict[str, Any], default: Column | None = None
+    d: DataFrameLike | dict[str, Any], default: Column | None = None
 ) -> list[Column]:
     if default is None:
         default = Column()
@@ -207,7 +204,7 @@ class ColInfo:
 
 @dataclass
 class Props:
-    data: dict[str, list[Any]] | PlDataFrame
+    data: dict[str, list[Any]] | DataFrameLike
     columns: list[Column] | None = None
     column_groups: list[ColGroup] | None = None
     rownames: InitVar[bool] = False
@@ -298,7 +295,7 @@ class Props:
 
         # data ----
         # from this point on, self.data is a dictionary
-        if isinstance(self.data, (PlDataFrame, PdDataFrame, SimpleFrame)):
+        if isinstance(self.data, DataFrameLike):
             self.data = process_data(self.data)
 
         self.default_sorted = self.derive_default_sorted(default_sort_order)
