@@ -1,16 +1,52 @@
 from __future__ import annotations
 
-import polars as pl
+from polars import DataFrame as PlDataFrame, Series as PlSeries
+from pandas import DataFrame as PdDataFrame, Series as PdSeries
+from .simpleframe import SimpleFrame, SimpleColumn
 
 from datetime import datetime, date, time
 from functools import singledispatch
-from typing import Union, Literal
+from typing import TYPE_CHECKING, Any, Union, Literal
 from typing_extensions import TypeAlias
 
-from .simpleframe import SimpleColumn
-from polars import Series as PlSeries
+from abc import ABC
 
-ColumnLike: TypeAlias = Union[PlSeries, SimpleColumn]
+
+if TYPE_CHECKING:
+    from polars import DataFrame as PlDataFrame, Series as PlSeries
+    from pandas import DataFrame as PdDataFrame, Series as PdSeries
+
+else:
+    from databackend import AbstractBackend
+
+    class PlDataFrame(AbstractBackend):
+        _backends = [("polars", "DataFrame")]
+
+    class PdDataFrame(AbstractBackend):
+        _backends = [("pandas", "DataFrame")]
+
+    class PlSeries(AbstractBackend):
+        _backends = [("polars", "Series")]
+
+    class PdSeries(AbstractBackend):
+        _backends = [("pandas", "Series")]
+
+    class DataFrameLike(ABC):
+        """Represent a DataFrame"""
+
+    class ColumnLike(ABC):
+        """Represent a Column"""
+
+    DataFrameLike.register(PlDataFrame)
+    DataFrameLike.register(PdDataFrame)
+    DataFrameLike.register(SimpleFrame)
+
+    ColumnLike.register(PlSeries)
+    ColumnLike.register(PdSeries)
+    ColumnLike.register(SimpleColumn)
+
+
+# col_type -------------------------------------------------------------
 
 WidgetColTypes: TypeAlias = 'None | Literal["numeric", "Date", "character", "factor", "logical"]'
 
@@ -22,6 +58,8 @@ def col_type(x: ColumnLike) -> WidgetColTypes:
 
 @col_type.register(PlSeries)
 def _(x: PlSeries) -> WidgetColTypes:
+    import polars as pl
+
     dtype = x.dtype
     if dtype.is_numeric():
         return "numeric"
@@ -35,6 +73,11 @@ def _(x: PlSeries) -> WidgetColTypes:
     elif dtype.is_(pl.Categorical):
         return "factor"
 
+    return "UNKNOWN"
+
+
+@col_type.register(PdSeries)
+def _(x: PdSeries) -> WidgetColTypes:
     return "UNKNOWN"
 
 
@@ -66,3 +109,59 @@ def _peek_type(col: SimpleColumn | list):
         return list(types)[0]
 
     return None
+
+
+# to_dict -------------------------------------------------------------
+
+
+@singledispatch
+def to_dict(data: DataFrameLike) -> "dict[str, list[Any]]":
+    raise TypeError(f"Unsupported type: {type(data)}")
+
+
+@to_dict.register
+def _(data: PlDataFrame) -> "dict[str, list[Any]]":
+    return data.to_dict(as_series=False)
+
+
+@to_dict.register
+def _(data: PdDataFrame) -> "dict[str, list[Any]]":
+    return data.to_dict(orient="list")
+
+
+@to_dict.register
+def _(data: SimpleFrame) -> "dict[str, list[Any]]":
+    return data.to_dict()
+
+
+# column_names ---------------------------------------------------------
+
+
+@singledispatch
+def column_names(data: DataFrameLike) -> "list[str]":
+    raise TypeError(f"Unsupported type: {type(data)}")
+
+
+@column_names.register
+def _(data: PlDataFrame) -> "list[str]":
+    return data.columns
+
+
+@column_names.register
+def _(data: PdDataFrame) -> "list[str]":
+    # note that column names don't have to be strings in pandas
+    names = list(data.columns)
+    for name in names:
+        if not isinstance(name, str):
+            raise TypeError(
+                "Column names must be strings, received:\n"
+                f"\n  * type: {type(name)}"
+                f"\n  * value: {name}"
+            )
+
+    return names
+
+
+@column_names.register
+def _(data: SimpleFrame) -> "list[str]":
+    return list(data.columns)
