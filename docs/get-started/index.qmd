@@ -1,6 +1,8 @@
 ---
 title: Get Started
 jupyter: python3
+aliases: 
+  - ../index.html
 ---
 
 `reactable` is a Python library for interactively viewing DataFrames. It focuses on three things:
