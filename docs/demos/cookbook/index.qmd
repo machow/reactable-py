@@ -435,7 +435,7 @@ Reactable(
 ## Show data from other columns
 
 ```{python}
-#| label: show-data-from-other-columns
+# | label: show-data-from-other-columns
 import htmltools
 
 from reactable import Reactable, Column, CellInfo
@@ -464,7 +464,7 @@ Reactable(
         "species": Column(show=False),
     },
     default_col_def=Column(v_align="center"),
-    default_page_size=6,
+    default_page_size=4,
 )
 ```
 

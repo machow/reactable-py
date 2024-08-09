@@ -17,14 +17,15 @@ embed_css()
 
 :::::: {.column-page}
 ::::: {.grid}
-
 :::{.g-col-lg-6 .g-col-12}
+
 
 ```{python}
 import polars as pl
 from great_tables import GT, md, html
 from great_tables.data import islands
 from reactable import render
+from reactable.render_gt import _render
 
 
 islands_mini = pl.from_pandas(islands).sort("size", descending=True).head(10)
@@ -108,12 +109,11 @@ wide_pops = (
     )
     .with_columns(pl.col("country_code_2").replace(country_to_region).alias("region"))
     .filter(pl.col("region").is_in(["Australasia", "Melanesia"]))
-    .pivot(index=["country_name", "region"], columns="year", values="population")
+    .pivot(index=["country_name", "region"], on="year", values="population")
     .sort("2020", descending=True)
 )
 
 gt = (
-
     GT(wide_pops)
     .tab_header(title="Populations of Oceania's Countries in 2000, 2010, and 2020")
     .tab_spanner(label="Total Population", columns=cs.all())
@@ -177,6 +177,7 @@ render(gt)
 :::{.g-col-lg-6 .g-col-12}
 
 ```{python}
+# | label: solar-zenith-angles
 from great_tables import GT, html
 from great_tables.data import sza
 import polars as pl
@@ -187,7 +188,7 @@ sza_pivot = (
     .filter((pl.col("latitude") == "20") & (pl.col("tst") <= "1200"))
     .select(pl.col("*").exclude("latitude"))
     .drop_nulls()
-    .pivot(values="sza", index="month", columns="tst", sort_columns=True)
+    .pivot(values="sza", index="month", on="tst", sort_columns=True)
 )
 
 gt = (
@@ -201,6 +202,7 @@ gt = (
         title="Solar Zenith Angles from 05:30 to 12:00",
         subtitle=html("Average monthly values at latitude of 20&deg;N."),
     )
+    .cols_width({k: 50 for k in sza_pivot.columns})
     .sub_missing(missing_text="")
 )
 
@@ -275,6 +277,7 @@ render(gt)
 :::{.g-col-lg-6 .g-col-12}
 
 ```{python}
+# | label: coffee-table
 import polars as pl
 import polars.selectors as cs
 from great_tables import GT, loc, style
@@ -330,6 +333,7 @@ render(coffee_table)
 ```
 
 :::
+
 
 ::::::
 :::::

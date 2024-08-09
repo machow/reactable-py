@@ -12,6 +12,16 @@ notebook-links: false
 iframe {
     overflow: hidden;
 }
+
+h3 {
+    text-align: center;
+}
+
+h3 a {
+    text-decoration: none;
+    font-size: 20px;
+
+}
 </style>
 
 
@@ -22,17 +32,29 @@ iframe {
 
 :::::: {.column-page}
 
+
 ## Demos
 
 ::::: {.grid}
 :::{.g-col-lg-6 .g-col-12 .example}
 ### [PyPI downloads](./pypi-downloads)
-<iframe src="./demo_snippets/pypi-downloads.html" width="100%" height="500px" scrolling="no"></iframe>
+<iframe src="./demo_snippets/pypi-downloads.html" width="100%" height="400px" scrolling="no"></iframe>
 :::
 
 :::{.g-col-lg-6 .g-col-12 .example}
 ### [Twitter followers](./twitter-followers.qmd)
-<iframe src="./demo_snippets/twitter-followers.html" width="100%" height="600px" scrolling="no"></iframe>
+<iframe src="./demo_snippets/twitter-followers.html" width="100%" height="400px" scrolling="no"></iframe>
+:::
+
+:::{.g-col-lg-6 .g-col-12 .example}
+### [Great Tables - coffee table](./great-tables.qmd)
+<iframe src="./demo_snippets/coffee-table.html" width="100%" height="400px" scrolling="no"></iframe>
+:::
+
+
+:::{.g-col-lg-6 .g-col-12 .example}
+### [Great Tables - solar angles](./great-tables.qmd)
+<iframe src="./demo_snippets/solar-zenith-angles.html" width="100%" height="400px" scrolling="no"></iframe>
 :::
 
 :::::
@@ -53,68 +75,68 @@ iframe {
 ::::: {.grid}
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Insert links](./cookbook/index.qmd#insert-links)
+### [Insert links](./cookbook/index.qmd#insert-links)
 {{< embed cookbook/index.qmd#insert-links >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Format colors](./cookbook/index.qmd#single-column)
+### [Format colors](./cookbook/index.qmd#single-column)
 {{< embed cookbook/index.qmd#format-color-scales >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Format colors (2)](./cookbook/index.qmd#grid)
+### [Format colors (2)](./cookbook/index.qmd#grid)
 {{< embed cookbook/index.qmd#format-color-scales2 >}}
 :::
 
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Format changes](./cookbook/index.qmd#format-changes)
+### [Format changes](./cookbook/index.qmd#format-changes)
 {{< embed cookbook/index.qmd#format-changes >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Format tags](./cookbook/index.qmd#format-tags-and-badges)
+### [Format tags](./cookbook/index.qmd#format-tags-and-badges)
 {{< embed cookbook/index.qmd#format-tags >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Format badge](./cookbook/index.qmd#format-tags-and-badges)
+### [Format badge](./cookbook/index.qmd#format-tags-and-badges)
 {{< embed cookbook/index.qmd#format-badge >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Bar charts](./cookbook/index.qmd#bar-charts)
+### [Bar charts](./cookbook/index.qmd#bar-charts)
 {{< embed cookbook/index.qmd#bar-charts >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Embed images](./cookbook/index.qmd#embed-images)
+### [Embed images](./cookbook/index.qmd#embed-images)
 {{< embed cookbook/index.qmd#embed-images >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Rating stars](./cookbook/index.qmd#rating-stars)
+### [Rating stars](./cookbook/index.qmd#rating-stars)
 {{< embed cookbook/index.qmd#rating-stars >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Combine cols](./cookbook/index.qmd#show-data-from-other-columns)
+### [Combine cols](./cookbook/index.qmd#show-data-from-other-columns)
 {{< embed cookbook/index.qmd#show-data-from-other-columns >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Total rows](./cookbook/index.qmd#total-rows)
+### [Total rows](./cookbook/index.qmd#total-rows)
 {{< embed cookbook/index.qmd#total-rows >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Nested tables](./cookbook/index.qmd#nested-tables)
+### [Nested tables](./cookbook/index.qmd#nested-tables)
 {{< embed cookbook/index.qmd#nested-tables >}}
 :::
 
 :::{.g-col-lg-3 .g-col-12 .example .shrink-example}
-## [Units on first row](./cookbook/index.qmd#units-on-first-row)
+### [Units on first row](./cookbook/index.qmd#units-on-first-row)
 {{< embed cookbook/index.qmd#units-on-first-row >}}
 :::
 

@@ -1,0 +1,46 @@
+---
+pagetitle: solar zenith angles
+navbar: false
+---
+
+:::{.shrink-example}
+
+```{python}
+# | echo: false
+from reactable import embed_css, render
+
+embed_css()
+
+
+from great_tables import GT, html
+from great_tables.data import sza
+import polars as pl
+import polars.selectors as cs
+
+sza_pivot = (
+    pl.from_pandas(sza)
+    .filter((pl.col("latitude") == "20") & (pl.col("tst") <= "1200"))
+    .select(pl.col("*").exclude("latitude"))
+    .drop_nulls()
+    .pivot(values="sza", index="month", on="tst", sort_columns=True)
+)
+
+gt = (
+    GT(sza_pivot, rowname_col="month")
+    .data_color(
+        domain=[90, 0],
+        palette=["rebeccapurple", "white", "orange"],
+        na_color="white",
+    )
+    .tab_header(
+        title="Solar Zenith Angles from 05:30 to 12:00",
+        subtitle=html("Average monthly values at latitude of 20&deg;N."),
+    )
+    .cols_width({k: 50 for k in sza_pivot.columns})
+    .sub_missing(missing_text="")
+)
+
+render(gt)
+```
+
+:::
