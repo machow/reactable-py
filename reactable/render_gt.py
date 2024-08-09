@@ -8,13 +8,13 @@ from great_tables import GT
 from great_tables._tbl_data import n_rows, subset_frame
 from great_tables._helpers import random_id
 from great_tables._text import _process_text
-from great_tables._spanners import spanners_print_matrix
 from great_tables._gt_data import ColInfoTypeEnum
+from great_tables._scss import compile_scss
 from typing import TYPE_CHECKING
 
 from .models import Column, Language, Theme, ColGroup
 from . import Reactable
-from .tags import as_react_style
+from .tags import as_react_style, to_widget
 
 if TYPE_CHECKING:
     from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes
@@ -326,8 +326,15 @@ def _render(self: GT):
 
 
 def render(self: GT) -> ipyreact.Widget:
+    # get table elements ----
     el_header, itable, el_footer = _render(self)
 
+    # compile table specific css ----
+    css = compile_scss(self, id=itable.element_id)
+
+    style = to_widget(html.tags.style(css))
+
+    # return widget ----
     res = [itable.to_widget()]
 
     if el_header:
@@ -335,4 +342,5 @@ def render(self: GT) -> ipyreact.Widget:
     if el_footer:
         res = res + [ipywidgets.HTML(str(el_footer))]
 
-    return ipyreact.Widget(_type="div", children=res)
+    res = [style] + res
+    return ipyreact.Widget(_type="div", props={"id": itable.element_id}, children=res)
