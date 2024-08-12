@@ -5,7 +5,7 @@ import ipyreact
 import ipywidgets
 
 from great_tables import GT
-from great_tables._tbl_data import n_rows, subset_frame
+from great_tables._tbl_data import n_rows
 from great_tables._helpers import random_id
 from great_tables._text import _process_text
 from great_tables._gt_data import ColInfoTypeEnum
@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 from .models import Column, Language, Theme, ColGroup
 from . import Reactable
 from .tags import as_react_style, to_widget
+from ._tbl_data import subset_frame
 
 if TYPE_CHECKING:
     from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes
