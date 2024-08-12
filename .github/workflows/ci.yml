@@ -29,7 +29,6 @@ jobs:
           # we are using the -e flag, so that code cov finds the source.
           # this is not ideal, since installing an editable can technically
           # differ from a normal install in surprising ways.
-          python -m pip install "git+https://github.com/posit-dev/great-tables.git@feat-interactive"
           pip install -e '.[all]'
       - name: Unit tests
         run: |
