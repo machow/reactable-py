@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 from .models import Column, Language, Theme, ColGroup
 from . import Reactable
 from .tags import as_react_style, to_widget
-from ._tbl_data import subset_frame
+from ._tbl_data import subset_frame, to_dict
 
 if TYPE_CHECKING:
     from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes, Options
@@ -28,7 +28,7 @@ class OptWrapper:
         self._d = d
 
     def __getitem__(self, k: str) -> Any:
-        return getattr(self._d, k).value
+    return getattr(self._d, k).value
 
 
 def dict_to_css(dict_: dict[str, str]) -> str:
@@ -128,8 +128,6 @@ def extract_cells(
     from great_tables._tbl_data import (
         cast_frame_to_string,
         replace_null_frame,
-        subset_frame,
-        to_column_dict,
     )
 
     if rows is not None:
@@ -148,7 +146,7 @@ def extract_cells(
 
     # TODO: get_cell gets individual cell, need one that gets columns
     df_subset = subset_frame(df_stringified, cols=columns)
-    return to_column_dict(df_subset)
+    return to_dict(df_subset)
 
 
 def _render(self: GT):
