@@ -28,7 +28,7 @@ class OptWrapper:
         self._d = d
 
     def __getitem__(self, k: str) -> Any:
-    return getattr(self._d, k).value
+        return getattr(self._d, k).value
 
 
 def dict_to_css(dict_: dict[str, str]) -> str:
