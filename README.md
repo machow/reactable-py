@@ -6,7 +6,7 @@ It's a port of the R package [reactable](https://github.com/glin/reactable) by [
 See these handy documentation pages:
 
 - [📚 User guide](https://machow.github.io/reactable-py/get-started)
-- [🧩 Examples](http://machow.github.io/reactable-py/examples)
+- [🧩 Examples](https://machow.github.io/reactable-py/demos/)
 
 ## Features
 
