@@ -5,19 +5,30 @@ import ipyreact
 import ipywidgets
 
 from great_tables import GT
-from great_tables._tbl_data import n_rows, subset_frame
+from great_tables._tbl_data import n_rows
 from great_tables._helpers import random_id
 from great_tables._text import _process_text
 from great_tables._gt_data import ColInfoTypeEnum
 from great_tables._scss import compile_scss
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .models import Column, Language, Theme, ColGroup
 from . import Reactable
 from .tags import as_react_style, to_widget
+from ._tbl_data import subset_frame, to_dict
 
 if TYPE_CHECKING:
-    from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes
+    from great_tables._gt_data import Locale, Spanners, Heading, Footnotes, SourceNotes, Options
+
+
+class OptWrapper:
+    _d: Options
+
+    def __init__(self, d: Options):
+        self._d = d
+
+    def __getitem__(self, k: str) -> Any:
+        return getattr(self._d, k).value
 
 
 def dict_to_css(dict_: dict[str, str]) -> str:
@@ -48,8 +59,14 @@ def create_col_groups(spanners: Spanners) -> list[ColGroup]:
     return col_groups
 
 
+def _is_empty(heading: Heading):
+    # TODO: this should be moved into great tables
+    self = heading
+    return self.title is None and self.subtitle is None and self.preheader is None
+
+
 def create_heading(heading: Heading, use_search: bool) -> html.Tag | None:
-    if heading.is_empty():
+    if _is_empty(heading):
         return None
 
     el = html.div(
@@ -117,8 +134,6 @@ def extract_cells(
     from great_tables._tbl_data import (
         cast_frame_to_string,
         replace_null_frame,
-        subset_frame,
-        to_column_dict,
     )
 
     if rows is not None:
@@ -137,7 +152,7 @@ def extract_cells(
 
     # TODO: get_cell gets individual cell, need one that gets columns
     df_subset = subset_frame(df_stringified, cols=columns)
-    return to_column_dict(df_subset)
+    return to_dict(df_subset)
 
 
 def _render(self: GT):
@@ -146,7 +161,7 @@ def _render(self: GT):
 
     # add_css_styles()
 
-    table_id = self._options["table_id"] or random_id()
+    table_id = OptWrapper(self._options)["table_id"] or random_id()
     locale = self._locale
 
     # generate Language -------------------------------------------------------
@@ -243,7 +258,7 @@ def _render(self: GT):
     )
 
     # Generate theme ----------------------------------------------------------
-    opts = self._options
+    opts = OptWrapper(self._options)
     theme = Theme(
         color=opts["table_font_color"],
         background_color=opts["table_background_color"],

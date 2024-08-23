@@ -4,7 +4,7 @@ from .simpleframe import SimpleFrame, SimpleColumn
 
 from datetime import datetime, date, time
 from functools import singledispatch
-from typing import TYPE_CHECKING, Any, Union, Literal
+from typing import TYPE_CHECKING, Any, Union, Literal, Optional
 from typing_extensions import TypeAlias
 
 from abc import ABC
@@ -163,3 +163,33 @@ def _(data: PdDataFrame) -> "list[str]":
 @column_names.register
 def _(data: SimpleFrame) -> "list[str]":
     return list(data.columns)
+
+
+# subset_frame --------------------------------------------------------
+@singledispatch
+def subset_frame(
+    data: DataFrameLike, row: Optional[list[int]], column: Optional[list[str]]
+) -> DataFrameLike:
+    raise TypeError(f"Unsupported type: {type(data)}")
+
+
+@subset_frame.register
+def _(
+    data: PdDataFrame, rows: Optional[list[int]] = None, cols: Optional[list[str]] = None
+) -> PdDataFrame:
+
+    cols_indx = slice(None) if cols is None else data.columns.get_indexer_for(cols)
+    rows_indx = slice(None) if rows is None else rows
+
+    return data.iloc[rows_indx, cols_indx]
+
+
+@subset_frame.register
+def _(
+    data: PlDataFrame, rows: Optional[list[int]] = None, cols: Optional[list[str]] = None
+) -> PlDataFrame:
+
+    cols_indx = slice(None) if cols is None else cols
+    rows_indx = slice(None) if rows is None else rows
+
+    return data[rows_indx, cols_indx]
