@@ -59,8 +59,14 @@ def create_col_groups(spanners: Spanners) -> list[ColGroup]:
     return col_groups
 
 
+def _is_empty(heading: Heading):
+    # TODO: this should be moved into great tables
+    self = heading
+    return self.title is None and self.subtitle is None and self.preheader is None
+
+
 def create_heading(heading: Heading, use_search: bool) -> html.Tag | None:
-    if heading.is_empty():
+    if _is_empty(heading):
         return None
 
     el = html.div(
