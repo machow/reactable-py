@@ -249,9 +249,9 @@ class SimpleFrame:
 
             return cls.from_dict(data)
 
-    def cast(self, col_mapping: dict[str, Any]) -> Self:
+    def cast(self, col_mapping: dict[str, Any], na_char: str|None = None) -> Self:
         new_columns = {**self.columns}
         for k, call in col_mapping.items():
-            new_columns[k] = [call(x) for x in self.columns[k]]
+            new_columns[k] = [call(x) if x != na_char else None for x in self.columns[k]]
 
         return self.__class__(new_columns)
