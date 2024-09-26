@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from anywidget import AnyWidget
 import ipyreact
 
 from importlib_resources import files
@@ -41,10 +42,17 @@ def embed_css():
     )
 
 
-class ReactableWidget(ipyreact.Widget):
-    # _esm = Path(str(STATIC_FILES / "reactable-py.esm.js"))
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, _module="reactable", _type="default")
+from ipywidgets import widget_serialization
+from traitlets import Dict
+
+
+class ReactableWidget(AnyWidget):
+    _esm = Path(str(STATIC_FILES / "reactable-py.esm.js"))
+    _css = Path(STATIC_FILES / "reactable-py.esm.css")
+    props = Dict({}, allow_none=True).tag(sync=True, **widget_serialization)
+
+    # def __init__(self, *args, **kwargs):
+    #    super().__init__(*args, **kwargs, _module="reactable", _type="default")
 
     def tagify(self) -> str:
         # to appease htmltools
