@@ -42,3 +42,9 @@ __all__ = [
     # TODO: remove ----
     "reactable",
 ]
+
+
+def _jupyter_nbextension_paths():
+    from ipyreact import _jupyter_nbextension_paths
+
+    return _jupyter_nbextension_paths()
