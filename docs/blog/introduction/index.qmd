@@ -275,13 +275,13 @@ Here's a more advanced example, where each row of this palmer penguins data expa
 
 ```{python}
 from reactable import Reactable, embed_css
+from reactable.data import penguins
 from htmltools import HTML, div
-from palmerpenguins import load_penguins
 
 embed_css()
 
 penguins = load_penguins()
-pl_penguins = pl.from_pandas(penguins)
+pl_penguins = penguins.to_polars()
 
 # Create a dictionary of all the nested tables ----
 sub_tables = {
