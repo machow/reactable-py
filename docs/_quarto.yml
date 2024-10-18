@@ -21,6 +21,7 @@ website:
   search:
     show-item-context: true
   page-navigation: true
+  google-analytics: "G-8JZE5GTSHM"
   navbar:
     left:
       - text: Get Started
@@ -29,8 +30,8 @@ website:
         file: demos/index.qmd
       - text: Reference
         file: reference/index.qmd
-      #- href: reference/index.qmd
-      #  text: Reference
+      - href: blog/index.qmd
+        text: Blog
     right:
       - icon: github
         href: https://github.com/machow/reactable-py
