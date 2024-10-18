@@ -21,6 +21,7 @@ website:
   search:
     show-item-context: true
   page-navigation: true
+  google-analytics: "G-8JZE5GTSHM"
   navbar:
     left:
       - text: Get Started
