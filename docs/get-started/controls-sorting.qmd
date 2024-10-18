@@ -5,15 +5,14 @@ jupyter: python3
 
 ```{python}
 from reactable import Reactable, Column, embed_css
+from reactable.data import penguins
 
-from palmerpenguins import load_penguins
 import polars as pl
 
 
 embed_css()
 
-penguins = load_penguins()
-pl_penguins = pl.from_pandas(penguins)
+pl_penguins = penguins.to_polars()
 ```
 
 Tables are sortable by default. You can sort a column by clicking on its header, or sort multiple columns by holding the shift key while sorting.
