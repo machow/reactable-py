@@ -29,8 +29,8 @@ website:
         file: demos/index.qmd
       - text: Reference
         file: reference/index.qmd
-      #- href: reference/index.qmd
-      #  text: Reference
+      - href: blog/index.qmd
+        text: Blog
     right:
       - icon: github
         href: https://github.com/machow/reactable-py
