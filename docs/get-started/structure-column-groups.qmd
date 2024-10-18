@@ -6,10 +6,9 @@ title: Column headers
 import polars as pl
 
 from reactable import Reactable, Column, ColGroup, embed_css
-from palmerpenguins import load_penguins
+from reactable.data import penguins
 
-penguins = load_penguins()
-pl_penguins = pl.from_pandas(penguins)
+pl_penguins = penguins.to_polars()
 
 embed_css()
 ```

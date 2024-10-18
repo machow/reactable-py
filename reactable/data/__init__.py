@@ -11,6 +11,7 @@ __all__ = [
     "cars_93",
     "co2",
     "nottem",
+    "penguins",
     "prices",
     "sleep",
     "starwars",
@@ -53,6 +54,17 @@ nottem = SimpleFrame.read_csv(BIG_DATA / "nottem.csv").cast(
     )
 )
 
+penguins = SimpleFrame.read_csv(BIG_DATA / "penguins.csv").cast(
+    dict(
+        bill_length_mm=float,
+        bill_depth_mm=float,
+        flipper_length_mm=float,
+        body_mass_g=float,
+        year=int,
+        sex=str
+    ),
+    na_char="NA"
+)
 
 prices = SimpleFrame.from_dict(
     {
