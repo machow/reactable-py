@@ -14,15 +14,13 @@ You can add cell click actions using the onClick argument, which accepts the fol
 import htmltools
 from reactable import Reactable, Column, JS, embed_css
 
-from reactable.data import cars_93
-from palmerpenguins import load_penguins
+from reactable.data import cars_93, penguins
 import polars as pl
 
 
 embed_css()
 
-penguins = load_penguins()
-pl_penguins = pl.from_pandas(penguins)
+pl_penguins = penguins.to_polars()
 ```
 
 
