@@ -1,0 +1,128 @@
+---
+title: PositConf 2024 talks
+jupyter: python3
+---
+
+The full list of talks for Posit Conf 2024 is now available!
+
+```{python}
+from IPython.display import HTML, display
+
+style = """
+<style>
+.detail-label {
+font-size: .87rem;
+color: rgba(0, 0, 0, 0.6);
+}
+.detail-description {
+color: rgba(0, 0, 0, 0.9);
+}
+.talk-detail {
+padding: 25px;
+box-shadow: inset 0 1px 3px #dbdbdb;
+background: hsl(213, 20%, 99%);
+}
+.talk-table {
+font-family: Nunito, "Helvetica Neue", Helvetica, Arial, sans-serif;
+margin-top: 1rem;
+font-size: 0.9375rem;
+border-radius: 1px;
+}
+a.fill-div {
+display: block;
+height: 100%;
+width: 100%;
+text-decoration: none;
+}
+</style>
+"""
+
+display(HTML(style))
+```
+
+```{python}
+import polars as pl
+
+raw = pl.read_csv("talks.csv", infer_schema_length=None)
+
+tbl_talks = (
+    raw.sort(pl.col("Tbl_Order", "row"))
+    .select(
+        title="Talk title",
+        speaker="Speaker Name",
+        description="Description",
+        track="Track",
+        url="YT URL",
+        order="Tbl_Order",
+    )
+    .filter(~pl.col("title").is_null())
+)
+```
+
+
+```{python}
+from reactable import Reactable, Column, CellInfo, embed_css
+import htmltools as ht
+
+
+def row_details(ci: CellInfo):
+    row = tbl_talks[ci.row_index,].to_dicts()[0]
+
+    description = row["description"] or ""
+    if description == "":
+        detail = ht.div()
+    else:
+        description = list(map(ht.p, description.split("\n")))
+        detail = ht.div(
+            ht.div("Description", class_="detail-label"),
+            ht.div(ht.TagList(*description), class_="detail-description"),
+        )
+
+    detail = ht.div(
+        detail,
+        ht.div("Track", class_="detail-label"),
+        ht.div(row["track"], class_="detail-description"),
+    )
+
+    detail = ht.div(detail, class_="talk-detail")
+    detail = ht.a(
+        detail,
+        href=row["url"],
+        class_="fill-div",
+        target="_blank",
+    )
+
+    return detail
+
+```
+
+```{python}
+embed_css()
+
+
+def title_cell(ci: CellInfo):
+    return ht.a(
+        str(ci.value),
+        href=tbl_talks[ci.row_index, "url"],
+        target="_blank",
+    )
+
+
+Reactable(
+    tbl_talks,
+    columns={
+        "title": Column(cell=title_cell, name="Talk Title"),
+        "speaker": Column(name="Speaker", align="right"),
+        "description": Column(show=False, searchable=True),
+        "url": Column(show=False, searchable=True),
+        "order": Column(show=False),
+        "track": Column(show=False, searchable=True),
+    },
+    details=Column(details=row_details),
+    on_click="expand",
+    pagination=False,
+    class_="talk-table",
+    searchable=True,
+)
+```
+
