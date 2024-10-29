@@ -280,7 +280,6 @@ from htmltools import HTML, div
 
 embed_css()
 
-penguins = load_penguins()
 pl_penguins = penguins.to_polars()
 
 # Create a dictionary of all the nested tables ----
