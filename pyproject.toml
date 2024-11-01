@@ -38,7 +38,7 @@ classifiers = [
 dependencies = [
     "htmltools",
     "databackend",
-    "ipyreact",
+    "ipyreact<=0.4.1",
     "IPython",
     "importlib-metadata",
     "importlib-resources",
