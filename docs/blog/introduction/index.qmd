@@ -1,6 +1,7 @@
 ---
 title: "reactable-py: interactive tables in reports and notebooks"
-date: 2024-10-17
+author: Michael Chow
+date: 2024-11-01
 ---
 
 I'm excited to share the [Python release of reactable](https://github.com/machow/reactable-py)---a library for adding interactive tables to your reports and notebooks! reactable is a port of the R library of the same name.
