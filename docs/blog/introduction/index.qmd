@@ -1,0 +1,361 @@
+---
+title: "reactable-py: interactive tables in reports and notebooks"
+author: Michael Chow
+date: 2024-11-04
+---
+
+I'm excited to share the [Python release of reactable](https://github.com/machow/reactable-py)---a library for adding interactive tables to your reports and notebooks! reactable is a port of the R library of the same name.
+
+Interactive tables in reports provide some neat features:
+
+-   **interactive controls**: sort, filter, and paginate.
+-   **expandable rows**: allow people to drill into details.
+-   **custom javascript**: allow custom actions and integration with websites.
+
+For example, here is a table of the most downloaded packages on PyPI:
+
+```{python}
+# | echo: false
+# NOTE: we have manually include all the code for the pypi table here,
+# because there's a weird bug in quarto, where embedding a widget works,
+# but if you then make python code blocks that produce other widgets,
+# all widget outputs get repeated ¯\_(ツ)_/¯
+import os
+
+orig_dir = os.getcwd()
+os.chdir("../../demos/pypi-downloads")
+```
+
+```{python}
+# | echo: false
+import json
+import polars as pl
+import polars.selectors as cs
+from reactable import Reactable, Column, Theme, embed_css
+from reactable.tags import to_widget
+from reactable.models import RowInfo
+import htmltools as ht
+
+embed_css()
+
+monthly = pl.read_csv("./pypi-monthly.csv", row_index_name=None)
+details = json.load(open("./pypi-details.json"))
+outer_details = pl.DataFrame(
+    [
+        {
+            "package": x["name"].lower().replace("_", "-"),
+            "version": x["version"],
+            "summary": x["summary"],
+            "published_at": x["releases"][0]["published_at"],
+        }
+        for x in details
+    ]
+)
+
+outer = monthly.join(outer_details, "package")
+
+
+def detail_label(title, content):
+    return ht.div(title, class_="detail-label"), content
+
+
+def create_details(entry: RowInfo):
+    pkg = details[entry.row_index]
+    sub_frame = pl.DataFrame(pkg["releases"])
+
+    sub_tbl = Reactable(
+        sub_frame,
+        pagination=False,
+        default_col_def=Column(header_class="header"),
+        columns={
+            "published_at": Column(name="Published", align="right"),
+        },
+        class_="archived-table",
+        theme=Theme(cell_padding="8px 16px"),
+    )
+    return ht.div(
+        ht.div(
+            pkg["name"],
+            # ht.span(pkg["summary"], class_="detail-title"),
+            class_="detail-header",
+        ),
+        ht.div(
+            (pkg["summary"] or [])[:200],
+            class_="detail-description",
+        ),
+        *detail_label("Version", pkg["version"]),
+        *detail_label("Python Depends", pkg["requires_python"]),
+        *detail_label("Depends", pkg["requires_dist"]),
+        # *detail_label("Suggests", pkg[""]),
+        *detail_label("AUTHOR", pkg["author"]),
+        *detail_label("License", pkg["license"]),
+        *detail_label("URL", pkg["home_page"]),
+        *detail_label("Recent Versions", sub_tbl.to_widget()),
+        class_="package-detail",
+    )
+
+
+html = """
+<link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=fallback rel="stylesheet">
+
+<style>
+.cran-packages {
+  font-family: Nunito, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.packages-table {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  border: 1px solid hsl(213, 33%, 93%);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  background-color: hsl(213, 45%, 97%);
+  border-bottom-color: hsl(213, 33%, 93%);
+  border-bottom-width: 1px;
+  color: hsl(213, 13%, 33%);
+}
+
+.header[aria-sort]:hover,
+.header[aria-sort]:focus {
+  color: hsl(213, 55%, 50%);
+}
+
+.units {
+  margin-left: 0.15em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.package-title {
+  font-size: 0.875rem;
+}
+
+.package-detail {
+  padding: 24px;
+  box-shadow: inset 0 1px 3px #dbdbdb;
+  background: hsl(213, 20%, 99%);
+}
+
+.detail-label {
+  margin: 1.25rem 0 0.25rem;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-header {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.detail-title {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.detail-description {
+  font-size: 0.875rem;
+}
+
+.archived-table {
+  max-width: 15rem;
+  border: 1px solid hsl(213, 33%, 93%);
+  border-radius: 4px;
+  box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
+}
+</style>
+"""
+
+# | label: css
+# | echo: false
+from IPython.display import HTML, display
+
+display(HTML(html))
+
+
+from IPython.display import HTML, display
+
+display(HTML(html))
+
+tbl = Reactable(
+    outer.head(50),
+    default_sorted=["downloads_month"],
+    default_page_size=10,
+    show_page_size_options=True,
+    page_size_options=[10, 20, 50, 100],
+    on_click="expand",
+    resizable=True,
+    default_col_def=Column(header_class="header"),
+    columns={
+        "summary": Column(
+            name="Summary",
+            min_width=250,
+            class_="package-title",
+            cell=lambda ci: ht.span(ci.value, title=ci.value),
+        ),
+        "published_at": Column(name="Published", align="right"),
+        "downloads_month": Column(
+            name="Downloads",
+            default_sort_order="desc",
+            cell=lambda ci: f"{ci.value // 1_000_000:,}M",
+        ),
+        "package": Column(name="Package"),
+        "version": Column(name="Version"),
+    },
+    wrap=False,
+    details=create_details,
+    class_="packages-table",
+    row_style={"cursor": "pointer"},
+    theme=Theme(cell_padding="8px 12px"),
+)
+
+to_widget(
+    ht.div(
+        # ht.h2("Top PyPI Monthly Downloads (Aug 1, 2024)"),
+        tbl,
+        class_="cran-packages",
+    )
+)
+```
+
+```{python}
+# | echo: false
+os.chdir(orig_dir)
+```
+
+Notice that if you click on a row, it expands to show the details of the package.
+Expandable rows are great for providing a dense summary table, while allowing people to drill deeper into pieces that interest them.
+
+(The code for this table is on github in [this demo notebook](https://github.com/machow/reactable-py/tree/main/docs/demos/pypi-downloads/index.ipynb) or [this qmd](https://github.com/machow/reactable-py/tree/main/docs/demos/pypi-downloads/index.qmd).)
+
+## Interactive Polars and Pandas DataFrames
+
+reactable works with both Pandas and Polars DataFrames.
+There are a bunch of datasets included, so you can quickly try it out.
+
+For example, here's a table that allows searching and filtering some car data:
+
+```{python}
+from reactable import Reactable, embed_css
+from reactable.data import cars_93
+
+# Note that currently this function is required
+# to put css into notebooks.
+embed_css()
+
+
+Reactable(
+    cars_93[["manufacturer", "model", "type", "price"]],
+    default_page_size=5,
+    searchable=True,
+    filterable=True,
+)
+```
+
+Note 2 important pieces:
+
+* There are boxes above each column for filtering, and a global search bar.
+* The table is paginated, with 5 rows per page.
+
+Moreover, `cars_93` is actually a lightweight reactable implementation of a "DataFrame" called SimpleFrame. Use methods like `cars_93.to_polars()` or `.to_pandas()` to convert to either library. The use of SimpleFrame allows us to provide demo data, without requiring users to install Pandas and Polars.
+
+The [Code basics](/get-started/code-structure.html) page builds on this example to show the basics of reactable-py.
+
+## Expandable rows
+
+Here's a more advanced example, where each row of this palmer penguins data expands into a nested reactable table.
+
+```{python}
+from reactable import Reactable, embed_css
+from reactable.data import penguins
+from htmltools import HTML, div
+
+embed_css()
+
+pl_penguins = penguins.to_polars()
+
+# Create a dictionary of all the nested tables ----
+sub_tables = {
+    g: div(Reactable(df, outlined=True).to_widget(), style="padding: 1rem")
+    for g, df in pl_penguins.group_by("species", "island")
+}
+
+# Get summary rows for displayed table ----
+df_uniq = pl_penguins.select(["species", "island"]).unique()
+
+Reactable(
+    df_uniq,
+    # Use details argument to expand rows into nested tables ----
+    details=lambda row_info: list(sub_tables.values())[row_info.row_index],
+)
+```
+
+Notice that if you click a summary row, it expands to show all the data belonging to that group in the data.
+
+See more in the [Expandable details](/get-started/structure-details.qmd) page of the user guide.
+
+## Custom Javascript
+
+reactable-py supports custom javascript for formatting, styling, and responding to events (like row selection). Below is an example of styling a column of values with javascript.
+
+```{python}
+from reactable import Reactable, JS, embed_css
+from reactable.data import sleep
+
+embed_css()
+
+# Javascript for styling values ----
+js_style = JS(
+    """function(rowInfo) {
+      const value = rowInfo.values['extra']
+      let color
+      if (value > 0) {
+        color = '#008000'
+      } else {
+        color = '#e00000'
+      }
+
+      return { color: color, fontWeight: 'bold' }
+    }"""
+)
+
+# Create table ----
+Reactable(
+    sleep[:6, :],
+    columns=[
+        Column(
+            id="extra",
+            style=js_style,
+        )
+    ],
+)
+```
+
+The `JS()` function wraps a string, in order to tell reactable that some javascript is being used. See the [javascript style](/get-started/style-conditional-js.qmd), and [javascript controls](/get-started/extra-advanced-filters.qmd) pages for more examples.
+
+Note that you can also use [Python to style](/get-started/style-conditional.qmd), which is often easier (but less exciting).
+
+## Common use cases
+
+For more examples and use cases, check out the reactable-py [Examples page](/demos) or [Cookbook](demos/cookbook/index.qmd).
+
+For more inspiration see the tons of demo tables in the [reactable R docs](https://glin.github.io/reactable/) or this incredible [Amtrak train table](https://joshfangmeier.quarto.pub/table-contest-2022/#sec-table) by Josh Fangmeier.
+
+## In conclusion
+
+[reactable-py](https://github.com/machow/reactable-py) is a port of the reactable R package to Python.
+It enables you to create beautiful, interactive tables for reports, dashboards, and more.
+Expand rows, sort columns, or extend all kinds of pieces with javascript! You can install reactable-py by using `pip install reactable`.
+
+A big motivation for porting reactable to Python was to be able to render [Great Tables](https://github.com/posit-dev/great-tables) interactively, so keep an eye out for that in the near future!
+
+To learn more, see the reactable-py [get started page](/get-started/index.qmd) or the [Code basics page](/get-started/code-structure.qmd).

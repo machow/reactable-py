@@ -1,0 +1,9 @@
+---
+title: "Reactable Blog"
+listing:
+  type: table
+  sort: "date desc"
+  feed: true
+  contents:
+    - "**.qmd"
+---
