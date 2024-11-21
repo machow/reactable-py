@@ -795,7 +795,9 @@ class Column:
         if other is None:
             return self
 
-        field_attrs = {field.name: getattr(self, field.name) for field in fields(self)}
+        field_attrs = {
+            field.name: getattr(self, field.name) for field in fields(self) if field.init
+        }
         return replace(other, **filter_none(field_attrs))
 
     def to_props(self) -> dict[str, Any]:
