@@ -696,6 +696,9 @@ class Column:
     footer_style: CssRules | None = None
     id: str | None = None
 
+    # props ----
+    default_sort_desc: bool = field(init=False)
+
     # internal ----
     # TODO: ideally this cannot be specified in the constructor
     # it's just passed to the widget
@@ -713,6 +716,8 @@ class Column:
                 cell=self.format.to_props(),
                 aggregated=self.format.to_props(),
             )
+
+        self.default_sort_desc = self.default_sort_order == "desc"
 
     def _apply_transform(self, col_data: list[Any], transform: callable):
         return [
@@ -790,7 +795,9 @@ class Column:
         if other is None:
             return self
 
-        field_attrs = {field.name: getattr(self, field.name) for field in fields(self)}
+        field_attrs = {
+            field.name: getattr(self, field.name) for field in fields(self) if field.init
+        }
         return replace(other, **filter_none(field_attrs))
 
     def to_props(self) -> dict[str, Any]:
