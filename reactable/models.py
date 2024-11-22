@@ -697,7 +697,7 @@ class Column:
     id: str | None = None
 
     # props ----
-    default_sort_desc: bool = field(init=False)
+    default_sort_desc: bool | None = field(init=False)
 
     # internal ----
     # TODO: ideally this cannot be specified in the constructor
@@ -717,7 +717,10 @@ class Column:
                 aggregated=self.format.to_props(),
             )
 
-        self.default_sort_desc = self.default_sort_order == "desc"
+        if self.default_sort_order is not None:
+            self.default_sort_desc = self.default_sort_order == "desc"
+        else:
+            self.default_sort_desc = None
 
     def _apply_transform(self, col_data: list[Any], transform: callable):
         return [
