@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ipywidgets
 import ipyreact
 import htmltools as html
