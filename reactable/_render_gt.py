@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import htmltools as html
-import ipyreact
-import ipywidgets
 
 from great_tables import GT
 from great_tables._tbl_data import n_rows
 from great_tables._helpers import random_id
 from great_tables._text import _process_text
 from great_tables._gt_data import ColInfoTypeEnum
-from great_tables._scss import compile_scss
 from typing import TYPE_CHECKING, Any
 
 from .models import Column, Language, Theme, ColGroup
 from . import Reactable
-from .tags import as_react_style, to_widget
 from ._tbl_data import subset_frame, to_dict
 
 if TYPE_CHECKING:
@@ -338,24 +334,3 @@ def _render(self: GT):
     )
 
     return el_header, itable, el_footer
-
-
-def render(self: GT) -> ipyreact.Widget:
-    # get table elements ----
-    el_header, itable, el_footer = _render(self)
-
-    # compile table specific css ----
-    css = compile_scss(self, id=itable.element_id)
-
-    style = to_widget(html.tags.style(css))
-
-    # return widget ----
-    res = [itable.to_widget()]
-
-    if el_header:
-        res = [ipywidgets.HTML(str(el_header))] + res
-    if el_footer:
-        res = res + [ipywidgets.HTML(str(el_footer))]
-
-    res = [style] + res
-    return ipyreact.Widget(_type="div", props={"id": itable.element_id}, children=res)
