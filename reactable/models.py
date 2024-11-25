@@ -637,7 +637,9 @@ class Column:
         column stick to the left or right side. If a sticky column is in a column group, all columns
         in the group will automatically be made sticky, including the column group header.
     class_:
-        Additional CSS classes to apply to cells. Can also be a Python function that takes
+        Additional CSS classes to apply to cells. Multiple classes should be specied as a single
+        string with a space separating each class. If a list is passed, the first entry sets the
+        class for the first cell, and so on. Can also be a Python function that takes
         a `CellInfo()` object, or a `JS()` function that takes a row info object, column object,
         and table state object as arguments.
     style:
