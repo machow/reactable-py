@@ -57,9 +57,8 @@ extra = [
 dev = [
     "black",
     "jupyter",
-    "quartodoc>=0.7.1; python_version >= '3.9'",
+    "quartodoc>=0.9.1",
     "faicons",
-    "griffe==0.38.1",
     "great-tables",
     "mizani",
     "pandas",
