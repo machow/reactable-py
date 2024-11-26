@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -151,15 +185,45 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 
 <section id="reactable.Theme" class="level1">
 <h1>Theme</h1>
-<p><code>Theme(color=None, background_color=None, border_color=None, border_width=None, striped_color=None, highlight_color=None, cell_padding=None, style=None, table_style=None, header_style=None, group_header_style=None, table_body_style=None, row_group_style=None, row_style=None, row_striped_style=None, row_highlight_style=None, row_selected_style=None, cell_style=None, footer_style=None, input_style=None, filter_input_style=None, search_input_style=None, select_style=None, pagination_style=None, page_button_style=None, page_button_hover_style=None, page_button_active_style=None, page_button_current_style=None)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Theme(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    background_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    border_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    border_width<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    striped_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    highlight_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    cell_padding<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    table_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    header_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    group_header_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    table_body_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    row_group_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    row_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    row_striped_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    row_highlight_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    row_selected_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    cell_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    footer_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    input_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    filter_input_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    search_input_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    select_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    pagination_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    page_button_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    page_button_hover_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    page_button_active_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    page_button_current_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Theme configuration.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 17%">
+<col style="width: 16%">
 <col style="width: 11%">
-<col style="width: 64%">
+<col style="width: 65%">
 <col style="width: 6%">
 </colgroup>
 <thead>
@@ -172,169 +236,169 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>color</code></td>
+<td>color</td>
 <td>str | None</td>
 <td>Default text color.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>background_color</code></td>
+<td>background_color</td>
 <td>str | None</td>
 <td>Default background color.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>border_color</code></td>
+<td>border_color</td>
 <td>str | None</td>
 <td>Default border color.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>border_width</code></td>
+<td>border_width</td>
 <td>str | None</td>
 <td>Default border width.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>striped_color</code></td>
+<td>striped_color</td>
 <td>str | None</td>
 <td>Default row stripe color.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>highlight_color</code></td>
+<td>highlight_color</td>
 <td>str | None</td>
 <td>Default row highlight color.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>cell_padding</code></td>
+<td>cell_padding</td>
 <td>str | None</td>
 <td>Default cell padding.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>style</code></td>
+<td>style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for the table.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>table_style</code></td>
+<td>table_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for the table element (excludes the pagination bar and search input).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>header_style</code></td>
+<td>header_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for header cells.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>group_header_style</code></td>
+<td>group_header_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for group header cells.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>table_body_style</code></td>
+<td>table_body_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for the table body element.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>row_group_style</code></td>
+<td>row_group_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for row groups.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>row_style</code></td>
+<td>row_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for rows.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>row_striped_style</code></td>
+<td>row_striped_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for striped rows.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>row_highlight_style</code></td>
+<td>row_highlight_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for highlighted rows.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>row_selected_style</code></td>
+<td>row_selected_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for selected rows.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>cell_style</code></td>
+<td>cell_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for cells.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>footer_style</code></td>
+<td>footer_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for footer cells.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>input_style</code></td>
+<td>input_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for inputs.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>filter_input_style</code></td>
+<td>filter_input_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for filter inputs.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>search_input_style</code></td>
+<td>search_input_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for the search input.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>select_style</code></td>
+<td>select_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for table select controls.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>pagination_style</code></td>
+<td>pagination_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for the pagination bar.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_button_style</code></td>
+<td>page_button_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for page buttons, page buttons with hover or active states, and the current page button.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>page_button_hover_style</code></td>
+<td>page_button_hover_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for page buttons, page buttons with hover or active states, and the current page button.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_button_active_style</code></td>
+<td>page_button_active_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for page buttons, page buttons with hover or active states, and the current page button.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>page_button_current_style</code></td>
+<td>page_button_current_style</td>
 <td>CssRules | None</td>
 <td>Additional CSS for page buttons, page buttons with hover or active states, and the current page button.</td>
 <td><code>None</code></td>

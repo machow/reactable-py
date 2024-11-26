@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -151,16 +185,39 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 
 <section id="reactable.Language" class="level1">
 <h1>Language</h1>
-<p><code>Language(sort_label='Sort {name}', filter_placeholder='', filter_label='Filter {name}', search_placeholder='Search', search_label='Search', no_data='No rows found', page_next='Next', page_previous='Previous', page_numbers='{page} of {pages}', page_info='{rowStart}–{rowEnd} of {rows} rows', page_size_options='Show {rows}', page_next_label='Next page', page_previous_label='Previous page', page_number_label='Page {page}', page_jump_label='Go to page', page_size_options_label='Rows per page', group_expand_label='Toggle group', details_expand_label='Toggle details', select_all_rows_label='Select all rows', select_all_sub_rows_label='Select all rows in group', select_row_label='Select row')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Language(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    sort_label<span class="op">=</span><span class="st">'Sort </span><span class="sc">{name}</span><span class="st">'</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    filter_placeholder<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    filter_label<span class="op">=</span><span class="st">'Filter </span><span class="sc">{name}</span><span class="st">'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    search_placeholder<span class="op">=</span><span class="st">'Search'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    search_label<span class="op">=</span><span class="st">'Search'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    no_data<span class="op">=</span><span class="st">'No rows found'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    page_next<span class="op">=</span><span class="st">'Next'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    page_previous<span class="op">=</span><span class="st">'Previous'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    page_numbers<span class="op">=</span><span class="st">'</span><span class="sc">{page}</span><span class="st"> of </span><span class="sc">{pages}</span><span class="st">'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    page_info<span class="op">=</span><span class="st">'</span><span class="sc">{rowStart}</span><span class="st">–</span><span class="sc">{rowEnd}</span><span class="st"> of </span><span class="sc">{rows}</span><span class="st"> rows'</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    page_size_options<span class="op">=</span><span class="st">'Show </span><span class="sc">{rows}</span><span class="st">'</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    page_next_label<span class="op">=</span><span class="st">'Next page'</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    page_previous_label<span class="op">=</span><span class="st">'Previous page'</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    page_number_label<span class="op">=</span><span class="st">'Page </span><span class="sc">{page}</span><span class="st">'</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    page_jump_label<span class="op">=</span><span class="st">'Go to page'</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    page_size_options_label<span class="op">=</span><span class="st">'Rows per page'</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    group_expand_label<span class="op">=</span><span class="st">'Toggle group'</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    details_expand_label<span class="op">=</span><span class="st">'Toggle details'</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    select_all_rows_label<span class="op">=</span><span class="st">'Select all rows'</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    select_all_sub_rows_label<span class="op">=</span><span class="st">'Select all rows in group'</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    select_row_label<span class="op">=</span><span class="st">'Select row'</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Language options.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 10%">
-<col style="width: 2%">
+<col style="width: 3%">
 <col style="width: 71%">
-<col style="width: 14%">
+<col style="width: 15%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -172,127 +229,127 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>sort_label</code></td>
+<td>sort_label</td>
 <td>str</td>
 <td>Accessible label for column sort buttons. Takes a <code>{name}</code> parameter for the column name.</td>
 <td><code>'Sort {name}'</code></td>
 </tr>
 <tr class="even">
-<td><code>filter_placeholder</code></td>
+<td>filter_placeholder</td>
 <td>str</td>
 <td>Placeholder for column filter inputs.</td>
 <td><code>''</code></td>
 </tr>
 <tr class="odd">
-<td><code>filter_label</code></td>
+<td>filter_label</td>
 <td>str</td>
 <td>Accessible label for column filter inputs. Takes a <code>{name}</code> parameter for the column name.</td>
 <td><code>'Filter {name}'</code></td>
 </tr>
 <tr class="even">
-<td><code>search_placeholder</code></td>
+<td>search_placeholder</td>
 <td>str</td>
 <td>Placeholder for the table search input.</td>
 <td><code>'Search'</code></td>
 </tr>
 <tr class="odd">
-<td><code>search_label</code></td>
+<td>search_label</td>
 <td>str</td>
 <td>Accessible label for the table search input.</td>
 <td><code>'Search'</code></td>
 </tr>
 <tr class="even">
-<td><code>no_data</code></td>
+<td>no_data</td>
 <td>str</td>
 <td>Placeholder text when the table has no data.</td>
 <td><code>'No rows found'</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_next</code></td>
+<td>page_next</td>
 <td>str</td>
 <td>Text for the next page button.</td>
 <td><code>'Next'</code></td>
 </tr>
 <tr class="even">
-<td><code>page_previous</code></td>
+<td>page_previous</td>
 <td>str</td>
 <td>Text for the previous page button.</td>
 <td><code>'Previous'</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_numbers</code></td>
+<td>page_numbers</td>
 <td>str</td>
 <td>Text for the page numbers info. Only used with the “jump” and “simple” pagination types. Takes the following parameters: {page} for the current page, {pages} for the total number of pages.</td>
 <td><code>'{page} of {pages}'</code></td>
 </tr>
 <tr class="even">
-<td><code>page_info</code></td>
+<td>page_info</td>
 <td>str</td>
 <td>Text for the page info. Takes the following parameters: <code>{rowStart}</code> for the starting row of the page, <code>{rowEnd}</code> for the ending row of the page, <code>{rows}</code> for the total number of rows.</td>
 <td><code>'{rowStart}–{rowEnd} of {rows} rows'</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_size_options</code></td>
+<td>page_size_options</td>
 <td>str</td>
 <td>Text for the page size options input. Takes a {rows} parameter for the page size options input.</td>
 <td><code>'Show {rows}'</code></td>
 </tr>
 <tr class="even">
-<td><code>page_next_label</code></td>
+<td>page_next_label</td>
 <td>str</td>
 <td>Accessible label for the next page button.</td>
 <td><code>'Next page'</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_previous_label</code></td>
+<td>page_previous_label</td>
 <td>str</td>
 <td>Accessible label for the previous page button.</td>
 <td><code>'Previous page'</code></td>
 </tr>
 <tr class="even">
-<td><code>page_number_label</code></td>
+<td>page_number_label</td>
 <td>str</td>
 <td>Accessible label for the page number buttons. Only used with the the “numbers” pagination type. Takes a {page} parameter for the page number.</td>
 <td><code>'Page {page}'</code></td>
 </tr>
 <tr class="odd">
-<td><code>page_jump_label</code></td>
+<td>page_jump_label</td>
 <td>str</td>
 <td>Accessible label for the page jump input. Only used with the “jump” pagination type.</td>
 <td><code>'Go to page'</code></td>
 </tr>
 <tr class="even">
-<td><code>page_size_options_label</code></td>
+<td>page_size_options_label</td>
 <td>str</td>
 <td>Accessible label for the page size options input.</td>
 <td><code>'Rows per page'</code></td>
 </tr>
 <tr class="odd">
-<td><code>group_expand_label</code></td>
+<td>group_expand_label</td>
 <td>str</td>
 <td>Accessible label for the row group expand button.</td>
 <td><code>'Toggle group'</code></td>
 </tr>
 <tr class="even">
-<td><code>details_expand_label</code></td>
+<td>details_expand_label</td>
 <td>str</td>
 <td>Accessible label for the row details expand button.</td>
 <td><code>'Toggle details'</code></td>
 </tr>
 <tr class="odd">
-<td><code>select_all_rows_label</code></td>
+<td>select_all_rows_label</td>
 <td>str</td>
 <td>Accessible label for the select all rows checkbox.</td>
 <td><code>'Select all rows'</code></td>
 </tr>
 <tr class="even">
-<td><code>select_all_sub_rows_label</code></td>
+<td>select_all_sub_rows_label</td>
 <td>str</td>
 <td>Accessible label for the select all sub rows checkbox.</td>
 <td><code>'Select all rows in group'</code></td>
 </tr>
 <tr class="odd">
-<td><code>select_row_label</code></td>
+<td>select_row_label</td>
 <td>str</td>
 <td>Accessible label for the select row checkbox.</td>
 <td><code>'Select row'</code></td>

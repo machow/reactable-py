@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -151,10 +185,21 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 
 <section id="reactable.ColGroup" class="level1">
 <h1>ColGroup</h1>
-<p><code>ColGroup(name=None, columns=None, header=None, html=None, align=None, header_v_align=None, sticky=None, header_class=None, header_style=None)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ColGroup(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    header<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    html<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    align<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    header_v_align<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    sticky<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    header_class<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    header_style<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Configure a column group (spanner).</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 6%">
@@ -172,55 +217,55 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>name</code></td>
+<td>name</td>
 <td>str | None</td>
 <td>Column group header name.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>columns</code></td>
+<td>columns</td>
 <td>list[str] | None</td>
 <td>Character vector of column names in the group.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>header</code></td>
+<td>header</td>
 <td>Callable[[HeaderCellInfo], HTML] | JsFunction | None</td>
 <td>Custom header renderer. A Python function that takes a <code>HeaderCellInfo()</code> object, or a JS() function that takes a column object and table state object as arguments.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>html</code></td>
+<td>html</td>
 <td>bool | None</td>
 <td>Render header content as HTML? Raw HTML strings are escaped by default.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>align</code></td>
-<td>Literal[‘left’, ‘right’, ‘center’] | None</td>
+<td>align</td>
+<td>Literal['left', 'right', 'center'] | None</td>
 <td>Horizontal alignment of content in the column group header. One of “left”, “right”, “center” (the default).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>header_v_align</code></td>
-<td>Literal[‘top’, ‘center’, ‘bottom’] | None</td>
+<td>header_v_align</td>
+<td>Literal['top', 'center', 'bottom'] | None</td>
 <td>Vertical alignment of content in the column group header. One of “top” (the default), “center”, “bottom”.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>sticky</code></td>
-<td>Literal[‘left’, ‘right’] | None</td>
+<td>sticky</td>
+<td>Literal['left', 'right'] | None</td>
 <td>Make the column group sticky when scrolling horizontally? Either “left” or “right”. If a column group is sticky, all columns in the group will automatically be made sticky.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>header_class</code></td>
+<td>header_class</td>
 <td>list[str] | None</td>
 <td>Additional CSS classes to apply to the header.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>header_style</code></td>
+<td>header_style</td>
 <td>CssStyles | None</td>
 <td>Inline styles to apply to the header. A dictionary mapping CSS style names to values.</td>
 <td><code>None</code></td>

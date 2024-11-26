@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -151,15 +185,28 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 
 <section id="reactable.ColFormat" class="level1">
 <h1>ColFormat</h1>
-<p><code>ColFormat(prefix=None, suffix=None, digits=None, separators=None, percent=None, currency=None, datetime=None, date=None, time=None, hour12=None, locales=None)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ColFormat(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    prefix<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    suffix<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    digits<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    separators<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    percent<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    currency<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    datetime<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    date<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    time<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    hour12<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    locales<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Specify formatting for a Column.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 2%">
 <col style="width: 4%">
-<col style="width: 90%">
+<col style="width: 91%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -172,67 +219,67 @@ gtag('config', 'G-8JZE5GTSHM', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>prefix</code></td>
+<td>prefix</td>
 <td>str | None</td>
 <td>Prefix string.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>suffix</code></td>
+<td>suffix</td>
 <td>str | None</td>
 <td>Suffix string.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>digits</code></td>
+<td>digits</td>
 <td>int | None</td>
 <td>Number of decimal digits to use for numbers.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>separators</code></td>
+<td>separators</td>
 <td>bool | None</td>
 <td>Whether to use grouping separators for numbers, such as thousands separators or thousand/lakh/crore separators. The format is locale-dependent.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>percent</code></td>
+<td>percent</td>
 <td>bool | None</td>
 <td>Format number as a percentage? The format is locale-dependent.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>currency</code></td>
+<td>currency</td>
 <td>StrIsoCurrency | None</td>
 <td>Currency format. An ISO 4217 currency code such as “USD” for the US dollar, “EUR” for the euro, or “CNY” for the Chinese RMB. The format is locale-dependent.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>datetime</code></td>
+<td>datetime</td>
 <td>bool | None</td>
 <td>Whether to format as a locale-dependent date-time.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>date</code></td>
+<td>date</td>
 <td>bool | None</td>
 <td>Whether to format as a locale-dependent date.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>time</code></td>
+<td>time</td>
 <td>bool | None</td>
 <td>Whether to format as a locale-dependent time.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>hour12</code></td>
+<td>hour12</td>
 <td>bool | None</td>
 <td>Whether to use 12-hour time (True) or 24-hour time (False). The default time convention is locale-dependent.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td><code>locales</code></td>
+<td>locales</td>
 <td>bool | None</td>
 <td>Locales to use for number, date, time, and currency formatting. A character vector of BCP 47 language tags, such as “en-US” for English (United States), “hi” for Hindi, or “sv-SE” for Swedish (Sweden). Defaults to the locale of the user’s browser. Multiple locales may be specified to provide a fallback language in case a locale is unsupported. When multiple locales are specified, the first supported locale will be used. See a list of common BCP 47 language tags for reference.</td>
 <td><code>None</code></td>
