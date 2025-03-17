@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from io import StringIO
 
-r = requests.get("https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json")
+r = requests.get("https://hugovk.github.io/top-pypi-packages/top-pypi-packages.min.json")
 r.raise_for_status()
 
 monthly = pl.DataFrame(r.json()["rows"]).rename(
