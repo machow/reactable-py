@@ -1,7 +1,7 @@
 LIBRARY_DIR=$(PWD)/reactable
 REACTABLE_DIR=tmp/reactable
 
-all: react_tables/static/reactable-py.esm.js
+all: reactable/static/reactable-py.esm.js
 
 setup:
 	mkdir -p tmp/reactable
