@@ -55,8 +55,8 @@ Column(aggregate = "frequency")  # Comma-separated counts of unique values
 
 Or a custom aggregate function in JavaScript:
 
+
 ```{python}
-# | output: hide
 Column(
     aggregate=JS(
         """
@@ -73,6 +73,37 @@ Column(
     )
 )
 ```
+
+Here is an example using a custom JS aggregate to join `mpg_city` values:
+
+```{python}
+# | code-fold: true
+data = cars_93[14:38, ["type", "price", "mpg_city"]]
+Reactable(
+    data,
+    group_by="type",
+    columns=[
+        Column(id="price", aggregate="max"),
+        Column(
+            id="mpg_city",
+            aggregate=JS(
+                """
+            function(values, rows) {
+              // input:
+              //  - values: an array of all values in the group
+              //  - rows: an array of row data values for all rows in the group (optional)
+              //
+              // output:
+              //  - an aggregated value, e.g. a comma-separated list
+              return values.join(', ')
+            }
+          """
+            ),
+        ),
+    ],
+)
+```
+
 
 ## Multiple groups
 
