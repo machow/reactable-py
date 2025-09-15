@@ -6,7 +6,7 @@ navbar: false
 :::{.shrink-example}
 
 ```{python}
-#| echo: false
+# | echo: false
 # NOTE: I can't get quarto embed to work with the great-tables.qmd,
 # so have just copied in the example code here :/
 import os
@@ -21,7 +21,7 @@ import polars as pl
 import polars.selectors as cs
 from great_tables import GT, loc, style
 
-coffee_sales = pl.DataFrame.deserialize("coffee-sales/coffee-sales.json", format="json")
+coffee_sales = pl.read_json("coffee-sales/coffee-sales.json")
 
 sel_rev = cs.starts_with("revenue")
 sel_prof = cs.starts_with("profit")
