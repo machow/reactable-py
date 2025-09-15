@@ -258,6 +258,68 @@ Reactable(row_info_props)
 ```
 :::
 
+## Aggregate cell calculation
+
+```{python}
+Reactable(
+    data,
+    group_by="type",
+    columns=[
+        Column(id="price", aggregate="max"),
+        Column(
+            id="model",
+            aggregate=JS(
+                """
+            function(values, rows) {
+              // input:
+              //  - values: an array of all values in the group
+              //  - rows: an array of row data values for all rows in the group (optional)
+              //
+              // output:
+              //  - an aggregated value, e.g. a comma-separated list
+              return values.join(', ')
+            }
+          """
+            ),
+        ),
+    ],
+)
+```
+
+## Aggregated cell
+
+```{python}
+
+# Render aggregated value as a comma-separated list of unique values
+agg_type = JS(
+    """
+    function(cellInfo) {
+            const values = cellInfo.subRows.map(function(row) { return row['Type'] })
+            const unique = values.reduce(function(obj, v) { obj[v] = true; return obj }, {})
+            return Object.keys(unique).join(', ')
+    }"""
+)
+
+# Render aggregated cell as currency
+agg_price = JS(
+    """
+    function(cellInfo) {
+            return cellInfo.value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+    }"""
+)
+
+Reactable(
+    data,
+    group_by="manufacturer",
+    columns={
+        "model": Column(aggregate="unique"),
+        "type": Column(aggregated=agg_type),
+        "price": Column(aggregate="sum", aggregated=agg_price),
+    },
+)
+
+```
+
 ## Javascript `state` properties
 
 

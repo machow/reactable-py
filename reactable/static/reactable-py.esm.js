@@ -36,7 +36,7 @@ var require_react_table_development = __commonJS({
   "tmp/reactable/node_modules/react-table/dist/react-table.development.js"(exports, module) {
     (function(global, factory) {
       typeof exports === "object" && typeof module !== "undefined" ? factory(exports, __require("react")) : typeof define === "function" && define.amd ? define(["exports", "react"], factory) : (global = global || self, factory(global.ReactTable = {}, global.React));
-    })(exports, function(exports2, React12) {
+    })(exports, (function(exports2, React12) {
       "use strict";
       React12 = React12 && Object.prototype.hasOwnProperty.call(React12, "default") ? React12["default"] : React12;
       function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -251,7 +251,7 @@ This usually means you need to need to name your plugin hook by setting the 'plu
         var getDefaultFn = useGetLatest8(defaultFn);
         var getDefaultWait = useGetLatest8(defaultWait);
         return React12.useCallback(
-          /* @__PURE__ */ function() {
+          /* @__PURE__ */ (function() {
             var _ref2 = _asyncToGenerator(
               /* @__PURE__ */ regeneratorRuntime.mark(function _callee2() {
                 var _len2, args, _key2, _args2 = arguments;
@@ -318,7 +318,7 @@ This usually means you need to need to name your plugin hook by setting the 'plu
             return function() {
               return _ref2.apply(this, arguments);
             };
-          }(),
+          })(),
           [getDefaultFn, getDefaultWait]
         );
       }
@@ -347,10 +347,10 @@ This usually means you need to need to name your plugin hook by setting the 'plu
         return isClassComponent(component) || typeof component === "function" || isExoticComponent(component);
       }
       function isClassComponent(component) {
-        return typeof component === "function" && function() {
+        return typeof component === "function" && (function() {
           var proto = Object.getPrototypeOf(component);
           return proto.prototype && proto.prototype.isReactComponent;
-        }();
+        })();
       }
       function isExoticComponent(component) {
         return typeof component === "object" && typeof component.$$typeof === "symbol" && ["react.memo", "react.forward_ref"].includes(component.$$typeof.description);
@@ -475,11 +475,11 @@ This usually means you need to need to name your plugin hook by setting the 'plu
           return obj;
         }
         var cacheKey = typeof path === "function" ? path : JSON.stringify(path);
-        var pathObj = pathObjCache.get(cacheKey) || function() {
+        var pathObj = pathObjCache.get(cacheKey) || (function() {
           var pathObj2 = makePathArray(path);
           pathObjCache.set(cacheKey, pathObj2);
           return pathObj2;
-        }();
+        })();
         var val;
         try {
           val = pathObj.reduce(function(cursor2, pathPart) {
@@ -3701,7 +3701,7 @@ This usually means you need to need to name your plugin hook by setting the 'plu
       exports2.useSortBy = useSortBy2;
       exports2.useTable = useTable2;
       Object.defineProperty(exports2, "__esModule", { value: true });
-    });
+    }));
   }
 });
 
@@ -4542,7 +4542,7 @@ function createStyleElement(options) {
   tag.setAttribute("data-s", "");
   return tag;
 }
-var StyleSheet = /* @__PURE__ */ function() {
+var StyleSheet = /* @__PURE__ */ (function() {
   function StyleSheet2(options) {
     var _this = this;
     this._insertTag = function(tag) {
@@ -4612,7 +4612,7 @@ var StyleSheet = /* @__PURE__ */ function() {
     }
   };
   return StyleSheet2;
-}();
+})();
 
 // tmp/reactable/node_modules/stylis/src/Enum.js
 var MS = "-ms-";
@@ -4701,12 +4701,14 @@ function slice(begin, end) {
 }
 function token(type) {
   switch (type) {
+    // \0 \t \n \r \s whitespace token
     case 0:
     case 9:
     case 10:
     case 13:
     case 32:
       return 5;
+    // ! + , / > @ ~ isolate token
     case 33:
     case 43:
     case 44:
@@ -4714,17 +4716,21 @@ function token(type) {
     case 62:
     case 64:
     case 126:
+    // ; { } breakpoint token
     case 59:
     case 123:
     case 125:
       return 4;
+    // : accompanied token
     case 58:
       return 3;
+    // " ' ( [ opening delimit token
     case 34:
     case 39:
     case 40:
     case 91:
       return 2;
+    // ) ] closing delimit token
     case 41:
     case 93:
       return 1;
@@ -4757,17 +4763,21 @@ function escaping(index, count2) {
 function delimiter(type) {
   while (next())
     switch (character) {
+      // ] ) " '
       case type:
         return position;
+      // " '
       case 34:
       case 39:
         if (type !== 34 && type !== 39)
           delimiter(character);
         break;
+      // (
       case 40:
         if (type === 41)
           delimiter(type);
         break;
+      // \
       case 92:
         next();
         break;
@@ -4810,26 +4820,31 @@ function parse(value, root, parent, rule, rules, rulesets, pseudo, points, decla
   var characters2 = type;
   while (scanning)
     switch (previous = character2, character2 = next()) {
+      // (
       case 40:
         if (previous != 108 && characters2.charCodeAt(length2 - 1) == 58) {
           if (indexof(characters2 += replace(delimit(character2), "&", "&\f"), "&\f") != -1)
             ampersand = -1;
           break;
         }
+      // " ' [
       case 34:
       case 39:
       case 91:
         characters2 += delimit(character2);
         break;
+      // \t \n \r \s
       case 9:
       case 10:
       case 13:
       case 32:
         characters2 += whitespace(previous);
         break;
+      // \
       case 92:
         characters2 += escaping(caret() - 1, 7);
         continue;
+      // /
       case 47:
         switch (peek()) {
           case 42:
@@ -4840,21 +4855,27 @@ function parse(value, root, parent, rule, rules, rulesets, pseudo, points, decla
             characters2 += "/";
         }
         break;
+      // {
       case 123 * variable:
         points[index++] = strlen(characters2) * ampersand;
+      // } ; \0
       case 125 * variable:
       case 59:
       case 0:
         switch (character2) {
+          // \0 }
           case 0:
           case 125:
             scanning = 0;
+          // ;
           case 59 + offset:
             if (property > 0 && strlen(characters2) - length2)
               append(property > 32 ? declaration(characters2 + ";", rule, parent, length2 - 1) : declaration(replace(characters2, " ", "") + ";", rule, parent, length2 - 2), declarations);
             break;
+          // @ ;
           case 59:
             characters2 += ";";
+          // { rule/at-rule
           default:
             append(reference = ruleset(characters2, root, parent, index, offset, rules, points, type, props = [], children = [], length2), rulesets);
             if (character2 === 123)
@@ -4862,6 +4883,7 @@ function parse(value, root, parent, rule, rules, rulesets, pseudo, points, decla
                 parse(characters2, root, reference, reference, props, rulesets, length2, points, children);
               else
                 switch (atrule) {
+                  // d m s
                   case 100:
                   case 109:
                   case 115:
@@ -4873,6 +4895,7 @@ function parse(value, root, parent, rule, rules, rulesets, pseudo, points, decla
         }
         index = offset = property = 0, variable = ampersand = 1, type = characters2 = "", length2 = pseudo;
         break;
+      // :
       case 58:
         length2 = 1 + strlen(characters2), property = previous;
       default:
@@ -4883,17 +4906,21 @@ function parse(value, root, parent, rule, rules, rulesets, pseudo, points, decla
             continue;
         }
         switch (characters2 += from(character2), character2 * variable) {
+          // &
           case 38:
             ampersand = offset > 0 ? 1 : (characters2 += "\f", -1);
             break;
+          // ,
           case 44:
             points[index++] = (strlen(characters2) - 1) * ampersand, ampersand = 1;
             break;
+          // @
           case 64:
             if (peek() === 45)
               characters2 += delimit(next());
             atrule = peek(), offset = length2 = strlen(type = characters2 += identifier(caret())), character2++;
             break;
+          // -
           case 45:
             if (previous === 45 && strlen(characters2) == 2)
               variable = 0;
@@ -4921,8 +4948,10 @@ function declaration(value, root, parent, length2) {
 // tmp/reactable/node_modules/stylis/src/Prefixer.js
 function prefix(value, length2) {
   switch (hash(value, length2)) {
+    // color-adjust
     case 5103:
       return WEBKIT + "print-" + value + value;
+    // animation, animation-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function)
     case 5737:
     case 4201:
     case 3177:
@@ -4930,18 +4959,21 @@ function prefix(value, length2) {
     case 1641:
     case 4457:
     case 2921:
+    // text-decoration, filter, clip-path, backface-visibility, column, box-decoration-break
     case 5572:
     case 6356:
     case 5844:
     case 3191:
     case 6645:
     case 3005:
+    // mask, mask-image, mask-(mode|clip|size), mask-(repeat|origin), mask-position, mask-composite,
     case 6391:
     case 5879:
     case 5623:
     case 6135:
     case 4599:
     case 4855:
+    // background-clip, columns, column-(count|fill|gap|rule|rule-color|rule-style|rule-width|span|width)
     case 4215:
     case 6389:
     case 5109:
@@ -4949,43 +4981,58 @@ function prefix(value, length2) {
     case 5621:
     case 3829:
       return WEBKIT + value + value;
+    // appearance, user-select, transform, hyphens, text-size-adjust
     case 5349:
     case 4246:
     case 4810:
     case 6968:
     case 2756:
       return WEBKIT + value + MOZ + value + MS + value + value;
+    // flex, flex-direction
     case 6828:
     case 4268:
       return WEBKIT + value + MS + value + value;
+    // order
     case 6165:
       return WEBKIT + value + MS + "flex-" + value + value;
+    // align-items
     case 5187:
       return WEBKIT + value + replace(value, /(\w+).+(:[^]+)/, WEBKIT + "box-$1$2" + MS + "flex-$1$2") + value;
+    // align-self
     case 5443:
       return WEBKIT + value + MS + "flex-item-" + replace(value, /flex-|-self/, "") + value;
+    // align-content
     case 4675:
       return WEBKIT + value + MS + "flex-line-pack" + replace(value, /align-content|flex-|-self/, "") + value;
+    // flex-shrink
     case 5548:
       return WEBKIT + value + MS + replace(value, "shrink", "negative") + value;
+    // flex-basis
     case 5292:
       return WEBKIT + value + MS + replace(value, "basis", "preferred-size") + value;
+    // flex-grow
     case 6060:
       return WEBKIT + "box-" + replace(value, "-grow", "") + WEBKIT + value + MS + replace(value, "grow", "positive") + value;
+    // transition
     case 4554:
       return WEBKIT + replace(value, /([^-])(transform)/g, "$1" + WEBKIT + "$2") + value;
+    // cursor
     case 6187:
       return replace(replace(replace(value, /(zoom-|grab)/, WEBKIT + "$1"), /(image-set)/, WEBKIT + "$1"), value, "") + value;
+    // background, background-image
     case 5495:
     case 3959:
       return replace(value, /(image-set\([^]*)/, WEBKIT + "$1$`$1");
+    // justify-content
     case 4968:
       return replace(replace(value, /(.+:)(flex-)?(.*)/, WEBKIT + "box-pack:$3" + MS + "flex-pack:$3"), /s.+-b[^;]+/, "justify") + WEBKIT + value + value;
+    // (margin|padding)-inline-(start|end)
     case 4095:
     case 3583:
     case 4068:
     case 2532:
       return replace(value, /(.+)-inline(.+)/, WEBKIT + "$1$2") + value;
+    // (min|max)?(width|height|inline-size|block-size)
     case 8116:
     case 7059:
     case 5753:
@@ -5000,32 +5047,43 @@ function prefix(value, length2) {
     case 4765:
       if (strlen(value) - 1 - length2 > 6)
         switch (charat(value, length2 + 1)) {
+          // (m)ax-content, (m)in-content
           case 109:
             if (charat(value, length2 + 4) !== 45)
               break;
+          // (f)ill-available, (f)it-content
           case 102:
             return replace(value, /(.+:)(.+)-([^]+)/, "$1" + WEBKIT + "$2-$3$1" + MOZ + (charat(value, length2 + 3) == 108 ? "$3" : "$2-$3")) + value;
+          // (s)tretch
           case 115:
             return ~indexof(value, "stretch") ? prefix(replace(value, "stretch", "fill-available"), length2) + value : value;
         }
       break;
+    // position: sticky
     case 4949:
       if (charat(value, length2 + 1) !== 115)
         break;
+    // display: (flex|inline-flex)
     case 6444:
       switch (charat(value, strlen(value) - 3 - (~indexof(value, "!important") && 10))) {
+        // stic(k)y
         case 107:
           return replace(value, ":", ":" + WEBKIT) + value;
+        // (inline-)?fl(e)x
         case 101:
           return replace(value, /(.+:)([^;!]+)(;|!.+)?/, "$1" + WEBKIT + (charat(value, 14) === 45 ? "inline-" : "") + "box$3$1" + WEBKIT + "$2$3$1" + MS + "$2box$3") + value;
       }
       break;
+    // writing-mode
     case 5936:
       switch (charat(value, length2 + 11)) {
+        // vertical-l(r)
         case 114:
           return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, "tb") + value;
+        // vertical-r(l)
         case 108:
           return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, "tb-rl") + value;
+        // horizontal(-)tb
         case 45:
           return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, "lr") + value;
       }
@@ -5080,9 +5138,11 @@ function prefixer(element, index, children, callback) {
           if (element.length)
             return combine(element.props, function(value) {
               switch (match(value, /(::plac\w+|:read-\w+)/)) {
+                // :read-(only|write)
                 case ":read-only":
                 case ":read-write":
                   return serialize([copy(element, { props: [replace(value, /:(read-\w+)/, ":" + MOZ + "$1")] })], callback);
+                // :placeholder
                 case "::placeholder":
                   return serialize([
                     copy(element, { props: [replace(value, /:(plac\w+)/, ":" + WEBKIT + "input-$1")] }),
@@ -5136,6 +5196,7 @@ var toRules = function toRules2(parsed, points) {
           points[index] = parsed[index].length;
           break;
         }
+      // fallthrough
       default:
         parsed[index] += from(character2);
     }
@@ -10377,7 +10438,7 @@ function Reactable2({
   columns,
   ...rest
 }) {
-  var colProps = ["filterMethod", "footer", "cell", "details", "style", "header"];
+  var colProps = ["filterMethod", "footer", "cell", "details", "style", "header", "aggregate", "aggregated"];
   var tableProps = ["rowStyle", "rowClass", "onClick"];
   var columns = mapReplaceWithEval(columns, colProps);
   var rest = replaceWithEval(rest, tableProps);
